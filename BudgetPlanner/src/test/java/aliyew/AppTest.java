@@ -1,4 +1,4 @@
-package com.aliyew.BudgetPlanner;
+package aliyew;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

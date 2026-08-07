@@ -1,4 +1,4 @@
-package com.aliyew.BudgetPlanner;
+package aliyew;
 
 /**
  * Hello world!
