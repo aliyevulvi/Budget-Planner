@@ -1,45 +1,54 @@
 package aliyew;
 
-import java.util.Scanner;
-
 public class Record {
-	private int recordId = 0;
-	private String recordName = "undefined";
-	private String creationDate = "undefined";
-	private int totalIncome = 0;
 
-	public Record(String name) {
-		this.recordName = name;
-	}
+    private int recordId = 0;
+    private String recordName = "undefined";
+    private String creationDate = "undefined";
+    private int totalIncome = 0;
 
-	public Record(int id, String name, String ts, int income) {
-		this.recordId = id;
-		this.recordName = name;
-		this.creationDate = ts;
-		this.totalIncome = income;
-	}
+    public Record(String name, int income) {
+        this.recordName = name;
+        this.totalIncome = income;
+    }
 
-	public String getRecordName() {
+    public Record(int id, String name, String ts) {
+        this.recordId = id;
+        this.recordName = name;
+        this.creationDate = ts;
+    }
 
-		return this.recordName;
-	}
+    public Record(int id, String name, String ts, int income) {
+        this.recordId = id;
+        this.recordName = name;
+        this.creationDate = ts;
+        this.totalIncome = income;
+    }
 
-	public String getCreationDate() {
+    public String getRecordName() {
+        return this.recordName;
+    }
 
-		return this.creationDate;
-	}
+    public String getCreationDate() {
+        return this.creationDate;
+    }
 
-	public int getRecordId() {
-		return this.recordId;
-	}
+    public int getRecordId() {
+        return this.recordId;
+    }
 
-	public void getRecordInfo() {
+    public int getTotalIncome() {
+        return this.totalIncome;
+    }
 
-		System.out.println("[ -------------------- ]");
-		System.out.printf("[ %-20s ]\n", "Record : " + this.getRecordName());
-		System.out.printf("[ %-20s ]\n", "Record ID : " + this.getRecordId());
-		System.out.printf("[ %-20s ]\n", "Created : " + this.getCreationDate());
-		System.out.println("[ -------------------- ]");
-	}
+    public void getRecordInfo() {
+
+        System.out.println("[ ----------------------------------- ]");
+        System.out.printf("[ %-35s ]\n", "Record Name: " + this.getRecordName());
+        System.out.printf("[ %-35s ]\n", "Record ID : " + this.getRecordId());
+        System.out.printf("[ %-35s ]\n", "Created : " + this.getCreationDate().substring(0, 16));
+        System.out.println("[ ----------------------------------- ]");
+
+    }
 
 }
