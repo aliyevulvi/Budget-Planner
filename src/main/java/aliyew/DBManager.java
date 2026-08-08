@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DBManager {
 
@@ -51,6 +52,11 @@ public class DBManager {
                 return e.getMessage() + e.getSQLState();
             }
         }
+    }
+    
+    public static ArrayList<Record> getRecords() {
+        
+        return new ArrayList<Record>();
     }
 
 }
