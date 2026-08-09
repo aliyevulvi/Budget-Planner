@@ -126,7 +126,7 @@ public class DBManager {
         }
     }
 
-    static ArrayList<Expense> getExpenses(Record rec) {
+    public static ArrayList<Expense> getExpenses(Record rec) {
         ArrayList<Expense> allExpenses = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
@@ -148,7 +148,7 @@ public class DBManager {
 
     }
 
-    static String deleteExpense(String recordName, int expenseId) {
+    public static String deleteExpense(String recordName, int expenseId) {
 
         try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
             String sqlQuery = "DELETE FROM record_" + recordName + "_expenses WHERE expense_id = " + expenseId + ";";
@@ -160,5 +160,23 @@ public class DBManager {
             return e.getMessage() + " (" + e.getSQLState() + ") deleteExpense Method";
         }
     }
+
+    public static String updateExpense(Record record, Expense expense) {
+        try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+            String sqlQuery = "UPDATE record_" + record.getRecordName() + "_expenses SET expense_date = ?, expense_cat = ?, expense_amt = ? WHERE expense_id = ?;";
+            PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+            pstmt.setObject(1, expense.getExpenseDate());
+            pstmt.setString(2, expense.getExpenseCat());
+            pstmt.setInt(3, expense.getExpenseAmt());
+            pstmt.setInt(4, expense.getExpenseId());
+            pstmt.executeUpdate();
+            conn.close();
+
+            return "Expense Updated Successfully";
+        } catch (SQLException e) {
+            return e.getMessage() + " (" + e.getSQLState() + ") updateExpense Method";
+        }
+    }
+
 
 }

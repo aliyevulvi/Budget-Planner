@@ -113,14 +113,15 @@ public class ConsoleUI {
 
                 rec.getRecordInfo();
                 System.out.println();
+                showExpenses(rec);
+
                 System.out.printf("[ %-20s ]\n", "--------------------");
-                System.out.printf("[ %-17s (1)]\n", "Show Expenses");
-                System.out.printf("[ %-17s (2)]\n", "Insert Expense");
-                System.out.printf("[ %-17s (3)]\n", "Delete Expense");
-                System.out.printf("[ %-17s (4)]\n", "Update Expense");
-                System.out.printf("[ %-17s (5)]\n", "Upd. Rec. Name");
-                System.out.printf("[ %-17s (6)]\n", "Update Income");
-                System.out.printf("[ %-17s (7)]\n", "Delete Record");
+                System.out.printf("[ %-17s (1)]\n", "Insert Expense");
+                System.out.printf("[ %-17s (2)]\n", "Delete Expense");
+                System.out.printf("[ %-17s (3)]\n", "Update Expense");
+                System.out.printf("[ %-17s (4)]\n", "Upd. Rec. Name");
+                System.out.printf("[ %-17s (5)]\n", "Update Income");
+                System.out.printf("[ %-17s (6)]\n", "Delete Record");
                 System.out.printf("[ %-17s (0)]\n", "Quit");
                 System.out.printf("[ %-20s ]\n", "--------------------");
                 System.out.print("[ Select ] : ");
@@ -129,13 +130,13 @@ public class ConsoleUI {
 
                 switch (input) {
                     case "1":
-                        System.out.println("SHOW EXPENSES");
-                        break;
-                    case "2":
                         createNewExpense(rec);
                         break;
-                    case "3":
+                    case "2":
                         deleteExpense(rec);
+                        break;
+                    case "3":
+                        updateExpense(rec);
                         break;
                     case "4":
                         System.out.println("Update");
@@ -144,9 +145,6 @@ public class ConsoleUI {
                         System.out.println("Update");
                         break;
                     case "6":
-                        System.out.println("Update");
-                        break;
-                    case "7":
                         System.out.println("Delete Record");
                         break;
                     case "0":
@@ -188,6 +186,29 @@ public class ConsoleUI {
         } catch (Exception e) {
         }
 
+    }
+
+    public static void showExpenses(Record rec) {
+        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+
+        if (allExpenses.isEmpty()) {
+            System.out.printf("[ %-20s ]\n\n", "--------------------");
+            System.err.println("[ NO EXPENSE ]");
+            System.out.printf("[ %-20s ]\n\n", "--------------------");
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+            }
+            return;
+        }
+        System.out.println("\n[  ------------------------ Expenses ------------------------  ]");
+        System.out.println("[ ____________________________________________________________ ]");
+        System.out.printf("|[ %9s ] [ %15s ] [ %10s ] [ %9s ]|\n", "ID", "DATE", "CATEGORY", "AMOUNT");
+        for (Expense exp : allExpenses) {
+            System.out.println(exp.toString());
+        }
+        System.out.println("[ ------------------------------------------------------------ ]\n");
     }
 
     public static void createNewExpense(Record rec) {
@@ -253,6 +274,8 @@ public class ConsoleUI {
         ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 
         if (allExpenses.isEmpty()) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             System.out.printf("[ %-20s ]\n\n", "--------------------");
             System.err.println("[ NO EXPENSE ]");
             System.out.printf("[ %-20s ]\n\n", "--------------------");
@@ -263,16 +286,6 @@ public class ConsoleUI {
             }
             return;
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-        rec.getRecordInfo();
-        System.out.println("\n[  ------------------------ Expenses ------------------------  ]");
-        System.out.println("[ ____________________________________________________________ ]");
-        System.out.printf("|[ %9s ] [ %15s ] [ %10s ] [ %9s ]|\n", "ID", "DATE", "CATEGORY", "AMOUNT");
-        for (Expense exp : allExpenses) {
-            System.out.println(exp.toString());
-        }
-        System.out.println("[ ------------------------------------------------------------ ]\n");
 
         Scanner console = new Scanner(System.in);
         System.out.print("[ Select Expense (0 for quit)] : ");
@@ -303,5 +316,116 @@ public class ConsoleUI {
             }
         }
 
+    }
+
+    public static void updateExpense(Record rec) {
+        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+
+        if (allExpenses.isEmpty()) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.printf("[ %-20s ]\n\n", "--------------------");
+            System.err.println("[ NO EXPENSE ]");
+            System.out.printf("[ %-20s ]\n\n", "--------------------");
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+            }
+            return;
+        }
+
+        Scanner console = new Scanner(System.in);
+        System.out.print("[ Select Expense (0 for quit)] : ");
+        String input = console.nextLine();
+        Expense expense = null;
+
+        if (input.equals("0")) {
+            return;
+        }
+
+        for (Expense exp : allExpenses) {
+            if (input.equals((exp.getExpenseId() + ""))) {
+                expense = exp;
+            }
+        }
+
+        if (expense != null) {
+            System.out.print("[ Year (" + expense.getExpenseDate().getYear() + ") : ");
+            String year = console.nextLine();
+            if (year.equals("")) {
+                year = expense.getExpenseDate().getYear() + "";
+            } else if (!year.matches("\\d+")) {
+                System.out.println("[ Wrong Input ]");
+                try {
+                    Thread.sleep(1000);
+                    return;
+                } catch (Exception e) {
+                }
+            }
+            System.out.print("[ Month (" + expense.getExpenseDate().getMonth() + ") : ");
+            String month = console.nextLine();
+            if (month.equals("")) {
+                month = expense.getExpenseDate().getMonth() + "";
+            } else if (!month.matches("\\d+")) {
+                System.out.println("[ Wrong Input ]");
+                try {
+                    Thread.sleep(1000);
+                    return;
+                } catch (Exception e) {
+                }
+            }
+            System.out.print("[ Day (" + expense.getExpenseDate().getDayOfMonth() + ") : ");
+            String day = console.nextLine();
+            if (day.equals("")) {
+                day = expense.getExpenseDate().getDayOfMonth() + "";
+            } else if (!day.matches("\\d+")) {
+                System.out.println("[ Wrong Input ]");
+                try {
+                    Thread.sleep(1000);
+                    return;
+                } catch (Exception e) {
+                }
+            }
+
+            System.out.print("[ Category (" + expense.getExpenseCat() + ") : ");
+            String cat = console.nextLine();
+
+            if (cat.equals("air") || cat.equals("home") || cat.equals("loan") || cat.equals("self") || cat.equals("utility") || cat.equals("others") || cat.equals("income") || cat.equals("")) {
+                if (cat.equals("")) {
+                    cat = expense.getExpenseCat();
+                }
+                System.out.print("[ Amount (" + expense.getExpenseAmt() + ") : ");
+                String amount = console.nextLine();
+                if (amount.equals("") || amount.matches("\\d+")) {
+                    if (amount.equals("")) {
+                        amount = expense.getExpenseAmt() + "";
+                    }
+                    DBManager.updateExpense(rec, new Expense(expense.getExpenseId(), java.time.LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day)), cat, Integer.parseInt(amount)));
+                } else {
+                    System.out.println("[ Wrong Input ]");
+                    try {
+                        Thread.sleep(1000);
+                        return;
+                    } catch (Exception e) {
+                    }
+                }
+            } else {
+                System.out.println("[ Wrong Input ]");
+                try {
+                    Thread.sleep(1000);
+                    return;
+                } catch (Exception e) {
+                }
+            }
+
+
+        } else {
+            System.out.println("[ Wrong Selection ]");
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+            }
+        }
     }
 }
