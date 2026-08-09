@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class DBManager {
 
-	private static final String LINK_STRING = "";
+    private static final String LINK_STRING = "";
 
 	public static void main(String[] args) {
 		try {
@@ -186,13 +186,16 @@ public class DBManager {
 			pstmt.setInt(3, rec.getRecordId());
 			pstmt.executeUpdate();
 			
-
+                    if (!rec.getRecordName().equals(newName)) {
 			String sqlQuery2 = "ALTER TABLE record_" + rec.getRecordName() + "_expenses RENAME TO " +
 							   "record_" + newName + "_expenses;";
             pstmt = conn.prepareStatement(sqlQuery2);
             pstmt.executeUpdate();
-            conn.close();							   							   
-           
+
+                    }
+                    conn.close();
+
+
 			return "Record Updated Successfully";
 
 		} catch (SQLException e) {
@@ -216,6 +219,28 @@ public class DBManager {
 			return e.getMessage() + " (" + e.getSQLState() + ") updateExpense Method";
 		}
 	}
+
+    public static String deleteRecord(Record rec) {
+        try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+            String sqlQuery = "DELETE FROM tb_records WHERE record_id = ?;";
+            PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+            pstmt.setInt(1, rec.getRecordId());
+            pstmt.executeUpdate();
+
+            String sqlQuery2 = "DROP TABLE record_" + rec.getRecordName() + "_expenses;";
+            pstmt = conn.prepareStatement(sqlQuery2);
+            pstmt.executeUpdate();
+
+            conn.close();
+
+            return "Record Deleted Successfully";
+        } catch (SQLException e) {
+            return e.getMessage() + " (" + e.getSQLState() + ") deleteRecord Method";
+
+        }
+
+    }
+
 
 
 }

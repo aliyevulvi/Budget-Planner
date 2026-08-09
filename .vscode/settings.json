@@ -1,0 +1,5 @@
+{
+    "java.format.settings.url": "eclipse-formatter.xml",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
+}
