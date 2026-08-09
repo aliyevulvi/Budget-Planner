@@ -37,7 +37,7 @@ public class Record {
         return this.recordId;
     }
 
-    public int getTotalIncome() {
+    public int getRecordIncome() {
         return this.totalIncome;
     }
 
