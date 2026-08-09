@@ -46,6 +46,7 @@ public class Record {
         System.out.println("[ ----------------------------------- ]");
         System.out.printf("[ %-35s ]\n", "Record Name: " + this.getRecordName());
         System.out.printf("[ %-35s ]\n", "Record ID : " + this.getRecordId());
+        System.out.printf("[ %-35s ]\n", "Income : " + this.getRecordIncome());
         System.out.printf("[ %-35s ]\n", "Created : " + this.getCreationDate().substring(0, 16));
         System.out.println("[ ----------------------------------- ]");
 

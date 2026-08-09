@@ -31,6 +31,22 @@ public class DBManager {
 			System.err.println(e.getCause());
 		}
 	}
+	
+	public static String addIncome(Record rec, int addAmt) {
+	    try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+	        String sqlQuery = "UPDATE tb_records SET record_income = ? WHERE record_id = ?;";
+	        PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+	        pstmt.setInt(1, rec.getRecordIncome()+addAmt);
+	        pstmt.setInt(2, rec.getRecordId());
+	        pstmt.executeUpdate();
+	        
+	        conn.close();
+	        
+	        return "Income Updated Successfully";
+	    } catch (SQLException e) {
+	        return e.getMessage() + " (" + e.getSQLState() + ") addIncome Method";
+	    }
+	}
 
 	public static String createNewRecord(Record newRecord) {
 

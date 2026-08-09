@@ -120,7 +120,8 @@ public class ConsoleUI {
 				System.out.printf("[ %-17s (2)]\n", "Delete Expense");
 				System.out.printf("[ %-17s (3)]\n", "Update Expense");
 				System.out.printf("[ %-17s (4)]\n", "Update Record");
-				System.out.printf("[ %-17s (5)]\n", "Delete Record");
+				System.out.printf("[ %-17s (5)]\n", "Add Extra Income");
+				System.out.printf("[ %-17s (6)]\n", "Delete Record");
 				System.out.printf("[ %-17s (0)]\n", "Quit");
 				System.out.printf("[ %-20s ]\n", "--------------------");
 				System.out.print("[ Select ] : ");
@@ -141,7 +142,7 @@ public class ConsoleUI {
 					updateRecord(rec);
 					return;
 				case "5":
-					System.out.println("Update");
+					addIncome(rec);
 					break;
 				case "6":
 					System.out.println("Delete Record");
@@ -157,6 +158,20 @@ public class ConsoleUI {
 
 		}
 
+	}
+	
+	public static void addIncome(Record rec) {
+	    Scanner console = new Scanner(System.in);
+	    System.out.print("[ Add Extra Income ("+rec.getRecordIncome()+") : ");
+	    String income = console.nextLine();
+	    
+	    if (income.matches("\\d+")) {
+	        System.out.println("[ "+DBManager.addIncome(rec, Integer.parseInt(income))+" ]");
+	        try { Thread.sleep(1000); } catch (Exception e) {}
+	    } else {
+	        System.out.println("[ Wrong Input ]");
+	        try { Thread.sleep(1000); } catch (Exception e) {}
+	    }
 	}
 
 	private static void createNewRecord() {
