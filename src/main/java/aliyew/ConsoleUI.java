@@ -21,7 +21,6 @@ public class ConsoleUI {
             System.out.printf("[ Budget Planner Menu ]\n");
             System.out.printf("[ %-16s (1)]\n", "Create Record");
             System.out.printf("[ %-16s (2)]\n", "Show Records");
-            System.out.printf("[ %-16s (3)]\n", "Get Report");
             System.out.printf("[ %-16s (0)]\n", "Quit");
             System.out.printf("[ %-15s ]\n", "-------------------");
             System.out.print("\n[ Select ] : ");
@@ -36,9 +35,6 @@ public class ConsoleUI {
                 case "2":
                     showRecords();
                     break;
-                case "3":
-                    System.out.println("3");
-                    break outerWhile;
                 case "0":
                     System.out.println("[ BudgetPlanner Closed ]");
                     System.exit(0);
@@ -125,7 +121,8 @@ public class ConsoleUI {
                 System.out.printf("[ %-17s (3)]\n", "Update Expense");
                 System.out.printf("[ %-17s (4)]\n", "Update Record");
                 System.out.printf("[ %-17s (5)]\n", "Add Extra Income");
-                System.out.printf("[ %-17s (6)]\n", "Delete Record");
+                System.out.printf("[ %-17s (6)]\n", "Show Report");
+                System.out.printf("[ %-17s (7)]\n", "Delete Record");
                 System.out.printf("[ %-17s (0)]\n", "Quit");
                 System.out.printf("[ %-20s ]\n", "--------------------");
                 System.out.print("[ Select ] : ");
@@ -149,6 +146,9 @@ public class ConsoleUI {
                         addIncome(rec);
                         return;
                     case "6":
+                        showReport(rec);
+                        break;
+                    case "7":
                         deleteRecord(rec);
                         return;
                     case "0":
@@ -162,6 +162,64 @@ public class ConsoleUI {
 
         }
 
+    }
+    
+    public static void showReport(Record rec) {
+        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        Scanner console = new Scanner(System.in);
+        int totalExpense = 0;
+        String[] cats = {"Air", "Home", "Loan", "Self", "Utility", "Others", "Income"}; 
+        
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.printf("[ %-35s ]\n", "-".repeat(35));
+        rec.getRecordInfo();
+        System.out.printf("[ %-35s ]\n", "-".repeat(35));
+        if (allExpenses.isEmpty()) {
+            System.out.printf("[ %-35s ]\n", "NO RECORDS");
+        } else {
+            for (Expense exp : allExpenses) {
+                exp.toString();
+                totalExpense += exp.getExpenseAmt();
+            }
+        }
+        
+        System.out.printf("[ %-35s ]\n", "<< Result >>");
+        System.out.printf("[ %-35s ]\n", "Total Expense : "+totalExpense);
+        System.out.printf("[ %-35s ]\n", "Remaining Salary :"+ (rec.getRecordIncome() + totalExpense));
+        System.out.printf("[ %-35s ]\n[ %-35s ]\n", "-".repeat(35), "-".repeat(35));
+        
+        System.out.printf("[ %-35s ]\n", "<< Category Based Expense Ratio >>");
+        for (String str : cats) {
+            int catExpense = 0;
+            for (Expense exp : allExpenses) {
+                if (exp.getExpenseCat().equalsIgnoreCase(str)) {
+                    catExpense += exp.getExpenseAmt();
+                }
+            }
+            System.out.printf("[ %-35s ]\n", str + " : " + catExpense);
+        }
+        
+        System.out.printf("[ %-35s ]\n\n", "-".repeat(35));
+        
+        System.out.printf("[ %-31s %-3s ]\n", "Create PDF", "(1)");
+        System.out.printf("[ %-31s %-3s ]\n", "Quit", "(0)");
+        
+        System.out.print("[ Select ]  : ");
+        String input = console.nextLine();
+        
+        if (input.equals("1")) {
+            System.out.println("CREATE PDF");
+        } else if (input.equals("0")) {
+            return;
+        } else {
+            System.out.println("[ Wrong Input ]");
+            try {Thread.sleep(1000);} catch (Exception e) {}
+            showReport(rec);
+        }
+        
+
+        
     }
 
     public static void addIncome(Record rec) {
