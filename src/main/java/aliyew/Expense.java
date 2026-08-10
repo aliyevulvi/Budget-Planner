@@ -5,12 +5,14 @@ import java.time.LocalDate;
 public class Expense {
 
     private int expense_id = 0;
+    private int expense_record_id = 0;
     private LocalDate expense_date = null;
     private String expense_cat = "undefined";
     private int expense_amt = 0;
 
-    public Expense(int id, LocalDate date, String cat, int amount) {
+    public Expense(int id, int record_id, LocalDate date, String cat, int amount) {
         this.expense_id = id;
+        this.expense_record_id = record_id;
         this.expense_date = date;
         this.expense_cat = cat;
         this.expense_amt = amount;
@@ -28,6 +30,10 @@ public class Expense {
 
     public int getExpenseId() {
         return this.expense_id;
+    }
+
+    public int getExpenseRecordId() {
+        return this.expense_record_id;
     }
 
     public LocalDate getExpenseDate() {

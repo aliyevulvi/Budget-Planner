@@ -99,6 +99,10 @@ public class ConsoleUI {
 
             if (!recordFound) {
                 System.out.printf("[ %-16s ]\n", "Such Record couldn't found");
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }
                 return;
             }
 
@@ -322,7 +326,7 @@ public class ConsoleUI {
         }
 
         if (expense != null) {
-            System.out.println("[ " + DBManager.deleteExpense(rec.getRecordName(), expense.getExpenseId()) + " ]");
+            System.out.println("[ " + DBManager.deleteExpense(expense.getExpenseId()) + " ]");
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
@@ -471,7 +475,7 @@ public class ConsoleUI {
                     if (amount.equals("")) {
                         amount = expense.getExpenseAmt() + "";
                     }
-                    DBManager.updateExpense(rec, new Expense(expense.getExpenseId(), java.time.LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day)), cat, Integer.parseInt(amount)));
+                    DBManager.updateExpense(new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), java.time.LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day)), cat, Integer.parseInt(amount)));
                 } else {
                     System.out.println("[ Wrong Input ]");
                     try {

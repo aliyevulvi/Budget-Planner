@@ -20,15 +20,23 @@ public class DBManager {
 							  + "record_income INTEGER NOT NULL, "
 							  + "record_ts TIMESTAMP NOT NULL "
 							  + ");";
+			String sqlQuery2 = "CREATE TABLE IF NOT EXISTS tb_expenses ( "
+							+ " expense_id SERIAL PRIMARY KEY, "
+							+ " expense_record_id INT REFERENCES tb_records(record_id) ON DELETE CASCADE, "
+							+ "expense_date DATE NOT NULL, "
+							+ "expense_cat VARCHAR(50) NOT NULL, "
+							+ "expense_amt INTEGER NOT NULL);";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.execute();
+			pstmt.executeUpdate();
+			pstmt = conn.prepareStatement(sqlQuery2);
+			pstmt.executeUpdate();
+			
 			conn.close();
 
 		} catch (SQLException e) {
-			System.err.println(e.getMessage());
-			System.err.println(e.toString());
-			System.err.println(e.getCause());
+			System.err.println(e.getMessage() + " (" + e.getSQLState() + ") main Method");
+
 		}
 	}
 	
@@ -53,19 +61,13 @@ public class DBManager {
 		try {
 			Connection conn = DriverManager.getConnection(LINK_STRING);
 			String insertQuery = "INSERT INTO tb_records (record_name, record_income, record_ts) VALUES (?, ?, ?);";
-			String expenseQuery = "CREATE TABLE record_" + newRecord.getRecordName() + "_expenses ( "
-								  + "expense_id SERIAL PRIMARY KEY, "
-								  + "expense_date DATE NOT NULL, "
-								  + "expense_cat VARCHAR(50) NOT NULL, "
-								  + "expense_amt INTEGER NOT NULL);";
 
 			PreparedStatement pStatement = conn.prepareStatement(insertQuery);
 			pStatement.setString(1, newRecord.getRecordName());
 			pStatement.setInt(2, newRecord.getRecordIncome());
 			pStatement.setTimestamp(3, java.sql.Timestamp.from(java.time.Instant.now()));
 			pStatement.executeUpdate();
-			pStatement = conn.prepareStatement(expenseQuery);
-			pStatement.executeUpdate();
+
 			conn.close();
 
 			return "Record Created Successfully";
@@ -74,7 +76,7 @@ public class DBManager {
 			if (e.getSQLState().equals("23505")) {
 				return newRecord.getRecordName() + " Record already created!";
 			} else {
-				return e.getMessage() + " (" + e.getSQLState() + ")";
+				return e.getMessage() + " (" + e.getSQLState() + ") createNewRecord Method";
 			}
 		}
 	}
@@ -106,12 +108,13 @@ public class DBManager {
 		try {
 
 			Connection conn = DriverManager.getConnection(LINK_STRING);
-			String insertQuery = "INSERT INTO record_" + rec.getRecordName() + "_expenses(expense_date, expense_cat, expense_amt) "
-								 + "VALUES (?,?,?);";
+			String insertQuery = "INSERT INTO tb_expenses(expense_record_id, expense_date, expense_cat, expense_amt) "
+								 + "VALUES (?,?,?,?);";
 			PreparedStatement pstmt = conn.prepareStatement(insertQuery);
-			pstmt.setObject(1, exp.getExpenseDate());
-			pstmt.setString(2, exp.getExpenseCat());
-			pstmt.setInt(3, exp.getExpenseAmt());
+			pstmt.setInt(1, rec.getRecordId());
+			pstmt.setObject(2, exp.getExpenseDate());
+			pstmt.setString(3, exp.getExpenseCat());
+			pstmt.setInt(4, exp.getExpenseAmt());
 			pstmt.executeUpdate();
 			conn.close();
 
@@ -126,10 +129,6 @@ public class DBManager {
 		ArrayList<Record> allRecords = getRecords();
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			for (Record rec : allRecords) {
-				PreparedStatement pstmt = conn.prepareStatement("DROP TABLE record_" + rec.getRecordName() + "_expenses;");
-				pstmt.executeUpdate();
-			}
 
 			String sqlQuery = "DROP TABLE tb_records;";
 			PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
@@ -146,13 +145,14 @@ public class DBManager {
 		ArrayList<Expense> allExpenses = new ArrayList<>();
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "SELECT * FROM record_" + rec.getRecordName() + "_expenses;";
+			String sqlQuery = "SELECT * FROM tb_expenses WHERE expense_record_id = ?;";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setInt(1, rec.getRecordId());
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getInt("expense_amt")));
+				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getInt("expense_record_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getInt("expense_amt")));
 			}
 			conn.close();
 			return allExpenses;
@@ -164,11 +164,12 @@ public class DBManager {
 
 	}
 
-	public static String deleteExpense(String recordName, int expenseId) {
+	public static String deleteExpense(int expenseId) {
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "DELETE FROM record_" + recordName + "_expenses WHERE expense_id = " + expenseId + ";";
+			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setInt(1, expenseId);
 			pstmt.executeUpdate();
 			conn.close();
 			return "Expense Deleted Successfully";
@@ -186,15 +187,7 @@ public class DBManager {
 			pstmt.setInt(3, rec.getRecordId());
 			pstmt.executeUpdate();
 			
-                    if (!rec.getRecordName().equals(newName)) {
-			String sqlQuery2 = "ALTER TABLE record_" + rec.getRecordName() + "_expenses RENAME TO " +
-							   "record_" + newName + "_expenses;";
-            pstmt = conn.prepareStatement(sqlQuery2);
-            pstmt.executeUpdate();
-
-                    }
-                    conn.close();
-
+            conn.close();
 
 			return "Record Updated Successfully";
 
@@ -203,9 +196,9 @@ public class DBManager {
 		}
 	}
 
-	public static String updateExpense(Record record, Expense expense) {
+	public static String updateExpense(Expense expense) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "UPDATE record_" + record.getRecordName() + "_expenses SET expense_date = ?, expense_cat = ?, expense_amt = ? WHERE expense_id = ?;";
+			String sqlQuery = "UPDATE tb_expenses SET expense_date = ?, expense_cat = ?, expense_amt = ? WHERE expense_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
 			pstmt.setObject(1, expense.getExpenseDate());
 			pstmt.setString(2, expense.getExpenseCat());
@@ -227,9 +220,6 @@ public class DBManager {
             pstmt.setInt(1, rec.getRecordId());
             pstmt.executeUpdate();
 
-            String sqlQuery2 = "DROP TABLE record_" + rec.getRecordName() + "_expenses;";
-            pstmt = conn.prepareStatement(sqlQuery2);
-            pstmt.executeUpdate();
 
             conn.close();
 
