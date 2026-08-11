@@ -209,7 +209,11 @@ public class ConsoleUI {
         String input = console.nextLine();
         
         if (input.equals("1")) {
-            System.out.println("CREATE PDF");
+            System.out.println("[ "+PDFManager.createPdf(rec, new Expense())+" ]");
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+            }
         } else if (input.equals("0")) {
             return;
         } else {
