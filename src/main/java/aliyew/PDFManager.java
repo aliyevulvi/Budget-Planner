@@ -130,8 +130,8 @@ public class PDFManager {
 				PdfPCell cell1 = new PdfPCell(new Phrase(entry.getKey(), FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
 				PdfPCell cell2 = new PdfPCell(new Phrase(entry.getValue()+"", FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
 
-				cell2.setBackgroundColor(new Color(152, 202, 255));
-				cell1.setBackgroundColor(new Color(206, 230, 255));
+				cell1.setBackgroundColor(new Color(152, 202, 255));
+				cell2.setBackgroundColor(new Color(206, 230, 255));
 				cell2.setHorizontalAlignment(Element.ALIGN_RIGHT);
 				cell1.setPadding(4f);
 				cell2.setPadding(4f);
@@ -141,10 +141,12 @@ public class PDFManager {
 				categorizedTable.addCell(cell1);
 				categorizedTable.addCell(cell2);
 			}
+			
+			categorizedTable.setSpacingAfter(50f);
 
 			doc.add(categorizedTable);
 
-			PdfPTable resultTable = new PdfPTable(2);
+			PdfPTable resultTable = new PdfPTable(4);
 			resultTable.setWidthPercentage(100f);
 			resultTable.setSpacingAfter(50f);
 			PdfPCell headerCell3 = new PdfPCell(new Phrase("Results", FontFactory.getFont(FontFactory.TIMES_ROMAN, 18, new Color(26, 54, 93))));
@@ -153,9 +155,23 @@ public class PDFManager {
 			headerCell3.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			headerCell3.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			headerCell3.setPadding(8f);
-			headerCell3.setBorder(PdfPCell.RIGHT);
+			headerCell3.setBorder(PdfPCell.RIGHT | PdfPCell.BOTTOM);
 
 			resultTable.addCell(headerCell3);
+			
+			addCell2Table(resultTable, "Total Expenses", false, true);
+			addCell2Table(resultTable, report.getTotalExpense()+"", false, false);
+			addCell2Table(resultTable, "Balance", false, true);
+			addCell2Table(resultTable, (report.getTotalExpense()+report.getRecord().getRecordIncome())+"", false, false);
+			addCell2Table(resultTable, "Highest Expense", false, true);
+			addCell2Table(resultTable, report.getHighestExpense() == null ? "0" : report.getHighestExpense().getExpenseAmt()+"" , false, false);
+			addCell2Table(resultTable, "Smallest Expense", false, true);
+			addCell2Table(resultTable, report.getSmallestExpense() == null ? "0" : report.getSmallestExpense().getExpenseAmt()+"", false, false);
+			addCell2Table(resultTable, "First Expense", false, true);
+			addCell2Table(resultTable, report.getFirstExpense() == null ? "0" : report.getFirstExpense().getExpenseDate()+"", false, false);
+			addCell2Table(resultTable, "Last Expense", false, true);
+			addCell2Table(resultTable, report.getLastExpense() == null ? "0" : report.getLastExpense().getExpenseDate()+"", false, false);
+			
 
 			doc.add(resultTable);
 			
@@ -184,7 +200,7 @@ public class PDFManager {
 		}
 		cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-		cell.setBorder(PdfPCell.RIGHT);
+		cell.setBorder(PdfPCell.BOTTOM);
 		cell.setBorderColor(Color.black);
 		cell.setPadding(4f);
 

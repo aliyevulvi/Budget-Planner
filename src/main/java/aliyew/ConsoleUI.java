@@ -345,7 +345,7 @@ public class ConsoleUI {
                 System.out.printf("[ %-20s ]\n\n", "--------------------");
 
                 if (amt.matches("-?\\d+")) {
-                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("dd.MM.yy")), cat, Integer.parseInt(amt)))
+                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd]")), cat, Integer.parseInt(amt)))
                             + " ]");
 
                     try {
@@ -382,11 +382,17 @@ public class ConsoleUI {
 
     public static boolean isValidDate(String input) {
         try {
-            LocalDate.parse(input, DateTimeFormatter.ofPattern("dd.MM.yy"));
+            System.out.println(input);
+            LocalDate.parse(input, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd]"));
+            try { Thread.sleep(1000);} catch (Exception e) {}
             return true;
-        } catch (Exception e) {
+        } catch (Exception a) {
+            System.out.println("false");
+            try { Thread.sleep(1000);} catch (Exception e) {}
             return false;
         }
+        
+        
     }
 
     public static void deleteExpense(Record rec) {

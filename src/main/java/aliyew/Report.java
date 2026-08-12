@@ -6,10 +6,10 @@ import java.util.HashMap;
 public class Report {
     private Record rec = new Record();
     private ArrayList<Expense> allExpenses = new ArrayList<>();
-    private Expense highestExpense = new Expense();
-    private Expense smallestExpense = new Expense();
-    private Expense firstExpense = new Expense();
-    private Expense lastExpense = new Expense();
+    private Expense highestExpense = null;
+    private Expense smallestExpense = null;
+    private Expense firstExpense = null;
+    private Expense lastExpense = null;
     private int totalExpense = 0;
     private HashMap<String, Integer> categorizedMap = new HashMap<>();
 

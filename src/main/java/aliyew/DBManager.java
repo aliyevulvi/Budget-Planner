@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class DBManager {
 
     private static final String LINK_STRING = "";
-
+    
 	public static void main(String[] args) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "CREATE TABLE IF NOT EXISTS tb_records ( "
