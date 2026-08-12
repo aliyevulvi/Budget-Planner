@@ -1,6 +1,9 @@
 package aliyew;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class ConsoleUI {
@@ -113,7 +116,7 @@ public class ConsoleUI {
 
                 rec.getRecordInfo();
                 System.out.println();
-                showExpenses(rec);
+                ArrayList<Expense> allExpenses = showExpenses(rec);
 
                 System.out.printf("[ %-20s ]\n", "--------------------");
                 System.out.printf("[ %-17s (1)]\n", "Insert Expense");
@@ -131,7 +134,7 @@ public class ConsoleUI {
 
                 switch (input) {
                     case "1":
-                        createNewExpense(rec);
+                        createNewExpense(rec, allExpenses);
                         break;
                     case "2":
                         deleteExpense(rec);
@@ -168,7 +171,7 @@ public class ConsoleUI {
         ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
         Scanner console = new Scanner(System.in);
         int totalExpense = 0;
-        String[] cats = {"Air", "Home", "Loan", "Self", "Utility", "Others", "Income"}; 
+        String[] cats = {"Air", "Home", "Loan", "Self", "Utility", "Others"}; 
         
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -189,6 +192,8 @@ public class ConsoleUI {
         System.out.printf("[ %-35s ]\n", "Remaining Salary :"+ (rec.getRecordIncome() + totalExpense));
         System.out.printf("[ %-35s ]\n[ %-35s ]\n", "-".repeat(35), "-".repeat(35));
         
+        HashMap<String, Integer> categorizedMap = new HashMap<>();
+        
         System.out.printf("[ %-35s ]\n", "<< Category Based Expense Ratio >>");
         for (String str : cats) {
             int catExpense = 0;
@@ -198,6 +203,7 @@ public class ConsoleUI {
                 }
             }
             System.out.printf("[ %-35s ]\n", str + " : " + catExpense);
+            categorizedMap.put(str, catExpense);
         }
         
         System.out.printf("[ %-35s ]\n\n", "-".repeat(35));
@@ -209,7 +215,7 @@ public class ConsoleUI {
         String input = console.nextLine();
         
         if (input.equals("1")) {
-            System.out.println("[ "+PDFManager.createPdf(rec, allExpenses)+" ]");
+            System.out.println("[ "+PDFManager.createPdf(new Report(rec, allExpenses, categorizedMap))+" ]");
             try {
                 Thread.sleep(2000);
             } catch (Exception e) {
@@ -250,6 +256,7 @@ public class ConsoleUI {
         Scanner console = new Scanner(System.in);
         String newRecordName = "";
         String newRecordTotaIncome = "";
+        String newRecordSaving = "";
 
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -258,10 +265,12 @@ public class ConsoleUI {
         newRecordName = console.nextLine();
         System.out.print("[ Total Income : ");
         newRecordTotaIncome = console.nextLine();
+        System.out.print("[ Total Saving : ");
+        newRecordSaving = console.nextLine();
         System.out.printf("[ %-20s ]\n\n", "--------------------");
 
-        if (newRecordTotaIncome.matches("-?\\d+")) {
-            System.out.printf("[ %-20s ]", DBManager.createNewRecord(new Record(newRecordName, Integer.parseInt(newRecordTotaIncome))));
+        if (newRecordTotaIncome.matches("-?\\d+") && newRecordSaving.matches("-?\\d+") ) {
+            System.out.printf("[ %-20s ]", DBManager.createNewRecord(new Record(newRecordName, Integer.parseInt(newRecordTotaIncome), Integer.parseInt(newRecordSaving))));
 
         } else {
             System.out.println("[ Wrong Input ]");
@@ -274,7 +283,7 @@ public class ConsoleUI {
 
     }
 
-    public static void showExpenses(Record rec) {
+    public static ArrayList<Expense> showExpenses(Record rec) {
         ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 
         if (allExpenses.isEmpty()) {
@@ -286,7 +295,7 @@ public class ConsoleUI {
                 Thread.sleep(1000);
             } catch (Exception e) {
             }
-            return;
+            return allExpenses;
         }
         System.out.println("\n[  ------------------------ Expenses ------------------------  ]");
         System.out.println("[ ____________________________________________________________ ]");
@@ -295,32 +304,48 @@ public class ConsoleUI {
             System.out.println(exp.toString());
         }
         System.out.println("[ ------------------------------------------------------------ ]\n");
+
+        return allExpenses;
     }
 
-    public static void createNewExpense(Record rec) {
+    public static void createNewExpense(Record rec, ArrayList<Expense> allExpenses) {
         Scanner console = new Scanner(System.in);
+        Expense lastExpense = null;
 
         System.out.printf("[ %-20s ]\n", "--------------------");
-        System.out.print("[ Expense Year : ");
-        String year = console.nextLine();
-        System.out.print("[ Expense Month : ");
-        String month = console.nextLine();
-        System.out.print("[ Expense Day : ");
-        String day = console.nextLine();
+        if (allExpenses.isEmpty()) {
+            System.out.print("[ Expense Date (dd.mm.yy): ");
+        } else {
+            lastExpense = Expense.getLastExpense(allExpenses);
+            System.out.print("[ Expense Date (" + lastExpense.getExpenseDate() + ") : ");
+        }
+        String expenseDate = console.nextLine();
 
-        if (year.matches("-?\\d+") && month.matches("-?\\d+") && day.matches("-?\\d+")) {
-            System.out.printf("[ %-20s ]\n", "Categories : Air, Home, Loan, Self, Utiliy, Others, Income");
-            System.out.print("[ Expense Cat. : ");
+        if (expenseDate.equals("") && lastExpense != null) {
+            expenseDate = lastExpense.getExpenseDate()+"";
+        } else if (expenseDate.equals(">") && lastExpense != null) {
+            expenseDate = lastExpense.getExpenseDate().plusDays(1)+"";
+        } else if (expenseDate.matches(">-?\\d++") && lastExpense != null) {
+            expenseDate = expenseDate.substring(1);
+            expenseDate = lastExpense.getExpenseDate().plusDays(Integer.parseInt(expenseDate)) + "";
+        }
+        
+
+        if (isValidDate(expenseDate)) {
+            System.out.printf("[ %-20s ]\n", "Categories : Air (1), Home (2), Loan (3), Self (4), Utiliy (5), Others (6)");
+            System.out.print("[ Expense Category : ");
 
             String cat = console.nextLine();
 
-            if (cat.equals("air") || cat.equals("home") || cat.equals("loan") || cat.equals("self") || cat.equals("utility") || cat.equals("others") || cat.equals("income")) {
+            cat = cat.equals("1") ? "air" : (cat.equals("2") ? "home" : (cat.equals("3") ? "loan" : (cat.equals("4") ? "self" : (cat.equals("5") ? "utility" : (cat.equals("6") ? "others" : "")))));
+ 
+            if (cat.equals("air") || cat.equals("home") || cat.equals("loan") || cat.equals("self") || cat.equals("utility") || cat.equals("others")) {
                 System.out.print("[ Input Expense Amount : ");
                 String amt = console.nextLine();
                 System.out.printf("[ %-20s ]\n\n", "--------------------");
 
                 if (amt.matches("-?\\d+")) {
-                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(java.time.LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day)), cat, Integer.parseInt(amt)))
+                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("dd.MM.yy")), cat, Integer.parseInt(amt)))
                             + " ]");
 
                     try {
@@ -352,6 +377,15 @@ public class ConsoleUI {
             } catch (Exception e) {
             }
             return;
+        }
+    }
+
+    public static boolean isValidDate(String input) {
+        try {
+            LocalDate.parse(input, DateTimeFormatter.ofPattern("dd.MM.yy"));
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -446,7 +480,25 @@ public class ConsoleUI {
             return;
         }
 
-        System.out.println("[ " + DBManager.updateRecord(rec, name, Integer.parseInt(income)) + " ]");
+        System.out.print("[ Record Saving  (" + rec.getRecordSaving() + ") : ");
+        String saving = console.nextLine();
+
+        if (saving.equals("")) {
+            saving = rec.getRecordSaving() + "";
+        }
+
+        if (!saving.matches("-?\\d+")) {
+            System.out.println("[ Wrong Input ]");
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+            }
+
+            return;
+        }
+
+        System.out.println("[ " + DBManager.updateRecord(rec, name, Integer.parseInt(income),Integer.parseInt(saving)) + " ]");
 
         try {
             Thread.sleep(1000);
@@ -487,47 +539,39 @@ public class ConsoleUI {
         }
 
         if (expense != null) {
-            System.out.print("[ Year (" + expense.getExpenseDate().getYear() + ") : ");
-            String year = console.nextLine();
-            if (year.equals("")) {
-                year = expense.getExpenseDate().getYear() + "";
-            } else if (!year.matches("-?\\d+")) {
-                System.out.println("[ Wrong Input ]");
-                try {
-                    Thread.sleep(1000);
-                    return;
-                } catch (Exception e) {
-                }
-            }
-            System.out.print("[ Month (" + expense.getExpenseDate().getMonth() + ") : ");
-            String month = console.nextLine();
-            if (month.equals("")) {
-                month = expense.getExpenseDate().getMonth() + "";
-            } else if (!month.matches("-?\\d+")) {
-                System.out.println("[ Wrong Input ]");
-                try {
-                    Thread.sleep(1000);
-                    return;
-                } catch (Exception e) {
-                }
-            }
-            System.out.print("[ Day (" + expense.getExpenseDate().getDayOfMonth() + ") : ");
-            String day = console.nextLine();
-            if (day.equals("")) {
-                day = expense.getExpenseDate().getDayOfMonth() + "";
-            } else if (!day.matches("-?\\d+")) {
-                System.out.println("[ Wrong Input ]");
-                try {
-                    Thread.sleep(1000);
-                    return;
-                } catch (Exception e) {
-                }
-            }
+            Expense lastExpense = null;
+
+        System.out.printf("[ %-20s ]\n", "--------------------");
+        if (allExpenses.isEmpty()) {
+            System.out.print("[ Expense Date (dd.mm.yy): ");
+        } else {
+            lastExpense = Expense.getLastExpense(allExpenses);
+            System.out.print("[ Expense Date (" + lastExpense.getExpenseDate() + ") : ");
+        }
+            String expenseDate = console.nextLine();
+
+        if (expenseDate.equals("") && lastExpense != null) {
+            expenseDate = lastExpense.getExpenseDate()+"";
+        } else if (expenseDate.equals(">") && lastExpense != null) {
+            expenseDate = lastExpense.getExpenseDate().plusDays(1)+"";
+        } else if (expenseDate.matches(">-?\\d++") && lastExpense != null) {
+            expenseDate = expenseDate.substring(1);
+            expenseDate = lastExpense.getExpenseDate().plusDays(Integer.parseInt(expenseDate)) + "";
+        }
+
+        if (!isValidDate(expenseDate)) {
+            return;
+        }
 
             System.out.print("[ Category (" + expense.getExpenseCat() + ") : ");
             String cat = console.nextLine();
+            if (cat.equals("")) {
+                cat = expense.getExpenseCat();
+            }
+            cat = cat.equals("1") ? "air" : (cat.equals("2") ? "home" : (cat.equals("3") ? "loan" : (cat.equals("4") ? "self" : (cat.equals("5") ? "utility" : (cat.equals("6") ? "others" : "")))));
 
-            if (cat.equals("air") || cat.equals("home") || cat.equals("loan") || cat.equals("self") || cat.equals("utility") || cat.equals("others") || cat.equals("income") || cat.equals("")) {
+
+            if (cat.equals("air") || cat.equals("home") || cat.equals("loan") || cat.equals("self") || cat.equals("utility") || cat.equals("others") || cat.equals("")) {
                 if (cat.equals("")) {
                     cat = expense.getExpenseCat();
                 }
@@ -537,7 +581,7 @@ public class ConsoleUI {
                     if (amount.equals("")) {
                         amount = expense.getExpenseAmt() + "";
                     }
-                    DBManager.updateExpense(new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), java.time.LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day)), cat, Integer.parseInt(amount)));
+                    DBManager.updateExpense(new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("dd.MM.yy")), cat, Integer.parseInt(amount)));
                 } else {
                     System.out.println("[ Wrong Input ]");
                     try {

@@ -1,6 +1,7 @@
 package aliyew;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Expense {
 
@@ -48,9 +49,23 @@ public class Expense {
         return this.expense_amt;
     }
 
+    public static Expense getLastExpense(ArrayList<Expense> allExpenses) {
+        Expense lastExpense = allExpenses.get(0);
+
+        for (Expense expense : allExpenses) {
+            if (expense.getExpenseDate().isAfter(lastExpense.getExpenseDate())) {
+                lastExpense = expense;
+            }
+        }
+
+        return lastExpense;
+    }
+
     @Override
     public String toString() {
         return "|[ %9d ] [ %15s ] [ %10s ] [ %9d ]|".formatted(expense_id, expense_date.toString(), expense_cat, expense_amt);
 
     }
+
+   
 }
