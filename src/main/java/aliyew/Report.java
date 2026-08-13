@@ -10,10 +10,10 @@ public class Report {
     private Expense smallestExpense = null;
     private Expense firstExpense = null;
     private Expense lastExpense = null;
-    private int totalExpense = 0;
-    private HashMap<String, Integer> categorizedMap = new HashMap<>();
+    private double totalExpense = 0;
+    private HashMap<String, Double> categorizedMap = new HashMap<>();
 
-    public Report(Record record, ArrayList<Expense> allExpenses, HashMap<String, Integer> map) {
+    public Report(Record record, ArrayList<Expense> allExpenses, HashMap<String, Double> map) {
 
         this.rec = record;
         this.allExpenses = allExpenses;
@@ -41,7 +41,7 @@ public class Report {
     public Expense getLastExpense() {
         return this.lastExpense;
     }
-    public int getTotalExpense() {
+    public double getTotalExpense() {
         return this.totalExpense;
     }
     public Record getRecord() {
@@ -50,7 +50,7 @@ public class Report {
     public ArrayList<Expense> getAllExpenses() {
         return this.allExpenses;
     }
-    public HashMap<String, Integer> getCategorizedMap() {
+    public HashMap<String, Double> getCategorizedMap() {
         return this.categorizedMap;
     }
 
@@ -101,8 +101,8 @@ public class Report {
         
         return last;
     }
-    public int getTotalExpense(ArrayList<Expense> allExpenses) {
-        int total = 0;
+    public double  getTotalExpense(ArrayList<Expense> allExpenses) {
+        double total = 0;
 
         for (Expense exp : allExpenses) {
             total += exp.getExpenseAmt();

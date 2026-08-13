@@ -5,14 +5,14 @@ public class Record {
     private int recordId = 0;
     private String recordName = "undefined";
     private String creationDate = "undefined";
-    private int totalIncome = 0;
-    private int record_saving = 0;
+    private double totalIncome = 0;
+    private double record_saving = 0;
 
     public Record() {
         
     }
 
-    public Record(String name, int income, int saving) {
+    public Record(String name, double income, double saving) {
         this.recordName = name;
         this.totalIncome = income;
         this.record_saving = saving;
@@ -24,7 +24,7 @@ public class Record {
         this.creationDate = ts;
     }
 
-    public Record(int id, String name, String ts, int income, int saving) {
+    public Record(int id, String name, String ts, double income, double saving) {
         this.recordId = id;
         this.recordName = name;
         this.creationDate = ts;
@@ -44,11 +44,11 @@ public class Record {
         return this.recordId;
     }
 
-    public int getRecordIncome() {
+    public double getRecordIncome() {
         return this.totalIncome;
     }
 
-    public int getRecordSaving() {
+    public double getRecordSaving() {
         return this.record_saving;
     }
 

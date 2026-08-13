@@ -192,16 +192,17 @@ public class ConsoleUI {
         System.out.printf("[ %-35s ]\n", "Remaining Salary :"+ (rec.getRecordIncome() + totalExpense));
         System.out.printf("[ %-35s ]\n[ %-35s ]\n", "-".repeat(35), "-".repeat(35));
         
-        HashMap<String, Integer> categorizedMap = new HashMap<>();
+        HashMap<String, Double> categorizedMap = new HashMap<>();
         
         System.out.printf("[ %-35s ]\n", "<< Category Based Expense Ratio >>");
         for (String str : cats) {
-            int catExpense = 0;
+            double catExpense = 0;
             for (Expense exp : allExpenses) {
                 if (exp.getExpenseCat().equalsIgnoreCase(str)) {
                     catExpense += exp.getExpenseAmt();
                 }
             }
+            catExpense = Math.round(catExpense * 100.0) / 100.0;
             System.out.printf("[ %-35s ]\n", str + " : " + catExpense);
             categorizedMap.put(str, catExpense);
         }
@@ -236,9 +237,9 @@ public class ConsoleUI {
         Scanner console = new Scanner(System.in);
         System.out.print("[ Add Extra Income (" + rec.getRecordIncome() + ") : ");
         String income = console.nextLine();
-
-        if (income.matches("-?\\d+")) {
-            System.out.println("[ " + DBManager.addIncome(rec, Integer.parseInt(income)) + " ]");
+        
+        if (income.matches("-?\\d+(\\,\\d+)?")) {
+            System.out.println("[ " + DBManager.addIncome(rec, Double.parseDouble(income)) + " ]");
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
@@ -269,8 +270,8 @@ public class ConsoleUI {
         newRecordSaving = console.nextLine();
         System.out.printf("[ %-20s ]\n\n", "--------------------");
 
-        if (newRecordTotaIncome.matches("-?\\d+") && newRecordSaving.matches("-?\\d+") ) {
-            System.out.printf("[ %-20s ]", DBManager.createNewRecord(new Record(newRecordName, Integer.parseInt(newRecordTotaIncome), Integer.parseInt(newRecordSaving))));
+        if (newRecordTotaIncome.matches("-?\\d+(\\.\\d+)?") && newRecordSaving.matches("-?\\d+(\\.\\d+)?") ) {
+            System.out.printf("[ %-20s ]", DBManager.createNewRecord(new Record(newRecordName, Double.parseDouble(newRecordTotaIncome), Double.parseDouble(newRecordSaving))));
 
         } else {
             System.out.println("[ Wrong Input ]");
@@ -344,8 +345,8 @@ public class ConsoleUI {
                 String amt = console.nextLine();
                 System.out.printf("[ %-20s ]\n\n", "--------------------");
 
-                if (amt.matches("-?\\d+")) {
-                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd]")), cat, Integer.parseInt(amt)))
+                if (amt.matches("-?\\d+(\\.\\d+)?")) {
+                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amt)))
                             + " ]");
 
                     try {
@@ -382,13 +383,9 @@ public class ConsoleUI {
 
     public static boolean isValidDate(String input) {
         try {
-            System.out.println(input);
-            LocalDate.parse(input, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd]"));
-            try { Thread.sleep(1000);} catch (Exception e) {}
+            LocalDate.parse(input, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]"));
             return true;
         } catch (Exception a) {
-            System.out.println("false");
-            try { Thread.sleep(1000);} catch (Exception e) {}
             return false;
         }
         
@@ -475,7 +472,7 @@ public class ConsoleUI {
             income = rec.getRecordIncome() + "";
         }
 
-        if (!income.matches("-?\\d+")) {
+        if (!income.matches("-?\\d+(\\.\\d+)?")) {
             System.out.println("[ Wrong Input ]");
 
             try {
@@ -493,7 +490,7 @@ public class ConsoleUI {
             saving = rec.getRecordSaving() + "";
         }
 
-        if (!saving.matches("-?\\d+")) {
+        if (!saving.matches("-?\\d+(\\.\\d+)?")) {
             System.out.println("[ Wrong Input ]");
 
             try {
@@ -504,7 +501,7 @@ public class ConsoleUI {
             return;
         }
 
-        System.out.println("[ " + DBManager.updateRecord(rec, name, Integer.parseInt(income),Integer.parseInt(saving)) + " ]");
+        System.out.println("[ " + DBManager.updateRecord(rec, name, Double.parseDouble(income),Double.parseDouble(saving)) + " ]");
 
         try {
             Thread.sleep(1000);
@@ -583,11 +580,11 @@ public class ConsoleUI {
                 }
                 System.out.print("[ Amount (" + expense.getExpenseAmt() + ") : ");
                 String amount = console.nextLine();
-                if (amount.equals("") || amount.matches("-?\\d+")) {
+                if (amount.equals("") || amount.matches("-?\\d+(\\.\\d+)?")) {
                     if (amount.equals("")) {
                         amount = expense.getExpenseAmt() + "";
                     }
-                    DBManager.updateExpense(new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("dd.MM.yy")), cat, Integer.parseInt(amount)));
+                    DBManager.updateExpense(new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amount)));
                 } else {
                     System.out.println("[ Wrong Input ]");
                     try {

@@ -9,9 +9,9 @@ public class Expense {
     private int expense_record_id = 0;
     private LocalDate expense_date = null;
     private String expense_cat = "undefined";
-    private int expense_amt = 0;
+    private double expense_amt = 0;
 
-    public Expense(int id, int record_id, LocalDate date, String cat, int amount) {
+    public Expense(int id, int record_id, LocalDate date, String cat, double amount) {
         this.expense_id = id;
         this.expense_record_id = record_id;
         this.expense_date = date;
@@ -19,7 +19,7 @@ public class Expense {
         this.expense_amt = amount;
     }
 
-    public Expense(LocalDate date, String cat, int amount) {
+    public Expense(LocalDate date, String cat, double amount) {
         this.expense_date = date;
         this.expense_cat = cat;
         this.expense_amt = amount;
@@ -45,7 +45,7 @@ public class Expense {
         return this.expense_cat;
     }
 
-    public int getExpenseAmt() {
+    public double getExpenseAmt() {
         return this.expense_amt;
     }
 
@@ -63,7 +63,7 @@ public class Expense {
 
     @Override
     public String toString() {
-        return "|[ %9d ] [ %15s ] [ %10s ] [ %9d ]|".formatted(expense_id, expense_date.toString(), expense_cat, expense_amt);
+        return "|[ %9d ] [ %15s ] [ %10s ] [ %9.2f ]|".formatted(expense_id, expense_date.toString(), expense_cat, expense_amt);
 
     }
 

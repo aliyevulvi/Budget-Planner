@@ -126,7 +126,7 @@ public class PDFManager {
 			categorizedTable.addCell(headerCell2);
 
 
-			for (Map.Entry<String, Integer> entry : report.getCategorizedMap().entrySet()) {
+			for (Map.Entry<String, Double> entry : report.getCategorizedMap().entrySet()) {
 				PdfPCell cell1 = new PdfPCell(new Phrase(entry.getKey(), FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
 				PdfPCell cell2 = new PdfPCell(new Phrase(entry.getValue()+"", FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
 
@@ -162,7 +162,7 @@ public class PDFManager {
 			addCell2Table(resultTable, "Total Expenses", false, true);
 			addCell2Table(resultTable, report.getTotalExpense()+"", false, false);
 			addCell2Table(resultTable, "Balance", false, true);
-			addCell2Table(resultTable, (report.getTotalExpense()+report.getRecord().getRecordIncome())+"", false, false);
+			addCell2Table(resultTable, (Math.round((report.getTotalExpense()+report.getRecord().getRecordIncome()) * 100.0) / 100.0)+"", false, false);
 			addCell2Table(resultTable, "Highest Expense", false, true);
 			addCell2Table(resultTable, report.getHighestExpense() == null ? "0" : report.getHighestExpense().getExpenseAmt()+"" , false, false);
 			addCell2Table(resultTable, "Smallest Expense", false, true);
