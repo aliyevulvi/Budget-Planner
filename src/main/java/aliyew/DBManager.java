@@ -51,6 +51,8 @@ public class DBManager {
 	}
 
 	public static String addIncome(Record rec, double addAmt) {
+
+
 	    try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 	        String sqlQuery = "UPDATE tb_records SET record_income = ? WHERE record_id = ?;";
 	        PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
@@ -59,11 +61,20 @@ public class DBManager {
 	        pstmt.executeUpdate();
 	        
 	        conn.close();
-	        
+	        rec.setSync(true);
 	        return "Income Updated Successfully";
 	    } catch (SQLException e) {
+			rec.setSync(false);
 	        return e.getMessage() + " (" + e.getSQLState() + ") addIncome Method";
-	    }
+	    } finally {
+			for (Record record : JsonManager.readValueRecords()) {
+			if (record.getRecordId() == rec.getRecordId()) {
+				record.setIncome(record.getRecordIncome() + addAmt);
+				record.setSync(false);
+				JsonManager.updateRecord(record);
+			}
+		}
+		}
 	}
 
 	public static String createNewRecord(Record newRecord) {
@@ -72,22 +83,38 @@ public class DBManager {
 			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 				String insertQuery = "INSERT INTO tb_records (record_name, record_income, record_saving, record_ts) VALUES (?, ?, ?, ?);";
 
-				PreparedStatement pStatement = conn.prepareStatement(insertQuery);
+				PreparedStatement pStatement = conn.prepareStatement(insertQuery, java.sql.Statement.RETURN_GENERATED_KEYS);
 				pStatement.setString(1, newRecord.getRecordName());
 				pStatement.setDouble(2, newRecord.getRecordIncome());
 				pStatement.setDouble(3, newRecord.getRecordSaving());
 				pStatement.setTimestamp(4, java.sql.Timestamp.from(java.time.Instant.now()));
 				pStatement.executeUpdate();
+
+				int generatedId = -1;
+
+				try (ResultSet generatedKeys = pStatement.getGeneratedKeys()) {
+        			if (generatedKeys.next()) {
+            			generatedId = generatedKeys.getInt(1);
+						newRecord.setId(generatedId);
+            
+        			}
+    			} catch (SQLException es) {
+    				System.out.println("Hata: " + es.getMessage());
+				}
 			}
-			newRecord.setSynced();
+			newRecord.setSync(true);
 			return "Record Created Successfully";
 
 		} catch (SQLException e) {
+			newRecord.setSync(false);
 			if (e.getSQLState().equals("23505")) {
 				return newRecord.getRecordName() + " Record already created!";
 			} else {
 				return e.getMessage() + " (" + e.getSQLState() + ") createNewRecord Method";
 			}
+		} finally {
+			newRecord.setDate();
+			JsonManager.writeValue(newRecord);
 		}
 	}
 
@@ -127,12 +154,32 @@ public class DBManager {
 			pstmt.setString(3, exp.getExpenseCat());
 			pstmt.setDouble(4, exp.getExpenseAmt());
 			pstmt.executeUpdate();
+
+			int generatedId = -1;
+			try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+        			if (generatedKeys.next()) {
+            			generatedId = generatedKeys.getInt(1);
+						exp.setId(generatedId);
+            
+        			}
+    			} catch (SQLException es) {
+    				System.out.println("Hata: " + es.getMessage());
+				}
+
 			conn.close();
-			exp.setSynced();
+			exp.setSync(true);
 			return "Expense Created Successfully";
 
 		} catch (SQLException e) {
+			exp.setSync(false);
+			exp.setId(-1);
 			return e.getMessage() + " (" + e.getSQLState() + ")";
+		} finally {
+			if (exp.getExpenseId() != -1) {
+				ArrayList<Expense> allExpenses = getExpenses();
+				exp.setId(allExpenses.get(allExpenses.size()-1).getExpenseId());
+			}
+			JsonManager.writeValue(exp);
 		}
 	}
 
@@ -199,6 +246,7 @@ public class DBManager {
 	}
 
 	public static String deleteExpense(int expenseId) {
+		JsonManager.deleteExpense(expenseId);
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
@@ -206,6 +254,7 @@ public class DBManager {
 			pstmt.setInt(1, expenseId);
 			pstmt.executeUpdate();
 			conn.close();
+			
 			return "Expense Deleted Successfully";
 		} catch (SQLException e) {
 			return e.getMessage() + " (" + e.getSQLState() + ") deleteExpense Method";
@@ -223,11 +272,18 @@ public class DBManager {
 			pstmt.executeUpdate();
 			
             conn.close();
+			rec.setSync(true);
 
 			return "Record Updated Successfully";
 
 		} catch (SQLException e) {
+			rec.setSync(false);
 			return e.getMessage() + " (" + e.getSQLState() + ") updateRecord Method";
+		} finally {
+			rec.setName(newName);
+			rec.setIncome(income);
+			rec.setSaving(saving);
+			JsonManager.updateRecord(rec);
 		}
 	}
 
@@ -242,13 +298,19 @@ public class DBManager {
 			pstmt.executeUpdate();
 			conn.close();
 
+			expense.setSync(true);
 			return "Expense Updated Successfully";
 		} catch (SQLException e) {
+			expense.setSync(false);
 			return e.getMessage() + " (" + e.getSQLState() + ") updateExpense Method";
+		} finally {
+			JsonManager.updateExpense(expense);
 		}
 	}
 
     public static String deleteRecord(Record rec) {
+		JsonManager.deleteRecord(rec.getRecordId());
+
         try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
             String sqlQuery = "DELETE FROM tb_records WHERE record_id = ?;";
             PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
@@ -257,6 +319,8 @@ public class DBManager {
 
 
             conn.close();
+
+
 
             return "Record Deleted Successfully";
         } catch (SQLException e) {

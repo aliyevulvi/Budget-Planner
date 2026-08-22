@@ -18,8 +18,8 @@ public class ConsoleUI {
 
         outerWhile:
         while (true) {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
 
             System.out.printf("[ Budget Planner Menu ]\n");
             System.out.printf("[ %-16s (1)]\n", "Create Record");
@@ -43,8 +43,8 @@ public class ConsoleUI {
                     System.exit(0);
                 default:
                     try {
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
+                        // System.out.print("\033[H\033[2J");
+                        // System.out.flush();
                         System.out.println("[ Wrong Selection ]");
                         Thread.sleep(1000);
                     } catch (Exception e) {
@@ -55,13 +55,13 @@ public class ConsoleUI {
     }
 
     public static void showRecords() {
-        ArrayList<Record> allRecords = DBManager.getRecords();
+        ArrayList<Record> allRecords = JsonManager.readValueRecords();
         Scanner console = new Scanner(System.in);
         String input = "";
 
         if (allRecords.isEmpty()) {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
             System.out.printf("[ %-20s ]\n", "--------------------");
             System.out.println("[ No Records ]");
             System.out.printf("[ %-20s ]\n", "--------------------");
@@ -71,8 +71,8 @@ public class ConsoleUI {
             } catch (Exception e) {
             }
         } else {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
             System.out.printf("[ %-35s ]\n", " ---------- ALL RECORDS ---------- ");
             for (Record rc : allRecords) {
                 rc.getRecordInfo();
@@ -90,7 +90,7 @@ public class ConsoleUI {
             Record rec = null;
 
             for (Record rc : allRecords) {
-                if (input.equals((rc.getRecordId() + ""))) {
+                if (input.equals((rc.getRecordId() + "")) || input.equals((rc.getRecordName()))) {
                     recordFound = true;
                     rec = rc;
                 }
@@ -111,8 +111,8 @@ public class ConsoleUI {
             }
 
             while (true) {
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                // System.out.print("\033[H\033[2J");
+                // System.out.flush();
 
                 rec.getRecordInfo();
                 System.out.println();
@@ -168,13 +168,13 @@ public class ConsoleUI {
     }
     
     public static void showReport(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.readValueExpenses();
         Scanner console = new Scanner(System.in);
         int totalExpense = 0;
         String[] cats = {"Air", "Home", "Loan", "Self", "Utility", "Others"}; 
         
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        // System.out.print("\033[H\033[2J");
+        // System.out.flush();
         System.out.printf("[ %-35s ]\n", "-".repeat(35));
         rec.getRecordInfo();
         System.out.printf("[ %-35s ]\n", "-".repeat(35));
@@ -259,8 +259,8 @@ public class ConsoleUI {
         String newRecordTotaIncome = "";
         String newRecordSaving = "";
 
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        // System.out.print("\033[H\033[2J");
+        // System.out.flush();
         System.out.printf("[ %-20s ]\n", "-----NEW RECORD-----");
         System.out.print("[ Record Name : ");
         newRecordName = console.nextLine();
@@ -285,7 +285,7 @@ public class ConsoleUI {
     }
 
     public static ArrayList<Expense> showExpenses(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.readValueExpenses();
 
         if (allExpenses.isEmpty()) {
             System.out.printf("[ %-20s ]\n", "--------------------");
@@ -298,13 +298,13 @@ public class ConsoleUI {
             }
             return allExpenses;
         }
-        System.out.println("\n[  ------------------------ Expenses ------------------------  ]");
-        System.out.println("[ ____________________________________________________________ ]");
-        System.out.printf("|[ %9s ] [ %15s ] [ %10s ] [ %9s ]|\n", "ID", "DATE", "CATEGORY", "AMOUNT");
+        System.out.println("\n[  ------------------------------ Expenses ------------------------------  ]");
+        System.out.println("[ ______________________________________________________________________ ]");
+        System.out.printf("|[ %9s ] [ %15s ] [ %10s ] [ %9s ] [ %5s ]|\n", "ID", "DATE", "CATEGORY", "AMOUNT", "SYNC");
         for (Expense exp : allExpenses) {
             System.out.println(exp.toString());
         }
-        System.out.println("[ ------------------------------------------------------------ ]\n");
+        System.out.println("[ ---------------------------------------------------------------------- ]\n");
 
         return allExpenses;
     }
@@ -393,11 +393,11 @@ public class ConsoleUI {
     }
 
     public static void deleteExpense(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.readValueExpenses();
 
         if (allExpenses.isEmpty()) {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
             System.out.printf("[ %-20s ]\n\n", "--------------------");
             System.err.println("[ NO EXPENSE ]");
             System.out.printf("[ %-20s ]\n\n", "--------------------");
@@ -446,7 +446,7 @@ public class ConsoleUI {
         System.out.print("[ Record Name (" + rec.getRecordName() + ") : ");
         String name = console.nextLine();
 
-        ArrayList<Record> allRecords = DBManager.getRecords();
+        ArrayList<Record> allRecords = JsonManager.readValueRecords();
 
         for (Record record : allRecords) {
             if (record.getRecordName().equals(name)) {
@@ -510,11 +510,11 @@ public class ConsoleUI {
     }
 
     public static void updateExpense(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.readValueExpenses();
 
         if (allExpenses.isEmpty()) {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
             System.out.printf("[ %-20s ]\n\n", "--------------------");
             System.err.println("[ NO EXPENSE ]");
             System.out.printf("[ %-20s ]\n\n", "--------------------");

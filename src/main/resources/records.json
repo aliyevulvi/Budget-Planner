@@ -1,13 +1,8 @@
 [ {
-  "recordId" : 1,
-  "recordName" : "avq/26",
-  "creationDate" : "2026-08-13 10:35:13.699286",
-  "recordIncome" : 24800.0,
-  "recordSaving" : 18587.78
-}, {
-  "recordId" : 5,
-  "recordName" : "zapas_xerc",
-  "creationDate" : "2026-08-20 12:43:18.293206",
-  "recordIncome" : 16931.56,
-  "recordSaving" : 0.0
+  "recordId" : 13,
+  "recordName" : "t3",
+  "creationDate" : "2026-08-22 15:20:48.8575539",
+  "recordIncome" : 1.0,
+  "recordSaving" : 1.0,
+  "recordSync" : true
 } ]

@@ -5,25 +5,25 @@ import java.util.ArrayList;
 
 public class Expense {
 
-    private int expense_id = 0;
-    private int expense_record_id = 0;
-    private LocalDate expense_date = null;
-    private String expense_cat = "undefined";
-    private double expense_amt = 0;
-    private boolean isSync = false;
+    private int expenseId = 0;
+    private int expenseRecordId = 0;
+    private LocalDate expenseDate = null;
+    private String expenseCat = "undefined";
+    private double expenseAmt = 0;
+    private boolean expenseSync = false;
 
     public Expense(int id, int record_id, LocalDate date, String cat, double amount) {
-        this.expense_id = id;
-        this.expense_record_id = record_id;
-        this.expense_date = date;
-        this.expense_cat = cat;
-        this.expense_amt = amount;
+        this.expenseId = id;
+        this.expenseRecordId = record_id;
+        this.expenseDate = date;
+        this.expenseCat = cat;
+        this.expenseAmt = amount;
     }
 
     public Expense(LocalDate date, String cat, double amount) {
-        this.expense_date = date;
-        this.expense_cat = cat;
-        this.expense_amt = amount;
+        this.expenseDate = date;
+        this.expenseCat = cat;
+        this.expenseAmt = amount;
     }
 
     public Expense() {
@@ -31,28 +31,37 @@ public class Expense {
     }
 
     public int getExpenseId() {
-        return this.expense_id;
+        return this.expenseId;
     }
 
     public int getExpenseRecordId() {
-        return this.expense_record_id;
+        return this.expenseRecordId;
     }
 
     public LocalDate getExpenseDate() {
-        return this.expense_date;
+        return this.expenseDate;
     }
 
     public String getExpenseCat() {
-        return this.expense_cat;
+        return this.expenseCat;
     }
 
     public double getExpenseAmt() {
-        return this.expense_amt;
+        return this.expenseAmt;
     }
 
-    public void setSynced() {
-        this.isSync = true;
+    public boolean getExpenseSync() {
+        return this.expenseSync;
     }
+
+    public void setSync(boolean bool) {
+        this.expenseSync = bool;
+    }
+
+    public void setId(int id) {
+        this.expenseId = id;
+    }
+
 
     public static Expense getLastExpense(ArrayList<Expense> allExpenses) {
         Expense lastExpense = allExpenses.get(0);
@@ -68,7 +77,7 @@ public class Expense {
 
     @Override
     public String toString() {
-        return "|[ %9d ] [ %15s ] [ %10s ] [ %9.2f ]|".formatted(expense_id, expense_date.toString(), expense_cat, expense_amt);
+        return "|[ %9d ] [ %15s ] [ %10s ] [ %9.2f ] [ %5s ]|".formatted(expenseId, expenseDate.toString(), expenseCat, expenseAmt, (expenseSync ? "TRUE" : "FALSE"));
 
     }
 
