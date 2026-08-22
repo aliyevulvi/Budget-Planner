@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class DBManager {
 
-    private static final String LINK_STRING = "";
+	private static final String LINK_STRING = "";
     
 	public static void main(String[] args) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
@@ -39,7 +39,17 @@ public class DBManager {
 
 		}
 	}
-	
+
+	public static boolean connnectDB() {
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			conn.close();
+			return true;
+		} catch (SQLException e) {
+			System.out.println(e.getMessage() + " (" + e.getSQLState() + ") connectDB Method");
+			return false;
+		}
+	}
+
 	public static String addIncome(Record rec, double addAmt) {
 	    try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 	        String sqlQuery = "UPDATE tb_records SET record_income = ? WHERE record_id = ?;";
@@ -59,17 +69,16 @@ public class DBManager {
 	public static String createNewRecord(Record newRecord) {
 
 		try {
-			Connection conn = DriverManager.getConnection(LINK_STRING);
-			String insertQuery = "INSERT INTO tb_records (record_name, record_income, record_saving, record_ts) VALUES (?, ?, ?, ?);";
+			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+				String insertQuery = "INSERT INTO tb_records (record_name, record_income, record_saving, record_ts) VALUES (?, ?, ?, ?);";
 
-			PreparedStatement pStatement = conn.prepareStatement(insertQuery);
-			pStatement.setString(1, newRecord.getRecordName());
-			pStatement.setDouble(2, newRecord.getRecordIncome());
-			pStatement.setDouble(3, newRecord.getRecordSaving());
-			pStatement.setTimestamp(4, java.sql.Timestamp.from(java.time.Instant.now()));
-			pStatement.executeUpdate();
-
-			conn.close();
+				PreparedStatement pStatement = conn.prepareStatement(insertQuery);
+				pStatement.setString(1, newRecord.getRecordName());
+				pStatement.setDouble(2, newRecord.getRecordIncome());
+				pStatement.setDouble(3, newRecord.getRecordSaving());
+				pStatement.setTimestamp(4, java.sql.Timestamp.from(java.time.Instant.now()));
+				pStatement.executeUpdate();
+			}
 
 			return "Record Created Successfully";
 
@@ -86,15 +95,17 @@ public class DBManager {
 		ArrayList<Record> allRecords = new ArrayList<>();
 
 		try {
-			Connection conn = DriverManager.getConnection(LINK_STRING);
-			String sqlQuery = "SELECT * FROM tb_records;";
-			PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
-			ResultSet rs = preparedStatement.executeQuery();
+			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+				String sqlQuery = "SELECT * FROM tb_records;";
+				PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
+				ResultSet rs = preparedStatement.executeQuery();
 
-			while (rs.next()) {
-				allRecords.add(new Record(rs.getInt("record_id"), rs.getString("record_name"), rs.getTimestamp("record_ts") + "", rs.getDouble("record_income"),  rs.getDouble("record_saving")));
+				while (rs.next()) {
+					allRecords.add(new Record(rs.getInt("record_id"), rs.getString("record_name"),
+							rs.getTimestamp("record_ts") + "", rs.getDouble("record_income"),
+							rs.getDouble("record_saving")));
+				}
 			}
-			conn.close();
 			return allRecords;
 
 		} catch (SQLException e) {
@@ -106,9 +117,8 @@ public class DBManager {
 	}
 
 	public static String createExpense(Record rec, Expense exp) {
-		try {
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 
-			Connection conn = DriverManager.getConnection(LINK_STRING);
 			String insertQuery = "INSERT INTO tb_expenses(expense_record_id, expense_date, expense_cat, expense_amt) "
 								 + "VALUES (?,?,?,?);";
 			PreparedStatement pstmt = conn.prepareStatement(insertQuery);
@@ -127,7 +137,6 @@ public class DBManager {
 	}
 
 	public static void adminDeleteRecords() {
-		ArrayList<Record> allRecords = getRecords();
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 
