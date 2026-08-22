@@ -79,7 +79,7 @@ public class DBManager {
 				pStatement.setTimestamp(4, java.sql.Timestamp.from(java.time.Instant.now()));
 				pStatement.executeUpdate();
 			}
-
+			newRecord.setSynced();
 			return "Record Created Successfully";
 
 		} catch (SQLException e) {
@@ -128,7 +128,7 @@ public class DBManager {
 			pstmt.setDouble(4, exp.getExpenseAmt());
 			pstmt.executeUpdate();
 			conn.close();
-
+			exp.setSynced();
 			return "Expense Created Successfully";
 
 		} catch (SQLException e) {
@@ -163,6 +163,30 @@ public class DBManager {
 
 			while (rs.next()) {
 				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getInt("expense_record_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getDouble("expense_amt")));
+			}
+			conn.close();
+			return allExpenses;
+
+		} catch (SQLException e) {
+			allExpenses.clear();
+			return allExpenses;
+		}
+
+	}
+
+	public static ArrayList<Expense> getExpenses() {
+		ArrayList<Expense> allExpenses = new ArrayList<>();
+
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			String sqlQuery = "SELECT * FROM tb_expenses;";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getInt("expense_record_id"),
+						rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"),
+						rs.getDouble("expense_amt")));
 			}
 			conn.close();
 			return allExpenses;

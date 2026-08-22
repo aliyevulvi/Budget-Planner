@@ -1,0 +1,385 @@
+[ {
+  "expenseRecordId" : 1,
+  "expenseId" : 1,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 1 ],
+  "expenseAmt" : -625.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 2,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 1 ],
+  "expenseAmt" : -110.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 3,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 1 ],
+  "expenseAmt" : -118.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 5,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 2 ],
+  "expenseAmt" : -110.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 6,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 3 ],
+  "expenseAmt" : -2051.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 7,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 3 ],
+  "expenseAmt" : -110.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 9,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 4 ],
+  "expenseAmt" : -110.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 8,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 4 ],
+  "expenseAmt" : -17.5
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 10,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 4 ],
+  "expenseAmt" : -15.5
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 11,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 5 ],
+  "expenseAmt" : -169.5
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 12,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 5 ],
+  "expenseAmt" : -110.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 13,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 5 ],
+  "expenseAmt" : -150.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 14,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 6 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 15,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 7 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 16,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 8 ],
+  "expenseAmt" : -180.83
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 17,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 8 ],
+  "expenseAmt" : -124.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 18,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 9 ],
+  "expenseAmt" : -28.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 19,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 9 ],
+  "expenseAmt" : -124.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 20,
+  "expenseCat" : "loan",
+  "expenseDate" : [ 2026, 8, 10 ],
+  "expenseAmt" : -1300.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 21,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 10 ],
+  "expenseAmt" : -1028.75
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 22,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 10 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 23,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 11 ],
+  "expenseAmt" : -17.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 24,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 11 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 25,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 11 ],
+  "expenseAmt" : -16.5
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 26,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 12 ],
+  "expenseAmt" : -73.94
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 27,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 12 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 28,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 12 ],
+  "expenseAmt" : -16.49
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 29,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 13 ],
+  "expenseAmt" : -484.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 30,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 13 ],
+  "expenseAmt" : -30.5
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 31,
+  "expenseCat" : "loan",
+  "expenseDate" : [ 2026, 8, 9 ],
+  "expenseAmt" : -6878.78
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 32,
+  "expenseCat" : "utility",
+  "expenseDate" : [ 2026, 8, 9 ],
+  "expenseAmt" : -3278.6
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 33,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 13 ],
+  "expenseAmt" : -18.49
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 34,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 13 ],
+  "expenseAmt" : -525.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 35,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 14 ],
+  "expenseAmt" : -243.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 36,
+  "expenseCat" : "others",
+  "expenseDate" : [ 2026, 8, 14 ],
+  "expenseAmt" : -218.89
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 37,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 14 ],
+  "expenseAmt" : -620.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 38,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 14 ],
+  "expenseAmt" : -504.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 39,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 15 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 40,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 15 ],
+  "expenseAmt" : -859.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 41,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 15 ],
+  "expenseAmt" : -310.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 42,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 16 ],
+  "expenseAmt" : -35.87
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 43,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 16 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 44,
+  "expenseCat" : "home",
+  "expenseDate" : [ 2026, 8, 17 ],
+  "expenseAmt" : -151.5
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 45,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 17 ],
+  "expenseAmt" : -124.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 46,
+  "expenseCat" : "others",
+  "expenseDate" : [ 2026, 8, 17 ],
+  "expenseAmt" : -95.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 47,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 17 ],
+  "expenseAmt" : -125.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 48,
+  "expenseCat" : "others",
+  "expenseDate" : [ 2026, 8, 17 ],
+  "expenseAmt" : -205.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 49,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 17 ],
+  "expenseAmt" : -3502.25
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 50,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 18 ],
+  "expenseAmt" : -60.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 51,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 18 ],
+  "expenseAmt" : -555.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 52,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 18 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 53,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 18 ],
+  "expenseAmt" : -16.95
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 54,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 19 ],
+  "expenseAmt" : -1440.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 55,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 10 ],
+  "expenseAmt" : -332.46
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 87,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 19 ],
+  "expenseAmt" : -55.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 88,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 19 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 89,
+  "expenseCat" : "others",
+  "expenseDate" : [ 2026, 8, 19 ],
+  "expenseAmt" : -1100.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 90,
+  "expenseCat" : "air",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -120.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 91,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -140.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 92,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -205.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 93,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -250.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 94,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -68.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 95,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -189.0
+}, {
+  "expenseRecordId" : 1,
+  "expenseId" : 96,
+  "expenseCat" : "self",
+  "expenseDate" : [ 2026, 8, 20 ],
+  "expenseAmt" : -433.9
+} ]

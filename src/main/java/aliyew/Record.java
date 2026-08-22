@@ -7,6 +7,7 @@ public class Record {
     private String creationDate = "undefined";
     private double totalIncome = 0;
     private double record_saving = 0;
+    private boolean isSync = false;
 
     public Record() {
         
@@ -50,6 +51,10 @@ public class Record {
 
     public double getRecordSaving() {
         return this.record_saving;
+    }
+
+    public void setSynced() {
+        this.isSync = true;
     }
 
     public void getRecordInfo() {

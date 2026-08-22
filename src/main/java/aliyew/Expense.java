@@ -10,6 +10,7 @@ public class Expense {
     private LocalDate expense_date = null;
     private String expense_cat = "undefined";
     private double expense_amt = 0;
+    private boolean isSync = false;
 
     public Expense(int id, int record_id, LocalDate date, String cat, double amount) {
         this.expense_id = id;
@@ -47,6 +48,10 @@ public class Expense {
 
     public double getExpenseAmt() {
         return this.expense_amt;
+    }
+
+    public void setSynced() {
+        this.isSync = true;
     }
 
     public static Expense getLastExpense(ArrayList<Expense> allExpenses) {
