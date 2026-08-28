@@ -5,11 +5,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class DBManager {
 
-	private static final String LINK_STRING = "";
+	private static final String LINK_STRING = System.getenv("DB_URL");
+	private static final Logger logger = LogManager.getLogger(DBManager.class.getName());
     
 	public static void main(String[] args) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
@@ -35,7 +39,7 @@ public class DBManager {
 			conn.close();
 
 		} catch (SQLException e) {
-			System.err.println(e.getMessage() + " (" + e.getSQLState() + ") main Method");
+			logger.severe(e.getMessage());
 
 		}
 	}
@@ -45,7 +49,7 @@ public class DBManager {
 			conn.close();
 			return true;
 		} catch (SQLException e) {
-			System.out.println(e.getMessage() + " (" + e.getSQLState() + ") connectDB Method");
+			// logger.severe(e.getMessage());
 			return false;
 		}
 	}
@@ -60,9 +64,10 @@ public class DBManager {
 	        
 	        conn.close();
 	        
-	        return "Income Updated Successfully";
+	        return "Update Income Successfully";
 	    } catch (SQLException e) {
-	        return e.getMessage() + " (" + e.getSQLState() + ") addIncome Method";
+			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
+	        return "Update Income Failed";
 	    }
 	}
 
@@ -72,21 +77,31 @@ public class DBManager {
 			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 				String insertQuery = "INSERT INTO tb_records (record_name, record_income, record_saving, record_ts) VALUES (?, ?, ?, ?);";
 
-				PreparedStatement pStatement = conn.prepareStatement(insertQuery);
+				PreparedStatement pStatement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
 				pStatement.setString(1, newRecord.getRecordName());
 				pStatement.setDouble(2, newRecord.getRecordIncome());
 				pStatement.setDouble(3, newRecord.getRecordSaving());
-				pStatement.setTimestamp(4, java.sql.Timestamp.from(java.time.Instant.now()));
+				pStatement.setTimestamp(4, Timestamp.valueOf(newRecord.getCreationDate()));
 				pStatement.executeUpdate();
+
+				ResultSet rs = pStatement.getGeneratedKeys();
+
+				if (rs.next()) {
+					newRecord.setRecordId(rs.getInt(1));
+					newRecord.setRecordSync(true);
+				}
+
+
 			}
 
-			return "Record Created Successfully";
+			return "Create Record Successfully";
 
 		} catch (SQLException e) {
+			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
 			if (e.getSQLState().equals("23505")) {
-				return newRecord.getRecordName() + " Record already created!";
+				return "Create Record Failed ("+newRecord.getRecordName() + ") already created!";
 			} else {
-				return e.getMessage() + " (" + e.getSQLState() + ") createNewRecord Method";
+				return "Create Record Failed";
 			}
 		}
 	}
@@ -109,7 +124,7 @@ public class DBManager {
 			return allRecords;
 
 		} catch (SQLException e) {
-			System.err.println(e.getMessage() + "getRecords");
+			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
 			allRecords.clear();
 			return allRecords;
 		}
@@ -121,18 +136,25 @@ public class DBManager {
 
 			String insertQuery = "INSERT INTO tb_expenses(expense_record_id, expense_date, expense_cat, expense_amt) "
 								 + "VALUES (?,?,?,?);";
-			PreparedStatement pstmt = conn.prepareStatement(insertQuery);
+			PreparedStatement pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setInt(1, rec.getRecordId());
 			pstmt.setObject(2, exp.getExpenseDate());
 			pstmt.setString(3, exp.getExpenseCat());
 			pstmt.setDouble(4, exp.getExpenseAmt());
 			pstmt.executeUpdate();
+
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				exp.setExpenseId(rs.getInt(1));
+				exp.setExpenseSync(true);
+			}
 			conn.close();
 
-			return "Expense Created Successfully";
+			return "Create Expense Successfully";
 
 		} catch (SQLException e) {
-			return e.getMessage() + " (" + e.getSQLState() + ")";
+			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
+			return "Create Expense Failed";
 		}
 	}
 
@@ -147,7 +169,7 @@ public class DBManager {
 			conn.close();
 
 		} catch (SQLException e) {
-			System.err.println(e.getMessage() + " adminDeleteRecords " + e.getSQLState());
+			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
 		}
 	}
 
@@ -168,6 +190,7 @@ public class DBManager {
 			return allExpenses;
 
 		} catch (SQLException e) {
+			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
 			allExpenses.clear();
 			return allExpenses;
 		}
@@ -182,9 +205,10 @@ public class DBManager {
 			pstmt.setInt(1, expenseId);
 			pstmt.executeUpdate();
 			conn.close();
-			return "Expense Deleted Successfully";
+			return "Delete Expense Successfully";
 		} catch (SQLException e) {
-			return e.getMessage() + " (" + e.getSQLState() + ") deleteExpense Method";
+			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
+			return "Delete Expense Failed";
 		}
 	}
 
@@ -200,10 +224,12 @@ public class DBManager {
 			
             conn.close();
 
-			return "Record Updated Successfully";
+			rec.setRecordSync(true);
+			return "Update Record Successfully";
 
 		} catch (SQLException e) {
-			return e.getMessage() + " (" + e.getSQLState() + ") updateRecord Method";
+			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
+			return "Update Record Failed";
 		}
 	}
 
@@ -218,9 +244,12 @@ public class DBManager {
 			pstmt.executeUpdate();
 			conn.close();
 
-			return "Expense Updated Successfully";
+			expense.setExpenseSync(true);
+
+			return "Update Expense Successfully";
 		} catch (SQLException e) {
-			return e.getMessage() + " (" + e.getSQLState() + ") updateExpense Method";
+			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
+			return "Update Expense Failed";
 		}
 	}
 
@@ -234,9 +263,10 @@ public class DBManager {
 
             conn.close();
 
-            return "Record Deleted Successfully";
+            return "Delete Record Successfully";
         } catch (SQLException e) {
-            return e.getMessage() + " (" + e.getSQLState() + ") deleteRecord Method";
+			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
+            return "Delete Record Failed";
 
         }
 

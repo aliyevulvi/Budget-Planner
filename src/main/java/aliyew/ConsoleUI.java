@@ -55,7 +55,8 @@ public class ConsoleUI {
     }
 
     public static void showRecords() {
-        ArrayList<Record> allRecords = DBManager.getRecords();
+        // ArrayList<Record> allRecords = DBManager.getRecords();
+        ArrayList<Record> allRecords = JsonManager.getRecords();
         Scanner console = new Scanner(System.in);
         String input = "";
 
@@ -168,7 +169,8 @@ public class ConsoleUI {
     }
     
     public static void showReport(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        // ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
         Scanner console = new Scanner(System.in);
         int totalExpense = 0;
         String[] cats = {"Air", "Home", "Loan", "Self", "Utility", "Others"}; 
@@ -239,7 +241,9 @@ public class ConsoleUI {
         String income = console.nextLine();
         
         if (income.matches("-?\\d+(\\,\\d+)?")) {
-            System.out.println("[ " + DBManager.addIncome(rec, Double.parseDouble(income)) + " ]");
+            System.out.println("[ " + DBManager.addIncome(rec, Double.parseDouble(income)) + " on DB]");
+            rec.setRecordIncome(rec.getRecordIncome()+Double.parseDouble(income));
+            System.out.println("[ "+JsonManager.updateRecord(rec)+" on Local]");
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
@@ -271,7 +275,10 @@ public class ConsoleUI {
         System.out.printf("[ %-20s ]\n\n", "--------------------");
 
         if (newRecordTotaIncome.matches("-?\\d+(\\.\\d+)?") && newRecordSaving.matches("-?\\d+(\\.\\d+)?") ) {
-            System.out.printf("[ %-20s ]", DBManager.createNewRecord(new Record(newRecordName, Double.parseDouble(newRecordTotaIncome), Double.parseDouble(newRecordSaving))));
+            Record rec = new Record(newRecordName, Double.parseDouble(newRecordTotaIncome), Double.parseDouble(newRecordSaving));
+            System.out.printf("[ %-20s ]\n", DBManager.createNewRecord(rec)+" on DB");
+            System.out.printf("[ %-20s ]\n", JsonManager.createRecord(rec)+" on Local");
+
 
         } else {
             System.out.println("[ Wrong Input ]");
@@ -285,7 +292,8 @@ public class ConsoleUI {
     }
 
     public static ArrayList<Expense> showExpenses(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        // ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 
         if (allExpenses.isEmpty()) {
             System.out.printf("[ %-20s ]\n", "--------------------");
@@ -298,13 +306,13 @@ public class ConsoleUI {
             }
             return allExpenses;
         }
-        System.out.println("\n[  ------------------------ Expenses ------------------------  ]");
-        System.out.println("[ ____________________________________________________________ ]");
-        System.out.printf("|[ %9s ] [ %15s ] [ %10s ] [ %9s ]|\n", "ID", "DATE", "CATEGORY", "AMOUNT");
+        System.out.println("\n[  ----------------------------- Expenses -----------------------------  ]");
+        System.out.println("[ ______________________________________________________________________ ]");
+        System.out.printf("|[ %9s ] [ %15s ] [ %10s ] [ %9s ] [ %5s ]|\n", "ID", "DATE", "CATEGORY", "AMOUNT", "SYNC");
         for (Expense exp : allExpenses) {
             System.out.println(exp.toString());
         }
-        System.out.println("[ ------------------------------------------------------------ ]\n");
+        System.out.println("[ ---------------------------------------------------------------------- ]\n");
 
         return allExpenses;
     }
@@ -346,8 +354,13 @@ public class ConsoleUI {
                 System.out.printf("[ %-20s ]\n\n", "--------------------");
 
                 if (amt.matches("-?\\d+(\\.\\d+)?")) {
-                    System.out.println("[ " + DBManager.createExpense(rec, new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amt)))
-                            + " ]");
+                    Expense exp = new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amt));
+                    System.out.println("[ " + DBManager.createExpense(rec, exp)
+                            + " on DB]");
+                    exp.setExpenseRecordId(rec.getRecordId());
+                    System.out.println("[ "+JsonManager.createExpense(exp)+" on Local]");
+
+
 
                     try {
 
@@ -393,7 +406,8 @@ public class ConsoleUI {
     }
 
     public static void deleteExpense(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        // ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 
         if (allExpenses.isEmpty()) {
             System.out.print("\033[H\033[2J");
@@ -425,9 +439,10 @@ public class ConsoleUI {
         }
 
         if (expense != null) {
-            System.out.println("[ " + DBManager.deleteExpense(expense.getExpenseId()) + " ]");
+            System.out.println("[ " + DBManager.deleteExpense(expense.getExpenseId()) + " on DB]");
+            System.out.println("[ " + JsonManager.deleteExpense(expense) + " on Local]");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (Exception e) {
             }
         } else {
@@ -446,7 +461,8 @@ public class ConsoleUI {
         System.out.print("[ Record Name (" + rec.getRecordName() + ") : ");
         String name = console.nextLine();
 
-        ArrayList<Record> allRecords = DBManager.getRecords();
+        // ArrayList<Record> allRecords = DBManager.getRecords();
+        ArrayList<Record> allRecords = JsonManager.getRecords();
 
         for (Record record : allRecords) {
             if (record.getRecordName().equals(name)) {
@@ -501,16 +517,22 @@ public class ConsoleUI {
             return;
         }
 
-        System.out.println("[ " + DBManager.updateRecord(rec, name, Double.parseDouble(income),Double.parseDouble(saving)) + " ]");
+        
+        System.out.println("[ " + DBManager.updateRecord(rec, name, Double.parseDouble(income),Double.parseDouble(saving)) + " on DB]");
+        rec.setRecordName(name);
+        rec.setRecordIncome(Double.parseDouble(income));
+        rec.setRecordSaving(Double.parseDouble(saving));
+        System.out.println("[ "+JsonManager.updateRecord(rec)+" on Local]");
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (Exception e) {
         }
     }
 
     public static void updateExpense(Record rec) {
-        ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        // ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
+        ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 
         if (allExpenses.isEmpty()) {
             System.out.print("\033[H\033[2J");
@@ -584,7 +606,15 @@ public class ConsoleUI {
                     if (amount.equals("")) {
                         amount = expense.getExpenseAmt() + "";
                     }
-                    DBManager.updateExpense(new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amount)));
+                    Expense exp = new Expense(expense.getExpenseId(),expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amount));
+                    System.out.println("[ "+DBManager.updateExpense(exp)+" on DB]");
+                    System.out.println("[ "+JsonManager.updateExpense(exp)+" on Local]");
+
+                    try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+        }
+
                 } else {
                     System.out.println("[ Wrong Input ]");
                     try {
@@ -617,9 +647,10 @@ public class ConsoleUI {
         String input = console.nextLine();
 
         if (input.equals("y")) {
-            System.out.println("[ " + DBManager.deleteRecord(rec) + " ]");
+            System.out.println("[ " + DBManager.deleteRecord(rec) + " on DB]");
+            System.out.println("[ " + JsonManager.deleteRecord(rec) + " on Local]");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (Exception e) {
             }
         } else if (input.equals("n")) {

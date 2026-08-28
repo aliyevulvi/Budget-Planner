@@ -1,0 +1,5 @@
+Aug 29, 2026 12:40:56 AM aliyew.DBManager updateRecord
+SEVERE: ERROR: duplicate key value violates unique constraint "tb_records_record_name_key"
+  Detail: Key (record_name)=(t3) already exists. | 23505
+Aug 29, 2026 12:54:43 AM aliyew.DBManager createExpense
+SEVERE: The connection attempt failed. | 08001

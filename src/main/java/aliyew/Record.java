@@ -5,8 +5,9 @@ public class Record {
     private int recordId = 0;
     private String recordName = "undefined";
     private String creationDate = "undefined";
-    private double totalIncome = 0;
-    private double record_saving = 0;
+    private double recordIncome = 0;
+    private double recordSaving = 0;
+    private boolean recordSync = false;
 
     public Record() {
         
@@ -14,8 +15,9 @@ public class Record {
 
     public Record(String name, double income, double saving) {
         this.recordName = name;
-        this.totalIncome = income;
-        this.record_saving = saving;
+        this.recordIncome = income;
+        this.recordSaving = saving;
+        setRecordDate();
     }
 
     public Record(int id, String name, String ts) {
@@ -28,8 +30,8 @@ public class Record {
         this.recordId = id;
         this.recordName = name;
         this.creationDate = ts;
-        this.totalIncome = income;
-        this.record_saving = saving;
+        this.recordIncome = income;
+        this.recordSaving = saving;
     }
 
     public String getRecordName() {
@@ -45,11 +47,39 @@ public class Record {
     }
 
     public double getRecordIncome() {
-        return this.totalIncome;
+        return this.recordIncome;
     }
 
     public double getRecordSaving() {
-        return this.record_saving;
+        return this.recordSaving;
+    }
+
+    public boolean getRecordSync() {
+        return this.recordSync;
+    }
+
+    public void setRecordId(int id) {
+        this.recordId = id;
+    }
+
+    public void setRecordName(String name) {
+        this.recordName = name;
+    }
+
+    public void setRecordIncome(double amt) {
+        this.recordIncome = amt;
+    }
+
+    public void setRecordSaving(double amt) {
+        this.recordSaving = amt;
+    }
+
+    public void setRecordDate() {
+        this.creationDate = java.sql.Timestamp.from(java.time.Instant.now())+"";
+    }
+
+    public void setRecordSync(boolean bool) {
+        this.recordSync = bool;
     }
 
     public void getRecordInfo() {
@@ -60,6 +90,7 @@ public class Record {
         System.out.printf("[ %-15s%-20s ]\n", "Income : ", this.getRecordIncome()+"");
         System.out.printf("[ %-15s%-20s ]\n", "Saving : ", this.getRecordSaving()+"");
         System.out.printf("[ %-15s%-20s ]\n", "Created : ", this.getCreationDate().substring(0, 16)+"");
+        System.out.printf("[ %-15s%-20s ]\n", "Sync : ", this.getRecordSync()+"");
         System.out.println("[ ----------------------------------- ]");
 
     }

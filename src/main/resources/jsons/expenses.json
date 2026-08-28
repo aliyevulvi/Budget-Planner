@@ -1,0 +1,22 @@
+[ {
+  "expenseId" : 113,
+  "expenseRecordId" : 33,
+  "expenseDate" : [ 2026, 8, 1 ],
+  "expenseCat" : "air",
+  "expenseAmt" : 1.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : -1,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 8, 1 ],
+  "expenseCat" : "air",
+  "expenseAmt" : 1.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -2,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 8, 2 ],
+  "expenseCat" : "home",
+  "expenseAmt" : 2.0,
+  "expenseSync" : false
+} ]
