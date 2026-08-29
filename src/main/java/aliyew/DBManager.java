@@ -44,7 +44,7 @@ public class DBManager {
 		}
 	}
 
-	public static boolean connnectDB() {
+	public static boolean connectDB() {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			conn.close();
 			return true;

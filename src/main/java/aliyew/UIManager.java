@@ -77,7 +77,7 @@ public class UIManager {
 
             while (true) {
 
-            boolean isConnected = DBManager.connnectDB();
+            boolean isConnected = DBManager.connectDB();
             Color statusColor = isConnected ? Color.GREEN : Color.RED;
             String statusText = isConnected ? "ONLINE" : "OFFLINE";
 
