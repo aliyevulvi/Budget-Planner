@@ -1,1 +1,50 @@
-[]
+[ {
+  "expenseId" : 118,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "home",
+  "expenseAmt" : -659.25,
+  "expenseSync" : true
+}, {
+  "expenseId" : 119,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -56.61,
+  "expenseSync" : true
+}, {
+  "expenseId" : 120,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -550.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 121,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -143.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 122,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -620.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 123,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "air",
+  "expenseAmt" : -123.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 124,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 9, 1 ],
+  "expenseCat" : "air",
+  "expenseAmt" : -120.0,
+  "expenseSync" : true
+} ]

@@ -1,1 +1,8 @@
-[]
+[ {
+  "recordId" : 36,
+  "recordName" : "sent/26",
+  "creationDate" : "2026-09-01 14:40:27.5654402",
+  "recordIncome" : 28000.0,
+  "recordSaving" : 649.23,
+  "recordSync" : true
+} ]

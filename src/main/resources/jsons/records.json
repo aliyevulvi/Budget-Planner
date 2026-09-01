@@ -1,22 +1,8 @@
 [ {
-  "recordId" : 33,
-  "recordName" : "t2",
-  "creationDate" : "2026-08-29 01:03:22.7893075",
-  "recordIncome" : 2.0,
-  "recordSaving" : 2.0,
+  "recordId" : 36,
+  "recordName" : "sent/26",
+  "creationDate" : "2026-09-01 14:40:27.5654402",
+  "recordIncome" : 28000.0,
+  "recordSaving" : 649.23,
   "recordSync" : true
-}, {
-  "recordId" : -1,
-  "recordName" : "t3",
-  "creationDate" : "2026-08-29 01:07:15.6293264",
-  "recordIncome" : 1.0,
-  "recordSaving" : 1.0,
-  "recordSync" : false
-}, {
-  "recordId" : -2,
-  "recordName" : "t4",
-  "creationDate" : "2026-08-29 01:07:30.0290451",
-  "recordIncome" : 1.0,
-  "recordSaving" : 1.0,
-  "recordSync" : false
 } ]

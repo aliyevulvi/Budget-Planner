@@ -176,7 +176,7 @@ public class ConsoleUI {
 		// ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 		ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 		Scanner console = new Scanner(System.in);
-		int totalExpense = 0;
+		double totalExpense = 0;
 		String[] cats = {"Air", "Home", "Loan", "Self", "Utility", "Others"};
 
 		System.out.print("\033[H\033[2J");

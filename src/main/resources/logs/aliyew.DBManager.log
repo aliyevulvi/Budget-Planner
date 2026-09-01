@@ -4,3 +4,15 @@ SEVERE: ERROR: insert or update on table "tb_expenses" violates foreign key cons
 Aug 29, 2026 1:09:59 AM aliyew.DBManager createExpense
 SEVERE: ERROR: insert or update on table "tb_expenses" violates foreign key constraint "tb_expenses_expense_record_id_fkey"
   Detail: Key (expense_record_id)=(-1) is not present in table "tb_records". | 23503
+Sep 01, 2026 2:26:23 PM aliyew.DBManager deleteRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 01, 2026 2:26:42 PM aliyew.DBManager deleteRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 01, 2026 2:26:56 PM aliyew.DBManager deleteRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 01, 2026 2:30:32 PM aliyew.DBManager createNewRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 01, 2026 2:31:24 PM aliyew.DBManager createExpense
+SEVERE: The connection attempt failed. | 08001
+Sep 01, 2026 2:41:58 PM aliyew.DBManager createExpense
+SEVERE: The connection attempt failed. | 08001

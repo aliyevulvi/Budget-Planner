@@ -1,22 +1,50 @@
 [ {
-  "expenseId" : 113,
-  "expenseRecordId" : 33,
-  "expenseDate" : [ 2026, 8, 1 ],
-  "expenseCat" : "air",
-  "expenseAmt" : 1.0,
+  "expenseId" : 118,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "home",
+  "expenseAmt" : -659.25,
   "expenseSync" : true
 }, {
-  "expenseId" : -1,
-  "expenseRecordId" : -1,
-  "expenseDate" : [ 2026, 8, 1 ],
-  "expenseCat" : "air",
-  "expenseAmt" : 1.0,
-  "expenseSync" : false
+  "expenseId" : 119,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -56.61,
+  "expenseSync" : true
 }, {
-  "expenseId" : -2,
-  "expenseRecordId" : -1,
-  "expenseDate" : [ 2026, 8, 2 ],
-  "expenseCat" : "home",
-  "expenseAmt" : 2.0,
-  "expenseSync" : false
+  "expenseId" : 120,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -550.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 121,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -143.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 122,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "self",
+  "expenseAmt" : -620.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 123,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 8, 31 ],
+  "expenseCat" : "air",
+  "expenseAmt" : -123.0,
+  "expenseSync" : true
+}, {
+  "expenseId" : 124,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 9, 1 ],
+  "expenseCat" : "air",
+  "expenseAmt" : -120.0,
+  "expenseSync" : true
 } ]
