@@ -64,6 +64,8 @@ public class DBManager {
 	        
 	        conn.close();
 	        
+
+			rec.setRecordSync(true);
 	        return "Update Income Successfully";
 	    } catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
@@ -197,14 +199,16 @@ public class DBManager {
 
 	}
 
-	public static String deleteExpense(int expenseId) {
+	public static String deleteExpense(Expense expense) {
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, expenseId);
+			pstmt.setInt(1, expense.getExpenseId());
 			pstmt.executeUpdate();
 			conn.close();
+
+			expense.setExpenseSync(true);
 			return "Delete Expense Successfully";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage()+" | "+e.getSQLState());

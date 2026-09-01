@@ -15,6 +15,7 @@ public class JsonManager {
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final File RECORD_FILE = new File("src/main/resources/jsons/records.json");
     private static final File EXPENSE_FILE = new File("src/main/resources/jsons/expenses.json");
+    private static final File FAILES_FILE = new File("src/main/resources/jsons/failedOps.json");
 
     public static ArrayList<Record> getRecords() {
         ArrayList<Record> allRecords = new ArrayList<>();
@@ -229,6 +230,36 @@ public class JsonManager {
         }
 
         return minId;
+    }
+
+    public static ArrayList<FailedSync> getFailedOps() {
+        ArrayList<FailedSync> allFailedOps = new ArrayList<>();
+
+        try {
+            if (!FAILES_FILE.exists()) {
+                FAILES_FILE.createNewFile();
+            }
+
+            allFailedOps = mapper.readValue(FAILES_FILE, new TypeReference<ArrayList<FailedSync>>() {});
+            return allFailedOps;
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return null;
+        }
+
+
+    }
+
+    public static void syncOp(FailedSync failedOp) {
+        ArrayList<FailedSync> allFailedOps = getFailedOps();
+        allFailedOps.add(failedOp);
+
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(FAILES_FILE, allFailedOps);
+
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+        }
     }
     
 

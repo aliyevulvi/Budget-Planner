@@ -55,7 +55,6 @@ public class ConsoleUI {
 	}
 
 	public static void showRecords() {
-		// ArrayList<Record> allRecords = DBManager.getRecords();
 		ArrayList<Record> allRecords = JsonManager.getRecords();
 		Scanner console = new Scanner(System.in);
 		String input = "";
@@ -173,7 +172,6 @@ public class ConsoleUI {
 	}
 
 	public static void showReport(Record rec) {
-		// ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 		ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 		Scanner console = new Scanner(System.in);
 		double totalExpense = 0;
@@ -247,9 +245,15 @@ public class ConsoleUI {
 		String income = console.nextLine();
 
 		if (income.matches("-?\\d+(\\,\\d+)?")) {
+			rec.setRecordSync(false);
 			System.out.println("[ " + DBManager.addIncome(rec, Double.parseDouble(income)) + " on DB]");
 			rec.setRecordIncome(rec.getRecordIncome() + Double.parseDouble(income));
 			System.out.println("[ " + JsonManager.updateRecord(rec) + " on Local]");
+
+			if (!rec.getRecordSync()) {
+				JsonManager.syncOp(new FailedSync("addIncome", rec, null));
+			}
+
 			try {
 				Thread.sleep(1000);
 			} catch (Exception e) {
@@ -298,7 +302,6 @@ public class ConsoleUI {
 	}
 
 	public static ArrayList<Expense> showExpenses(Record rec) {
-		// ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 		ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 
 		if (allExpenses.isEmpty()) {
@@ -412,7 +415,6 @@ public class ConsoleUI {
 	}
 
 	public static void deleteExpense(Record rec) {
-		// ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 		ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 
 		if (allExpenses.isEmpty()) {
@@ -445,8 +447,14 @@ public class ConsoleUI {
 		}
 
 		if (expense != null) {
-			System.out.println("[ " + DBManager.deleteExpense(expense.getExpenseId()) + " on DB]");
+			expense.setExpenseSync(false);
+			System.out.println("[ " + DBManager.deleteExpense(expense) + " on DB]");
 			System.out.println("[ " + JsonManager.deleteExpense(expense) + " on Local]");
+
+			if (!expense.getExpenseSync()) {
+				JsonManager.syncOp(new FailedSync("deleteExpense", null, expense));
+			}
+
 			try {
 				Thread.sleep(2000);
 			} catch (Exception e) {
@@ -467,7 +475,6 @@ public class ConsoleUI {
 		System.out.print("[ Record Name (" + rec.getRecordName() + ") : ");
 		String name = console.nextLine();
 
-		// ArrayList<Record> allRecords = DBManager.getRecords();
 		ArrayList<Record> allRecords = JsonManager.getRecords();
 
 		for (Record record : allRecords) {
@@ -523,12 +530,16 @@ public class ConsoleUI {
 			return;
 		}
 
-
+		rec.setRecordSync(false);
 		System.out.println("[ " + DBManager.updateRecord(rec, name, Double.parseDouble(income), Double.parseDouble(saving)) + " on DB]");
 		rec.setRecordName(name);
 		rec.setRecordIncome(Double.parseDouble(income));
 		rec.setRecordSaving(Double.parseDouble(saving));
 		System.out.println("[ " + JsonManager.updateRecord(rec) + " on Local]");
+
+		if (!rec.getRecordSync()) {
+			JsonManager.syncOp(new FailedSync("updateRecord", rec, null));
+		}
 
 		try {
 			Thread.sleep(2000);
@@ -537,7 +548,6 @@ public class ConsoleUI {
 	}
 
 	public static void updateExpense(Record rec) {
-		// ArrayList<Expense> allExpenses = DBManager.getExpenses(rec);
 		ArrayList<Expense> allExpenses = JsonManager.getExpenses(rec);
 
 		if (allExpenses.isEmpty()) {
@@ -614,8 +624,13 @@ public class ConsoleUI {
 					}
 					Expense exp = new Expense(expense.getExpenseId(), expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat,
 											  Double.parseDouble(amount));
+					exp.setExpenseSync(false);
 					System.out.println("[ " + DBManager.updateExpense(exp) + " on DB]");
 					System.out.println("[ " + JsonManager.updateExpense(exp) + " on Local]");
+
+					if (!exp.getExpenseSync()) {
+						JsonManager.syncOp(new FailedSync("updateExpense", null, exp));
+					}
 
 					try {
 						Thread.sleep(2000);
@@ -654,8 +669,14 @@ public class ConsoleUI {
 		String input = console.nextLine();
 
 		if (input.equals("y")) {
+			rec.setRecordSync(false);
 			System.out.println("[ " + DBManager.deleteRecord(rec) + " on DB]");
 			System.out.println("[ " + JsonManager.deleteRecord(rec) + " on Local]");
+
+			if (!rec.getRecordSync()) {
+				JsonManager.syncOp(new FailedSync("deleteRecord", rec, null));
+			}
+
 			try {
 				Thread.sleep(2000);
 			} catch (Exception e) {
