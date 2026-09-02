@@ -39,13 +39,91 @@ public class FailedSync {
         }
     }
 
-    public String retryOp() {
+    public void retryOp() {
 
         switch (this.failedOp) {
-            
+            case "createRecord" : createRecord();
+                break;
+            case "updateRecord" : updateRecord();
+                break;
+            case "deleteRecord" : deleteRecord();
+                break;
+            case "createExpense" : createExpense();
+                break;
+            case "updateExpense" : updateExpense();
+                break;
+            case "deleteExpense" : deleteExpense();
+                break;
         }
-
-        return "Success";
     }
+    
+    public void createRecord() {
+        Record record = new Record(recordName, recordIncome, recordSaving);
+        DBManager.createRecord(record);
+        
+        if (record.getRecordSync()) {
+            ArrayList<Expense> allExpenses = JsonManager.getExpenses(new Record(recordId, null, null));
+            
+            for (Expense exp : allExpenses) {
+                exp.setExpenseRecordId(record.getRecordId());
+                JsonManager.updateExpense(exp);
+            }
+            
+            ArrayList<Record> allRecords = JsonManager.getRecords();
+            
+            for (Record rec : allRecords) {
+                if (rec.getRecordId() == recordId) {
+                    JsonManager.deleteRecord(rec);
+                    break;
+                }
+            }
+            
+            JsonManager.createRecord(record);
+                     
+            this.failedOp = "solved";
+        }
+    }
+    
+    public void updateRecord() {
+        Record record = new Record(recordName, recordIncome, recordSaving);
+        DBManager.updateRecord(record, recordName, recordIncome, recordSaving);
+        
+        if (record.getRecordSync()) {
+            JsonManager.updateRecord(record);
+            this.failedOp = "solved";
+        }
+    }
+    
+    public void deleteRecord() {
+        Record record = new Record(recordName, recordIncome, recordSaving);
+        DBManager.deleteRecord(record);
+        
+        if (record.getRecordSync()) {
+            this.failedOp = "solved";
+        }
+    }
+    
+    public void createExpense() {
+        Expense expense = new Expense(expenseDate, expenseCat, expenseAmt);
+        Record record = new Record(recordName, recordIncome, recordSaving);
+        DBManager.createExpense(record, expense);
+        
+        if (expense.getExpenseSync()) {
+            ArrayList<Expense> allExpenses = JsonManager.getExpenses(record);
+            
+            for (Expense exp : allExpenses) {
+                if (exp.getExpenseId() == expenseId) {
+                    JsonManager.deleteExpense(exp);
+                    break;
+                }
+            }
+            
+            
+            
+            this.failedOp = "solved";
+        }
+    }
+    
+    
 
 }

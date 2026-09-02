@@ -14,7 +14,7 @@ public class DBManager {
 
 	private static final String LINK_STRING = System.getenv("DB_URL");
 	private static final Logger logger = LogManager.getLogger(DBManager.class.getName());
-    
+
 	public static void main(String[] args) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "CREATE TABLE IF NOT EXISTS tb_records ( "
@@ -25,17 +25,17 @@ public class DBManager {
 							  + "record_ts TIMESTAMP NOT NULL "
 							  + ");";
 			String sqlQuery2 = "CREATE TABLE IF NOT EXISTS tb_expenses ( "
-							+ " expense_id SERIAL PRIMARY KEY, "
-							+ " expense_record_id INT REFERENCES tb_records(record_id) ON DELETE CASCADE, "
-							+ "expense_date DATE NOT NULL, "
-							+ "expense_cat VARCHAR(50) NOT NULL, "
-							+ "expense_amt DOUBLE PRECISION NOT NULL);";
+							   + " expense_id SERIAL PRIMARY KEY, "
+							   + " expense_record_id INT REFERENCES tb_records(record_id) ON DELETE CASCADE, "
+							   + "expense_date DATE NOT NULL, "
+							   + "expense_cat VARCHAR(50) NOT NULL, "
+							   + "expense_amt DOUBLE PRECISION NOT NULL);";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
 			pstmt.executeUpdate();
 			pstmt = conn.prepareStatement(sqlQuery2);
 			pstmt.executeUpdate();
-			
+
 			conn.close();
 
 		} catch (SQLException e) {
@@ -49,31 +49,36 @@ public class DBManager {
 			conn.close();
 			return true;
 		} catch (SQLException e) {
-			// logger.severe(e.getMessage());
 			return false;
 		}
 	}
 
-	public static String addIncome(Record rec, double addAmt) {
-	    try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-	        String sqlQuery = "UPDATE tb_records SET record_income = ? WHERE record_id = ?;";
-	        PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-	        pstmt.setDouble(1, rec.getRecordIncome()+addAmt);
-	        pstmt.setInt(2, rec.getRecordId());
-	        pstmt.executeUpdate();
-	        
-	        conn.close();
-	        
+	public static ArrayList<Record> getRecords() {
+		ArrayList<Record> allRecords = new ArrayList<>();
 
-			rec.setRecordSync(true);
-	        return "Update Income Successfully";
-	    } catch (SQLException e) {
+		try {
+			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+				String sqlQuery = "SELECT * FROM tb_records;";
+				PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
+				ResultSet rs = preparedStatement.executeQuery();
+
+				while (rs.next()) {
+					allRecords.add(new Record(rs.getInt("record_id"), rs.getString("record_name"),
+											  rs.getTimestamp("record_ts") + "", rs.getDouble("record_income"),
+											  rs.getDouble("record_saving")));
+				}
+			}
+			return allRecords;
+
+		} catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
-	        return "Update Income Failed";
-	    }
+			allRecords.clear();
+			return allRecords;
+		}
+
 	}
 
-	public static String createNewRecord(Record newRecord) {
+	public static String createRecord(Record newRecord) {
 
 		try {
 			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
@@ -101,34 +106,75 @@ public class DBManager {
 		} catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
 			if (e.getSQLState().equals("23505")) {
-				return "Create Record Failed ("+newRecord.getRecordName() + ") already created!";
+				return "Create Record Failed (" + newRecord.getRecordName() + ") already created!";
 			} else {
 				return "Create Record Failed";
 			}
 		}
 	}
 
-	public static ArrayList<Record> getRecords() {
-		ArrayList<Record> allRecords = new ArrayList<>();
+	public static String updateRecord(Record rec, String newName, double income, double saving) {
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			String sqlQuery = "UPDATE tb_records SET record_name = ?, record_income = ?, record_saving = ? WHERE record_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setString(1, newName);
+			pstmt.setDouble(2, income);
+			pstmt.setDouble(3, saving);
+			pstmt.setInt(4, rec.getRecordId());
+			pstmt.executeUpdate();
 
-		try {
-			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-				String sqlQuery = "SELECT * FROM tb_records;";
-				PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
-				ResultSet rs = preparedStatement.executeQuery();
+			conn.close();
 
-				while (rs.next()) {
-					allRecords.add(new Record(rs.getInt("record_id"), rs.getString("record_name"),
-							rs.getTimestamp("record_ts") + "", rs.getDouble("record_income"),
-							rs.getDouble("record_saving")));
-				}
-			}
-			return allRecords;
+			rec.setRecordSync(true);
+			return "Update Record Successfully";
 
 		} catch (SQLException e) {
-			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
-			allRecords.clear();
-			return allRecords;
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+			return "Update Record Failed";
+		}
+	}
+
+
+	public static String deleteRecord(Record rec) {
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			deleteExpense(rec);
+			String sqlQuery = "DELETE FROM tb_records WHERE record_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setInt(1, rec.getRecordId());
+			pstmt.executeUpdate();
+
+
+			conn.close();
+
+			return "Delete Record Successfully";
+		} catch (SQLException e) {
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+			return "Delete Record Failed";
+
+		}
+
+	}
+
+	public static ArrayList<Expense> getExpenses(Record rec) {
+		ArrayList<Expense> allExpenses = new ArrayList<>();
+
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			String sqlQuery = "SELECT * FROM tb_expenses WHERE expense_record_id = ?;";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setInt(1, rec.getRecordId());
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getInt("expense_record_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getDouble("expense_amt")));
+			}
+			conn.close();
+			return allExpenses;
+
+		} catch (SQLException e) {
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+			allExpenses.clear();
+			return allExpenses;
 		}
 
 	}
@@ -160,83 +206,6 @@ public class DBManager {
 		}
 	}
 
-	public static void adminDeleteRecords() {
-
-		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-
-			String sqlQuery = "DROP TABLE tb_records;";
-			PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
-			preparedStatement.executeUpdate();
-
-			conn.close();
-
-		} catch (SQLException e) {
-			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
-		}
-	}
-
-	public static ArrayList<Expense> getExpenses(Record rec) {
-		ArrayList<Expense> allExpenses = new ArrayList<>();
-
-		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "SELECT * FROM tb_expenses WHERE expense_record_id = ?;";
-
-			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, rec.getRecordId());
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getInt("expense_record_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getDouble("expense_amt")));
-			}
-			conn.close();
-			return allExpenses;
-
-		} catch (SQLException e) {
-			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
-			allExpenses.clear();
-			return allExpenses;
-		}
-
-	}
-
-	public static String deleteExpense(Expense expense) {
-
-		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
-			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, expense.getExpenseId());
-			pstmt.executeUpdate();
-			conn.close();
-
-			expense.setExpenseSync(true);
-			return "Delete Expense Successfully";
-		} catch (SQLException e) {
-			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
-			return "Delete Expense Failed";
-		}
-	}
-
-	public static String updateRecord(Record rec, String newName, double income, double saving) {
-		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "UPDATE tb_records SET record_name = ?, record_income = ?, record_saving = ? WHERE record_id = ?;";
-			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setString(1, newName);
-			pstmt.setDouble(2, income);
-			pstmt.setDouble(3, saving);
-			pstmt.setInt(4, rec.getRecordId());
-			pstmt.executeUpdate();
-			
-            conn.close();
-
-			rec.setRecordSync(true);
-			return "Update Record Successfully";
-
-		} catch (SQLException e) {
-			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
-			return "Update Record Failed";
-		}
-	}
-
 	public static String updateExpense(Expense expense) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "UPDATE tb_expenses SET expense_date = ?, expense_cat = ?, expense_amt = ? WHERE expense_id = ?;";
@@ -252,29 +221,59 @@ public class DBManager {
 
 			return "Update Expense Successfully";
 		} catch (SQLException e) {
-			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
 			return "Update Expense Failed";
 		}
 	}
 
-    public static String deleteRecord(Record rec) {
-        try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-            String sqlQuery = "DELETE FROM tb_records WHERE record_id = ?;";
-            PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-            pstmt.setInt(1, rec.getRecordId());
-            pstmt.executeUpdate();
+	public static String deleteExpense(Expense expense) {
 
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setInt(1, expense.getExpenseId());
+			pstmt.executeUpdate();
+			conn.close();
 
-            conn.close();
+			expense.setExpenseSync(true);
+			return "Delete Expense Successfully";
+		} catch (SQLException e) {
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+			return "Delete Expense Failed";
+		}
+	}
+	
+	public static String deleteExpense(Record record) {
 
-            return "Delete Record Successfully";
-        } catch (SQLException e) {
-			logger.severe(()->e.getMessage()+" | "+e.getSQLState());
-            return "Delete Record Failed";
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_record_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+			pstmt.setInt(1, record.getRecordId());
+			pstmt.executeUpdate();
+			conn.close();
 
-        }
+		
+			return "Delete Expense Successfully";
+		} catch (SQLException e) {
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+			return "Delete Expense Failed";
+		}
+	}
 
-    }
+	public static void adminDeleteRecords() {
+
+		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
+
+			String sqlQuery = "DROP TABLE tb_records;";
+			PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
+			preparedStatement.executeUpdate();
+
+			conn.close();
+
+		} catch (SQLException e) {
+			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+		}
+	}
 
 
 

@@ -67,7 +67,7 @@ public class JsonManager {
         try {
             
             mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
-            return "Update Updated Successfully";
+            return "Update Record Successfully";
         } catch (IOException e) {
             logger.severe(e.getMessage());
             return "Update Record Failed";
@@ -250,7 +250,7 @@ public class JsonManager {
 
     }
 
-    public static void syncOp(FailedSync failedOp) {
+    public static void createFailedOp(FailedSync failedOp) {
         ArrayList<FailedSync> allFailedOps = getFailedOps();
         allFailedOps.add(failedOp);
 
