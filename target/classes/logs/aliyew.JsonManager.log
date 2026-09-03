@@ -1,0 +1,22 @@
+Sep 03, 2026 3:00:50 PM aliyew.JsonManager addOp
+SEVERE: No serializer found for class aliyew.Synchronization and no properties discovered to create BeanSerializer (to avoid exception, disable SerializationFeature.FAIL_ON_EMPTY_BEANS) (through reference chain: java.util.ArrayList[0])
+Sep 03, 2026 3:01:06 PM aliyew.JsonManager getOps
+SEVERE: Unexpected end-of-input: expected close marker for Array (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+Sep 03, 2026 3:01:46 PM aliyew.JsonManager getOps
+SEVERE: Unexpected end-of-input: expected close marker for Array (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+Sep 03, 2026 3:12:10 PM aliyew.JsonManager addOp
+SEVERE: No serializer found for class aliyew.Synchronization and no properties discovered to create BeanSerializer (to avoid exception, disable SerializationFeature.FAIL_ON_EMPTY_BEANS) (through reference chain: java.util.ArrayList[0])
+Sep 03, 2026 3:12:50 PM aliyew.JsonManager getOps
+SEVERE: No content to map due to end-of-input
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1]
+Sep 03, 2026 3:17:52 PM aliyew.JsonManager getOps
+SEVERE: Cannot construct instance of `aliyew.Synchronization` (no Creators, like default constructor, exist): cannot deserialize from Object value (no delegate- or property-based Creator)
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 2, column: 3] (through reference chain: java.util.ArrayList[0])
+Sep 03, 2026 3:18:00 PM aliyew.JsonManager getOps
+SEVERE: Cannot construct instance of `aliyew.Synchronization` (no Creators, like default constructor, exist): cannot deserialize from Object value (no delegate- or property-based Creator)
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 2, column: 3] (through reference chain: java.util.ArrayList[0])
+Sep 03, 2026 3:20:19 PM aliyew.JsonManager getOps
+SEVERE: Cannot construct instance of `aliyew.Synchronization` (no Creators, like default constructor, exist): cannot deserialize from Object value (no delegate- or property-based Creator)
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 2, column: 3] (through reference chain: java.util.ArrayList[0])

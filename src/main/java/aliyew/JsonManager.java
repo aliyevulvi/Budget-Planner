@@ -39,10 +39,6 @@ public class JsonManager {
             }
         }
 
-        if (!record.getRecordSync()) {
-            record.setRecordId(getMinIdRecord());
-        }
-
         allRecords.add(record);
 
         try {
@@ -135,10 +131,6 @@ public class JsonManager {
     public static String createExpense(Expense expense) {
         ArrayList<Expense> allExpenses = getExpenses();
 
-        if (!expense.getExpenseSync()) {
-            expense.setExpenseId(getMinIdExpense());
-        }
-
         allExpenses.add(expense);
 
         try {
@@ -213,7 +205,7 @@ public class JsonManager {
 
         for (Record rec: allRecords) {
             if (rec.getRecordId() <= minId) {
-                minId--;
+                minId = rec.getRecordId() - 1; 
             }
         }
 
@@ -226,7 +218,7 @@ public class JsonManager {
 
         for (Expense exp : allExpenses) {
             if (exp.getExpenseId() <= minId) {
-                minId--;
+                minId = exp.getExpenseId()-1;
             }
         }
 

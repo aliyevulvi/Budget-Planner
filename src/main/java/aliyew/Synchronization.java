@@ -13,5 +13,31 @@ public class Synchronization {
         JsonManager.addOp(this);
     }
 
+    public Synchronization(){}
+ 
+    public String getOp() {
+        return op;
+    }
+
+    public Record getRecord() {
+        return record;
+    }
+
+    public Expense getExpense() {
+        return expense;
+    }
+
+    public void setOp(String opStr) {
+        this.op = opStr;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
+
+    public void setExpense(Expense expense) {
+        this.expense = expense;
+    }
+
 
 }

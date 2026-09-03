@@ -78,7 +78,7 @@ public class DBManager {
 
 	}
 
-	public static boolean createRecord(Record newRecord) {
+	public static String createRecord(Record newRecord) {
 
 		try {
 			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
@@ -101,21 +101,23 @@ public class DBManager {
 
 			}
 
-			return true;
+			return "Create Record Successfully";
+
 
 		} catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
-			return false;
+			return "Create Record Failed";
+			
 		}
 	}
 
-	public static String updateRecord(Record rec, String newName, double income, double saving) {
+	public static String updateRecord(Record rec) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "UPDATE tb_records SET record_name = ?, record_income = ?, record_saving = ? WHERE record_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setString(1, newName);
-			pstmt.setDouble(2, income);
-			pstmt.setDouble(3, saving);
+			pstmt.setString(1, rec.getRecordName());
+			pstmt.setDouble(2, rec.getRecordIncome());
+			pstmt.setDouble(3, rec.getRecordSaving());
 			pstmt.setInt(4, rec.getRecordId());
 			int affectedRows = pstmt.executeUpdate();
 
@@ -180,13 +182,13 @@ public class DBManager {
 
 	}
 
-	public static String createExpense(Record rec, Expense exp) {
+	public static String createExpense(Expense exp) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 
 			String insertQuery = "INSERT INTO tb_expenses(expense_record_id, expense_date, expense_cat, expense_amt) "
 								 + "VALUES (?,?,?,?);";
 			PreparedStatement pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-			pstmt.setInt(1, rec.getRecordId());
+			pstmt.setInt(1, exp.getExpenseRecordId());
 			pstmt.setObject(2, exp.getExpenseDate());
 			pstmt.setString(3, exp.getExpenseCat());
 			pstmt.setDouble(4, exp.getExpenseAmt());

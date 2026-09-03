@@ -4,9 +4,9 @@ public class Main {
 
     public static void main(String[] args) {
         
-        // DBManager.main(args);
-        // ConsoleUI.startProgram();
+        DBManager.main(args);
+        ConsoleUI.startProgram();
 
-        UIManager.main(args);
+        // UIManager.main(args);
     }
 }

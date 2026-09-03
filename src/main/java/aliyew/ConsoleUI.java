@@ -256,7 +256,15 @@ public class ConsoleUI {
 
 		if (newRecordTotaIncome.matches("-?\\d+(\\.\\d+)?") && newRecordSaving.matches("-?\\d+(\\.\\d+)?")) {
 			Record rec = new Record(newRecordName, Double.parseDouble(newRecordTotaIncome), Double.parseDouble(newRecordSaving));
+			System.out.printf("[ %-20s ]\n", DBManager.createRecord(rec) + " on DB");
+
+			if (!rec.getRecordSync()) {
+				rec.setRecordId(JsonManager.getMinIdRecord());
+				new Synchronization("CREATE_RECORD", rec, null);
+			}
+
 			System.out.printf("[ %-20s ]\n", JsonManager.createRecord(rec) + " on Local");
+
 			
 
 
@@ -334,6 +342,18 @@ public class ConsoleUI {
 
 				if (amt.matches("-?\\d+(\\.\\d+)?")) {
 					Expense exp = new Expense(LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat, Double.parseDouble(amt));
+					exp.setExpenseRecordId(rec.getRecordId());
+					exp.setExpenseId(JsonManager.getMinIdExpense());
+
+					if (rec.getRecordSync()) {
+						System.out.println("[ " + DBManager.createExpense(exp) + " on DB]");
+						if (!exp.getExpenseSync()) {
+							new Synchronization("CREATE_EXPENSE", null, exp);
+						}
+					} else {
+							new Synchronization("CREATE_EXPENSE", null, exp);
+					}
+
 					System.out.println("[ " + JsonManager.createExpense(exp) + " on Local]");
 					
 
@@ -417,6 +437,14 @@ public class ConsoleUI {
 		if (expense != null) {
 			System.out.println("[ " + JsonManager.deleteExpense(expense) + " on Local]");
 
+			if (expense.getExpenseSync()) {
+				expense.setExpenseSync(false);
+				System.out.println("[ " + DBManager.deleteExpense(expense) + " on DB]");
+				if (!expense.getExpenseSync()) {
+					new Synchronization("DELETE_EXPENSE", null, expense);
+				}
+			}
+
 			try {
 				Thread.sleep(2000);
 			} catch (Exception e) {
@@ -492,10 +520,18 @@ public class ConsoleUI {
 			return;
 		}
 
-		rec.setRecordSync(false);
 		rec.setRecordName(name);
 		rec.setRecordIncome(Double.parseDouble(income));
 		rec.setRecordSaving(Double.parseDouble(saving));
+
+		if (rec.getRecordSync()) {
+			rec.setRecordSync(false);
+			System.out.println("[ " + DBManager.updateRecord(rec) + " on DB]");
+			if (!rec.getRecordSync()) {
+				new Synchronization("UPDATE_RECORD", rec, null);
+			}
+		}
+
 		System.out.println("[ " + JsonManager.updateRecord(rec) + " on Local]");
 
 
@@ -582,7 +618,12 @@ public class ConsoleUI {
 					}
 					Expense exp = new Expense(expense.getExpenseId(), expense.getExpenseRecordId(), LocalDate.parse(expenseDate, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), cat,
 											  Double.parseDouble(amount));
-					exp.setExpenseSync(false);
+					if (expense.getExpenseSync() && rec.getRecordSync()) {
+						System.out.println("[ " + DBManager.updateExpense(exp) + " on DB]");
+						if (!exp.getExpenseSync()) {
+							new Synchronization("UPDATE_EXPENSE", rec, exp);
+						}
+					}
 					System.out.println("[ " + JsonManager.updateExpense(exp) + " on Local]");
 
 					try {
@@ -622,6 +663,13 @@ public class ConsoleUI {
 		String input = console.nextLine();
 
 		if (input.equals("y")) {
+			if (rec.getRecordSync()) {
+				rec.setRecordSync(false);
+				System.out.println("[ " + DBManager.deleteRecord(rec) + " on DB]");
+				if (!rec.getRecordSync()) {
+					new Synchronization("DELETE_RECORD", rec, null);
+				}
+			}
 			System.out.println("[ " + JsonManager.deleteRecord(rec) + " on Local]");
 
 			try {
@@ -639,44 +687,8 @@ public class ConsoleUI {
 		}
 	}
 
-	public static String sync(Record record) {
-		ArrayList<Synchronization> allOps = JsonManager.getOps();
-
-		if (allOps == null) {
-			return "[ Failed Synchronization ]";
-		}
-
-		if (!record.getRecordSync()) {
-			int oldRecordId = record.getRecordId();
-			if (DBManager.createRecord(record)) {
-				ArrayList<Record> allRecords = JsonManager.getRecords();
-				for (Record rec : allRecords) {
-					if (rec.getRecordId() == oldRecordId) {
-						JsonManager.deleteRecord(rec);
-						break;
-					}
-				}
-
-				JsonManager.createRecord(record);
-				Record recordInstance = new Record();
-				recordInstance.setRecordId(oldRecordId);
-				ArrayList<Expense> allExpenses = JsonManager.getExpenses(recordInstance);
-
-				for (Expense exp : allExpenses) {
-					exp.setExpenseRecordId(record.getRecordId());
-					JsonManager.updateExpense(exp);
-				}
-			} else {
-				return "Failed Sync Record : " + record.getRecordName();
-			}
-
-		} else {
-			
-		}
-
-
-
-		return "";
+	public static void sync(Record record) {
+		
 	}
 	
 	
