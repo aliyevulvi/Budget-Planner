@@ -263,8 +263,12 @@ public class ConsoleUI {
 				new Synchronization("CREATE_RECORD", rec, null);
 			}
 
-			System.out.printf("[ %-20s ]\n", JsonManager.createRecord(rec) + " on Local");
-
+            String response = JsonManager.createRecord(rec);
+			System.out.printf("[ %-20s ]\n", response + " on Local");
+			if (response.contains("Failed")) {
+			         JsonManager.deleteLastOp();
+			}
+            
 			
 
 

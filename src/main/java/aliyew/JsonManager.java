@@ -232,7 +232,8 @@ public class JsonManager {
 
         } catch (IOException e) {
             logger.severe(e.getMessage());
-            return null;
+            
+            return new ArrayList<Synchronization>();
         }
         
     }
@@ -253,6 +254,31 @@ public class JsonManager {
             logger.severe(e.getMessage());
         }
 
+    }
+    
+    public static void setAllOps(ArrayList<Synchronization> arr) {
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, arr);
+        } catch (IOException e) {
+            logger.severe(e.getMessage());
+        }
+    }
+    
+    public static void deleteLastOp() {
+        ArrayList<Synchronization> allOps = getOps();
+        
+        if (allOps == null || allOps.isEmpty()) {
+            return;
+        }
+        
+        allOps.remove(allOps.size()-1);
+        
+        try {
+            
+            mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
+        } catch (IOException e) {
+            logger.severe(e.getMessage());
+        }
     }
 
 }
