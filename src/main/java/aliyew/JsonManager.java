@@ -15,7 +15,7 @@ public class JsonManager {
     private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final File RECORD_FILE = new File("src/main/resources/jsons/records.json");
     private static final File EXPENSE_FILE = new File("src/main/resources/jsons/expenses.json");
-    private static final File FAILES_FILE = new File("src/main/resources/jsons/failedOps.json");
+    private static final File SYNC_FILE = new File("src/main/resources/jsons/syncQueue.json");
 
     public static ArrayList<Record> getRecords() {
         ArrayList<Record> allRecords = new ArrayList<>();
@@ -158,6 +158,7 @@ public class JsonManager {
         for (int i = 0; i < allExpenses.size(); i++) {
             if (allExpenses.get(i).getExpenseId() == expense.getExpenseId()) {
                 allExpenses.set(i, expense);
+                break;
             }
         }
 
@@ -232,35 +233,34 @@ public class JsonManager {
         return minId;
     }
 
-    public static ArrayList<FailedSync> getFailedOps() {
-        ArrayList<FailedSync> allFailedOps = new ArrayList<>();
-
+    public static ArrayList<Synchronization> getOps() {
         try {
-            if (!FAILES_FILE.exists()) {
-                FAILES_FILE.createNewFile();
-            }
+            return mapper.readValue(SYNC_FILE, new TypeReference<ArrayList<Synchronization>>(){});
 
-            allFailedOps = mapper.readValue(FAILES_FILE, new TypeReference<ArrayList<FailedSync>>() {});
-            return allFailedOps;
-        } catch (Exception e) {
+
+        } catch (IOException e) {
             logger.severe(e.getMessage());
             return null;
         }
-
-
+        
     }
 
-    public static void createFailedOp(FailedSync failedOp) {
-        ArrayList<FailedSync> allFailedOps = getFailedOps();
-        allFailedOps.add(failedOp);
+    public static void addOp(Synchronization op) {
+        ArrayList<Synchronization> allOps = getOps();
+
+        if (allOps == null) {
+            return;
+        }
+
+        allOps.add(op);
 
         try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(FAILES_FILE, allFailedOps);
-
-        } catch (Exception e) {
+            
+            mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
+        } catch (IOException e) {
             logger.severe(e.getMessage());
         }
+
     }
-    
 
 }

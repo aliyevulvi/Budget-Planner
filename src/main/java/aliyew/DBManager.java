@@ -78,7 +78,7 @@ public class DBManager {
 
 	}
 
-	public static String createRecord(Record newRecord) {
+	public static boolean createRecord(Record newRecord) {
 
 		try {
 			try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
@@ -101,15 +101,11 @@ public class DBManager {
 
 			}
 
-			return "Create Record Successfully";
+			return true;
 
 		} catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
-			if (e.getSQLState().equals("23505")) {
-				return "Create Record Failed (" + newRecord.getRecordName() + ") already created!";
-			} else {
-				return "Create Record Failed";
-			}
+			return false;
 		}
 	}
 
@@ -121,12 +117,15 @@ public class DBManager {
 			pstmt.setDouble(2, income);
 			pstmt.setDouble(3, saving);
 			pstmt.setInt(4, rec.getRecordId());
-			pstmt.executeUpdate();
+			int affectedRows = pstmt.executeUpdate();
 
 			conn.close();
 
-			rec.setRecordSync(true);
-			return "Update Record Successfully";
+			if (affectedRows == 1) {
+				rec.setRecordSync(true);
+				return "Update Record Successfully";
+			}
+			return "Update Record Failed";
 
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
@@ -137,16 +136,18 @@ public class DBManager {
 
 	public static String deleteRecord(Record rec) {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			deleteExpense(rec);
 			String sqlQuery = "DELETE FROM tb_records WHERE record_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
 			pstmt.setInt(1, rec.getRecordId());
-			pstmt.executeUpdate();
+			int affectedRows = pstmt.executeUpdate();
 
 
 			conn.close();
-
-			return "Delete Record Successfully";
+			if (affectedRows == 1) {
+				rec.setRecordSync(true);
+				return "Delete Record Successfully";
+			}
+			return "Delete Record Failed";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
 			return "Delete Record Failed";
@@ -214,12 +215,14 @@ public class DBManager {
 			pstmt.setString(2, expense.getExpenseCat());
 			pstmt.setDouble(3, expense.getExpenseAmt());
 			pstmt.setInt(4, expense.getExpenseId());
-			pstmt.executeUpdate();
+			int affectedRows = pstmt.executeUpdate();
 			conn.close();
 
-			expense.setExpenseSync(true);
-
-			return "Update Expense Successfully";
+			if (affectedRows == 1) {
+				expense.setExpenseSync(true);
+				return "Update Expense Successfully";
+			}
+			return "Update Expense Failed";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
 			return "Update Expense Failed";
@@ -232,11 +235,14 @@ public class DBManager {
 			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
 			pstmt.setInt(1, expense.getExpenseId());
-			pstmt.executeUpdate();
+			int affectedRows = pstmt.executeUpdate();
 			conn.close();
 
-			expense.setExpenseSync(true);
-			return "Delete Expense Successfully";
+			if (affectedRows == 1) {
+				expense.setExpenseSync(true);
+				return "Delete Expense Successfully";
+			}
+			return "Delete Expense Failed";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
 			return "Delete Expense Failed";
