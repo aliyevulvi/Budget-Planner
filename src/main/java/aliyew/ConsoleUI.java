@@ -26,6 +26,7 @@ public class ConsoleUI {
 			System.out.printf("[ Budget Planner Menu ]\n");
 			System.out.printf("[ %-16s (1)]\n", "Create Record");
 			System.out.printf("[ %-16s (2)]\n", "Show Records");
+			System.out.printf("[ %-16s (3)]\n", "Synchronization");
 			System.out.printf("[ %-16s (0)]\n", "Quit");
 			System.out.printf("[ %-15s ]\n", "-------------------");
 			System.out.print("\n[ Select ] : ");
@@ -39,6 +40,9 @@ public class ConsoleUI {
 				break;
 			case "2":
 				showRecords();
+				break;
+			case "3":
+				sync();
 				break;
 			case "0":
 				System.out.println("[ BudgetPlanner Closed ]");
@@ -127,7 +131,6 @@ public class ConsoleUI {
 				System.out.printf("[ %-17s (4)]\n", "Update Record");
 				System.out.printf("[ %-17s (5)]\n", "Show Report");
 				System.out.printf("[ %-17s (6)]\n", "Delete Record");
-				System.out.printf("[ %-17s (7)]\n", "Synchronization");
 				System.out.printf("[ %-17s (0)]\n", "Quit");
 				System.out.printf("[ %-20s ]\n", "--------------------");
 				System.out.print("[ Select ] : ");
@@ -153,9 +156,6 @@ public class ConsoleUI {
 				case "6":
 					deleteRecord(rec);
 					return;
-				case "7":
-					sync(rec);
-					break;
 				case "0":
 					System.out.println("Quit");
 					return;
@@ -691,7 +691,32 @@ public class ConsoleUI {
 		}
 	}
 
-	public static void sync(Record record) {
+	public static void sync() {
+
+		while (true) {
+			ArrayList<Synchronization> allOps = JsonManager.getOps();
+			System.out.println("");
+
+			if (allOps.isEmpty()) {
+				System.out.println("[ All Synced ]");
+				break;
+			}
+
+			if (allOps.get(0).retryOp()) {
+				allOps = JsonManager.getOps();
+				System.out.println("[ Synchronization Successed ]");
+				allOps.remove(0);
+				JsonManager.setAllOps(allOps);
+			} else {
+				System.out.println("[ Synchronization Failed ]");
+				break;
+			}
+		}
+
+		try {
+			Thread.sleep(5000);
+		} catch (Exception e) {
+		}
 		
 	}
 	

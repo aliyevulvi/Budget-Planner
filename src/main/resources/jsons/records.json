@@ -5,11 +5,4 @@
   "recordIncome" : 28000.0,
   "recordSaving" : 649.23,
   "recordSync" : true
-}, {
-  "recordId" : -1,
-  "recordName" : "test1",
-  "creationDate" : "2026-09-03 15:40:50.2199148",
-  "recordIncome" : 1.0,
-  "recordSaving" : 1.0,
-  "recordSync" : false
 } ]

@@ -75,7 +75,7 @@ public class Synchronization {
 
 			for (Expense exp : allExpenses) {
 				exp.setExpenseRecordId(record.getRecordId());
-				JsonManager.updateExpense(exp);
+				JsonManager.createExpense(exp);
 			}
 
 			ArrayList<Synchronization> allOps = JsonManager.getOps();
@@ -83,6 +83,10 @@ public class Synchronization {
 			for (Synchronization sync : allOps) {
 				if (sync.getRecord() != null && sync.getRecord().getRecordId() == oldRecord.getRecordId()) {
 					sync.getRecord().setRecordId(record.getRecordId());
+				}
+
+				if (sync.getExpense() != null && sync.getExpense().getExpenseRecordId() == oldRecord.getRecordId()) {
+					sync.getExpense().setExpenseRecordId(record.getRecordId());
 				}
 			}
 

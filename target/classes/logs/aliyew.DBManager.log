@@ -68,3 +68,30 @@ Sep 03, 2026 3:40:41 PM aliyew.DBManager createExpense
 SEVERE: The connection attempt failed. | 08001
 Sep 03, 2026 3:40:50 PM aliyew.DBManager createRecord
 SEVERE: The connection attempt failed. | 08001
+Sep 04, 2026 2:53:30 AM aliyew.DBManager createExpense
+SEVERE: ERROR: insert or update on table "tb_expenses" violates foreign key constraint "tb_expenses_expense_record_id_fkey"
+  Detail: Key (expense_record_id)=(-1) is not present in table "tb_records". | 23503
+Sep 04, 2026 3:06:45 AM aliyew.DBManager main
+SEVERE: The connection attempt failed.
+Sep 04, 2026 3:06:56 AM aliyew.DBManager createRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 04, 2026 3:07:30 AM aliyew.DBManager createRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 04, 2026 3:08:48 AM aliyew.DBManager createExpense
+SEVERE: ERROR: insert or update on table "tb_expenses" violates foreign key constraint "tb_expenses_expense_record_id_fkey"
+  Detail: Key (expense_record_id)=(-1) is not present in table "tb_records". | 23503
+Sep 04, 2026 3:14:12 AM aliyew.DBManager main
+SEVERE: The connection attempt failed.
+Sep 04, 2026 3:14:20 AM aliyew.DBManager createRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 04, 2026 3:15:09 AM aliyew.DBManager createRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 04, 2026 3:15:36 AM aliyew.DBManager createExpense
+SEVERE: ERROR: insert or update on table "tb_expenses" violates foreign key constraint "tb_expenses_expense_record_id_fkey"
+  Detail: Key (expense_record_id)=(-1) is not present in table "tb_records". | 23503
+Sep 04, 2026 3:21:41 AM aliyew.DBManager main
+SEVERE: The connection attempt failed.
+Sep 04, 2026 3:22:28 AM aliyew.DBManager createRecord
+SEVERE: The connection attempt failed. | 08001
+Sep 04, 2026 3:23:10 AM aliyew.DBManager createRecord
+SEVERE: The connection attempt failed. | 08001

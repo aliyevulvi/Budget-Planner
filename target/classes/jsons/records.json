@@ -6,10 +6,31 @@
   "recordSaving" : 649.23,
   "recordSync" : true
 }, {
-  "recordId" : -1,
+  "recordId" : 37,
   "recordName" : "test1",
   "creationDate" : "2026-09-03 15:40:50.2199148",
   "recordIncome" : 1.0,
   "recordSaving" : 1.0,
-  "recordSync" : false
+  "recordSync" : true
+}, {
+  "recordId" : 38,
+  "recordName" : "test2",
+  "creationDate" : "2026-09-04 03:06:56.5232351",
+  "recordIncome" : 1.0,
+  "recordSaving" : 1.0,
+  "recordSync" : true
+}, {
+  "recordId" : 39,
+  "recordName" : "test3",
+  "creationDate" : "2026-09-04 03:14:20.2184091",
+  "recordIncome" : 1.0,
+  "recordSaving" : 1.0,
+  "recordSync" : true
+}, {
+  "recordId" : 40,
+  "recordName" : "test4",
+  "creationDate" : "2026-09-04 03:22:28.4578088",
+  "recordIncome" : 1.0,
+  "recordSaving" : 1.0,
+  "recordSync" : true
 } ]

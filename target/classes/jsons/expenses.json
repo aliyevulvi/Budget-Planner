@@ -48,38 +48,31 @@
   "expenseAmt" : -120.0,
   "expenseSync" : true
 }, {
-  "expenseId" : -1,
+  "expenseId" : 125,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 9, 2 ],
   "expenseCat" : "others",
   "expenseAmt" : -1.0,
-  "expenseSync" : false
+  "expenseSync" : true
 }, {
-  "expenseId" : -2,
+  "expenseId" : 126,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 9, 3 ],
   "expenseCat" : "others",
   "expenseAmt" : -1.0,
-  "expenseSync" : false
+  "expenseSync" : true
 }, {
-  "expenseId" : -3,
-  "expenseRecordId" : -1,
+  "expenseId" : 130,
+  "expenseRecordId" : 40,
   "expenseDate" : [ 2026, 1, 1 ],
   "expenseCat" : "others",
   "expenseAmt" : -1.0,
-  "expenseSync" : false
+  "expenseSync" : true
 }, {
-  "expenseId" : -4,
-  "expenseRecordId" : -1,
+  "expenseId" : 131,
+  "expenseRecordId" : 40,
   "expenseDate" : [ 2026, 1, 2 ],
   "expenseCat" : "others",
   "expenseAmt" : -1.0,
-  "expenseSync" : false
-}, {
-  "expenseId" : -5,
-  "expenseRecordId" : -1,
-  "expenseDate" : [ 2026, 1, 3 ],
-  "expenseCat" : "others",
-  "expenseAmt" : -1.0,
-  "expenseSync" : false
+  "expenseSync" : true
 } ]
