@@ -1,62 +1,63 @@
 package aliyew;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 public class UIManager {
+        private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        private static final int dynamicWidth = (int) (screenSize.width * 0.60);
+        private static final int dynamicHeight = (int) (screenSize.height * 0.70);
     
     public static void main(String[] args) {
         JFrame myFrame = getFrame();
 
-
-        
-
         // PANELS
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
-        JPanel rightPanel = new JPanel(new FlowLayout());
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        JPanel rightPanel = new JPanel(new BorderLayout());
 
         leftPanelConfigurationMethod(leftPanel);
         rightPanelConfigurationMethod(rightPanel);
 
 
-        myFrame.add(leftPanel);
-        myFrame.add(rightPanel); 
+        myFrame.add(leftPanel, java.awt.BorderLayout.WEST);
+        myFrame.add(rightPanel, java.awt.BorderLayout.CENTER); 
         myFrame.setVisible(true);
 
     }
 
     public static JFrame getFrame() {
         JFrame myFrame = new JFrame("Budget Planner");
-        myFrame.setLayout(new BoxLayout(myFrame.getContentPane(), BoxLayout.X_AXIS));     
+        myFrame.setLayout(new BorderLayout());
 
-        myFrame.setSize(1000, 600);
+        myFrame.setSize(dynamicWidth, dynamicHeight);
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        myFrame.setLocationRelativeTo(null);
+        myFrame.setResizable(false);
 
         return myFrame;
     }
 
     public static void leftPanelConfigurationMethod(JPanel leftPanel) {
         leftPanel.setBackground(Color.decode("#598392"));
-        leftPanel.setPreferredSize(new Dimension(200, 600));
-
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setPreferredSize(new Dimension( (int) (dynamicWidth*0.20), dynamicHeight));
         JButton createRecordButton = new JButton("Create Record");
-        JButton showRecordsButton = new JButton("Show Records");
+        JButton synchronizationButton = new JButton("Synchronization");
 
-        leftPanelButtonConfigruations(createRecordButton);
-        leftPanelButtonConfigruations(showRecordsButton);
+        leftPanelButtonConfigruations(leftPanel, createRecordButton);
+        leftPanelButtonConfigruations(leftPanel, synchronizationButton);
         
 
         createRecordButton.addActionListener(e -> {
@@ -64,16 +65,18 @@ public class UIManager {
         });
 
         leftPanel.add(createRecordButton);
-        leftPanel.add(showRecordsButton);
+        leftPanel.add(synchronizationButton);
 
     }
 
-    public static void leftPanelButtonConfigruations(JButton btn) {
+    public static void leftPanelButtonConfigruations(JPanel jPanel, JButton btn) {
         btn.setBackground(Color.decode("#124559"));
-        btn.setPreferredSize(new Dimension(200, 75));
+        btn.setAlignmentX(JButton.CENTER_ALIGNMENT);
         btn.setBorderPainted(false);
         btn.setFocusable(false);
         btn.setForeground(Color.decode("#dbd8d8"));
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int) (screenSize.height * 0.10)));
+        btn.setPreferredSize(new Dimension(0, (int) (jPanel.getHeight()*0.1)));
 
         btn.addMouseListener(new MouseAdapter() {
             @Override
@@ -89,63 +92,27 @@ public class UIManager {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                btn.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.WHITE));
+                // btn.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.WHITE));
             }
             
         });
     }
 
     public static void rightPanelConfigurationMethod(JPanel rightPanel) {
-        rightPanel.setBackground(Color.decode("#aec3b0"));
-        rightPanel.setPreferredSize(new Dimension(800, 600));
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBackground(Color.decode("#aec3b0"));        
+        // rightPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JPanel panel21 = new JPanel();
-        panel21.setPreferredSize(new Dimension(800, 550));
-        panel21.setBackground(Color.decode("#eff6e0"));
-        JPanel panel22 = new JPanel();
-        panel22.setPreferredSize(new Dimension(800, 50));
-        panel22.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-
-        Thread networkConnThread = new Thread(() -> {
-            JLabel networkLabel = new JLabel();
-            panel22.add(networkLabel);
-
-            while (true) {
-
-            boolean isConnected = DBManager.connectDB();
-            Color statusColor = isConnected ? Color.GREEN : Color.RED;
-            String statusText = isConnected ? "ONLINE" : "OFFLINE";
-
-            for (int i = 3; i > 0; i--) {
-                String currentText = "Status : " + statusText + " (" + i + ")";
-
-                SwingUtilities.invokeLater(() -> {
-                    networkLabel.setText(currentText);
-                    networkLabel.setForeground(statusColor);
-                });
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-
-            }
-
-            
-        });
-
-        networkConnThread.start();
-
-
-        
+        panel21.setLayout(new BoxLayout(panel21, BoxLayout.Y_AXIS));
+        panel21.setBackground(Color.decode("#dee2e6"));
+        JTable table = new JTable(5, 4);
+        // table.set
+        panel21.add(table);
+        rightPanel.add(panel21, BorderLayout.CENTER);
+    
 
         
         rightPanel.add(panel21);
-        rightPanel.add(panel22);
         
 
 

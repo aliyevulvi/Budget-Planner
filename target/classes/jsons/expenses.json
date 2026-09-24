@@ -47,32 +47,4 @@
   "expenseCat" : "air",
   "expenseAmt" : -120.0,
   "expenseSync" : true
-}, {
-  "expenseId" : 125,
-  "expenseRecordId" : 36,
-  "expenseDate" : [ 2026, 9, 2 ],
-  "expenseCat" : "others",
-  "expenseAmt" : -1.0,
-  "expenseSync" : true
-}, {
-  "expenseId" : 126,
-  "expenseRecordId" : 36,
-  "expenseDate" : [ 2026, 9, 3 ],
-  "expenseCat" : "others",
-  "expenseAmt" : -1.0,
-  "expenseSync" : true
-}, {
-  "expenseId" : 130,
-  "expenseRecordId" : 40,
-  "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "others",
-  "expenseAmt" : -1.0,
-  "expenseSync" : true
-}, {
-  "expenseId" : 131,
-  "expenseRecordId" : 40,
-  "expenseDate" : [ 2026, 1, 2 ],
-  "expenseCat" : "others",
-  "expenseAmt" : -1.0,
-  "expenseSync" : true
 } ]
