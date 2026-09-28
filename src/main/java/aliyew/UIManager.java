@@ -1,25 +1,25 @@
 package aliyew;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.CardLayout;
-import java.awt.GridBagLayout;
-import java.awt.*;
 
-import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JList;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class UIManager {
         private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -123,8 +123,8 @@ public class UIManager {
     }
 
     public static void rightPanelConfigurationMethod(JPanel rightPanel) {
-        rightPanel.setBackground(Color.decode("#aec3b0"));        
-        // rightPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        rightPanel.setBackground(Color.decode("#f1f1f1"));        
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 
         rightPanel.setLayout(new CardLayout());
@@ -153,37 +153,55 @@ public class UIManager {
     }
     
     private static void recordsPanelConfig(JPanel panel) {
+        panel.setBackground(Color.decode("#e3e3e3"));
+
         String[] records = {"t1","t2","t3","t4"};
-        JList recordList = new JList(records);
-        recordList.setFixedCellWidth((int) (dynamicWidth*0.8));
-        recordList.setFixedCellHeight((int) (dynamicHeight*0.1));
+        //JList recordList = new JList(records);
+        //recordList.setFixedCellWidth((int) (dynamicWidth*0.8));
+        //recordList.setFixedCellHeight((int) (dynamicHeight*0.1));
         
-        panel.add(recordList, BorderLayout.CENTER);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         
+        for (String str : records) {
+            JPanel p = new JPanel(new BorderLayout());
+            JLabel icon = new JLabel("Icon");
+            JLabel recordName = new JLabel(str);
+            recordName.setHorizontalAlignment(SwingConstants.CENTER);
+            JButton deleteButton = new JButton("Delete");
+            
+            p.setMaximumSize(new Dimension((int) (dynamicWidth*0.8), (int) (dynamicHeight*0.1)));
+            p.setBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.decode("#000000")));
+            p.setBackground(Color.LIGHT_GRAY);
+            p.add(icon, BorderLayout.WEST);
+            p.add(recordName, BorderLayout.CENTER);
+            p.add(deleteButton, BorderLayout.EAST);
+            panel.add(p);
+        }
+        
+        panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.decode("#cccccc")));
+        
+
     }
     
     private static void createRecordPanelConfig(JPanel panel) {
         int panelWidth = (int) (dynamicWidth * 0.4);
         int panelHeight = (int) (dynamicHeight * 0.1);
-        
+        panel.setBackground(Color.decode("#e3e3e3"));
         GridBagConstraints gbc = new GridBagConstraints();
         
-        gbc.insets = new Insets((int) (panelHeight*0.9), (int) (panelWidth*0.1), (int) (panelHeight*0.1), (int) (panelWidth*0.1));
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.insets = new Insets((int) (panelHeight*0.1), (int) (panelWidth*0.1), (int) (panelHeight*0.15), (int) (panelWidth*0.1));
+        gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         gbc.gridx = 0;
         gbc.gridy = 0;
-        
-        panel.add(new JLabel("Record Name: "), gbc);
+        panel.add(new JLabel("Record Name:"), gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 0;
         JTextField recordNameField = new JTextField(10);
+        recordNameField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
         panel.add(recordNameField, gbc);
-        
-        gbc.insets = new Insets((int) (panelHeight*0.1), (int) (panelWidth*0.1), (int) (panelHeight*0.1), (int) (panelWidth*0.1));
-        
         
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -192,15 +210,17 @@ public class UIManager {
         gbc.gridx = 1;
         gbc.gridy = 1;
         JTextField recordIncomeField = new JTextField(10);
+        recordIncomeField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
         panel.add(recordIncomeField, gbc);
         
         gbc.gridx = 0;
         gbc.gridy = 2;
-        panel.add(new JLabel("Record Saving"), gbc);
+        panel.add(new JLabel("Record Saving:"), gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 2;
         JTextField recordSavingField = new JTextField(10);
+        recordSavingField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
         panel.add(recordSavingField, gbc);
         
         gbc.gridx = 0;
@@ -216,20 +236,16 @@ public class UIManager {
         gbc.gridx = 1;
         gbc.gridy = 3;
         JButton createButton = new JButton("Create");
+        createButton.setBackground(Color.decode("#0066FF"));
         panel.add(createButton, gbc);
         
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.weighty = 1.0;
-        panel.add(new JLabel(""), gbc);
-        
-        panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.decode("#000000")));
+        panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.decode("#cccccc")));
         
         
     }
     
     private static void settingsPanelConfig(JPanel panel) {
+        panel.setBackground(Color.decode("#e3e3e3"));
         
     }
 
@@ -254,5 +270,4 @@ public class UIManager {
         
         
     }
-}
 }
