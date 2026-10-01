@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,6 +21,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.*;
+
+import java.util.ArrayList;
 
 public class UIManager {
         private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -29,7 +33,12 @@ public class UIManager {
         private static final String RECORDS_PANEL = "RECORDS_PANEL";
         private static final String CREATE_RECORD_PANEL = "CREATE_RECORD_PANEL";
         private static final String SETTINGS_PANEL = "SETTINGS_PANEL";
+        private static final String REVIEW_PANEL = "REVIEW_PANEL";
         private static JPanel rightPanel;
+        
+        private static JPanel reviewPanel = new JPanel();
+        private static Record record = new Record();
+        private static ArrayList<Expense> allExpenses = new ArrayList<>();
     
     public static void main(String[] args) {
         JFrame myFrame = getFrame();
@@ -124,7 +133,7 @@ public class UIManager {
 
     public static void rightPanelConfigurationMethod(JPanel rightPanel) {
         rightPanel.setBackground(Color.decode("#f1f1f1"));        
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        rightPanel.setBorder(BorderFactory.createEmptyBorder((int) (dynamicHeight*0.05),(int) (dynamicWidth*0.05),(int) (dynamicHeight*0.05),(int) (dynamicWidth*0.05)));
 
 
         rightPanel.setLayout(new CardLayout());
@@ -143,6 +152,7 @@ public class UIManager {
         rightPanel.add(recordsPanel, RECORDS_PANEL);
         rightPanel.add(createRecordPanel, CREATE_RECORD_PANEL);
         rightPanel.add(settingsPanel, SETTINGS_PANEL);
+        rightPanel.add(reviewPanel, REVIEW_PANEL);
         
 
 
@@ -154,34 +164,82 @@ public class UIManager {
     
     private static void recordsPanelConfig(JPanel panel) {
         panel.setBackground(Color.decode("#e3e3e3"));
-
-        String[] records = {"t1","t2","t3","t4"};
-        //JList recordList = new JList(records);
-        //recordList.setFixedCellWidth((int) (dynamicWidth*0.8));
-        //recordList.setFixedCellHeight((int) (dynamicHeight*0.1));
         
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        ArrayList<Record> allRecords = JsonManager.getRecords();
         
-        for (String str : records) {
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBackground(Color.decode("#e3e3e3"));
+        
+        for (Record rec : allRecords) {
             JPanel p = new JPanel(new BorderLayout());
-            JLabel icon = new JLabel("Icon");
-            JLabel recordName = new JLabel(str);
+            JLabel icon = new JLabel(javax.swing.UIManager.getIcon("FileView.directoryIcon"));
+            icon.setBorder(BorderFactory.createEmptyBorder(0,(int) (dynamicWidth*0.1), 0, 0));
+            JLabel recordName = new JLabel(rec.getRecordName());
             recordName.setHorizontalAlignment(SwingConstants.CENTER);
-            JButton deleteButton = new JButton("Delete");
+            JButton deleteButton = new JButton("X");
+            deleteButton.setForeground(Color.WHITE);
+            deleteButton.setBackground(Color.decode("#ed574c"));
+            JButton reviewButton = new JButton(">");
+            reviewButton.setForeground(Color.WHITE);
+            reviewButton.setBackground(Color.decode("#4487eb"));
+            reviewButton.setName(rec.getRecordName());
             
-            p.setMaximumSize(new Dimension((int) (dynamicWidth*0.8), (int) (dynamicHeight*0.1)));
+            reviewButton.addActionListener( e -> {
+                for (Record rec2 : allRecords) {
+                    if (reviewButton.getName().equals(rec2.getRecordName())) {
+                        record = rec2;
+                    }
+                }
+                
+                allExpenses = JsonManager.getExpenses(record);
+                
+                reviewPanelConfig();
+                
+                ((CardLayout) (rightPanel.getLayout())).show(rightPanel, REVIEW_PANEL);
+            });
+            
+            JPanel buttonPanel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(0, 0, 0, 10);
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            
+            buttonPanel.add(deleteButton, gbc);
+            
+            gbc.gridx = 1;
+            buttonPanel.add(reviewButton, gbc);
+            
+            //buttonPanel.setMaximumSize(new Dimension((int) (dynamicWidth*0.05), (int) (dynamicHeight*0.1)));
+            buttonPanel.setBackground(Color.LIGHT_GRAY);
+            
+        
+            deleteButton.setMaximumSize(new Dimension((int) (dynamicWidth*0.8), (int) (dynamicHeight*0.05)));
+            reviewButton.setMaximumSize(new Dimension((int) (dynamicWidth*0.8), (int) (dynamicHeight*0.05)));
+           
+            p.setPreferredSize(new Dimension((int) (dynamicWidth*0.7), (int) (dynamicHeight*0.1)));
+            p.setMaximumSize(new Dimension((int) (dynamicWidth*0.7), (int) (dynamicHeight*0.10)));
+            p.setMinimumSize(new Dimension((int) (dynamicWidth*0.7), (int) (dynamicHeight*0.1)));
+            
             p.setBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.decode("#000000")));
             p.setBackground(Color.LIGHT_GRAY);
             p.add(icon, BorderLayout.WEST);
             p.add(recordName, BorderLayout.CENTER);
-            p.add(deleteButton, BorderLayout.EAST);
-            panel.add(p);
+            p.add(buttonPanel, BorderLayout.EAST);
+            
+            contentPanel.add(p);
+
         }
         
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+        panel.add(scrollPane , BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.decode("#cccccc")));
         
 
     }
+    
     
     private static void createRecordPanelConfig(JPanel panel) {
         int panelWidth = (int) (dynamicWidth * 0.4);
@@ -226,6 +284,8 @@ public class UIManager {
         gbc.gridx = 0;
         gbc.gridy = 3;
         JButton clearButton = new JButton("Clear");
+        clearButton.setForeground(Color.WHITE);
+        clearButton.setBackground(Color.decode("#ed574c"));
         clearButton.addActionListener(e -> {
             recordNameField.setText("");
             recordIncomeField.setText("");
@@ -236,7 +296,8 @@ public class UIManager {
         gbc.gridx = 1;
         gbc.gridy = 3;
         JButton createButton = new JButton("Create");
-        createButton.setBackground(Color.decode("#0066FF"));
+        createButton.setForeground(Color.WHITE);
+        createButton.setBackground(Color.decode("#4487eb"));
         panel.add(createButton, gbc);
         
         panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.decode("#cccccc")));
@@ -249,25 +310,22 @@ public class UIManager {
         
     }
 
-    public static void createRecordFrame() {
-        JFrame newRecordFrame = new JFrame();
-        newRecordFrame.setSize(420, 420);
-
-        JPanel newRecordPanel = new JPanel();
-
-        JTextField recordNameTextField = new JTextField("Record Name");
-        JTextField recordIncomeTextField = new JTextField("Record Income");
-        JTextField recordSavingTextField = new JTextField("Record Saving");
-
-        newRecordPanel.add(recordNameTextField);
-        newRecordPanel.add(recordIncomeTextField);
-        newRecordPanel.add(recordSavingTextField);
-
-        newRecordFrame.add(newRecordPanel);
-        newRecordFrame.setTitle("Create Record");
-        newRecordFrame.setVisible(true);
-
+    private static void reviewPanelConfig() {
+        reviewPanel.setLayout(new BorderLayout());
         
+        JLabel recordName = new JLabel("Record Name : "+record.getRecordName());
+        JLabel recordCreationDate = new JLabel("Record Date : "+record.getCreationDate());
+        JLabel recordIncome = new JLabel("Record Income : "+record.getRecordIncome());
+        JLabel recordSaving =new JLabel("Record Saving : "+record.getRecordSaving());
+        
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.add(recordName);
+        infoPanel.add(recordCreationDate);
+        infoPanel.add(recordIncome);
+        infoPanel.add(recordSaving);
+        
+        reviewPanel.add(infoPanel, BorderLayout.NORTH);
         
     }
 }
