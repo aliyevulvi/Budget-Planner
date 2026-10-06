@@ -11,274 +11,315 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 
 public class JsonManager {
-    private static final Logger logger = LogManager.getLogger(JsonManager.class.getName());
-    private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-    private static final File RECORD_FILE = new File("src/main/resources/jsons/records.json");
-    private static final File EXPENSE_FILE = new File("src/main/resources/jsons/expenses.json");
-    private static final File SYNC_FILE = new File("src/main/resources/jsons/syncQueue.json");
+	private static final Logger logger = LogManager.getLogger(JsonManager.class.getName());
+	private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+	private static final File RECORD_FILE = new File("src/main/resources/jsons/records.json");
+	private static final File EXPENSE_FILE = new File("src/main/resources/jsons/expenses.json");
+	private static final File SYNC_FILE = new File("src/main/resources/jsons/syncQueue.json");
+	private static final File CAT_FILE = new File("src/main/resources/jsons/category.json");
 
-    public static ArrayList<Record> getRecords() {
-        ArrayList<Record> allRecords = new ArrayList<>();
-        try {
-            return mapper.readValue(RECORD_FILE, new TypeReference<ArrayList<Record>>() {});
-
-
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            allRecords.clear();
-            return allRecords;
-        }
-    }
-
-    public static String createRecord(Record record) {
-        ArrayList<Record> allRecords = getRecords();
-        
-        for (Record rec : allRecords) {
-            if (rec.getRecordName().equals(record.getRecordName())) {
-                return "Create Record Failed ("+record.getRecordName() + ") Already Created";
-            }
-        }
-
-        allRecords.add(record);
-
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
-            return "Create Record Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Create Record Failed";
-        }
-    }
-
-    public static String updateRecord(Record record) {
-        ArrayList<Record> allRecords = getRecords();
-
-        for (int i = 0; i < allRecords.size(); i++) {
-            if (allRecords.get(i).getRecordId() == record.getRecordId()) {
-                allRecords.set(i, record);
-            }
-        }
-
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
-            return "Update Record Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Update Record Failed";
-        }
-    }
-
-    public static String deleteRecord(Record record) {
-        ArrayList<Record> allRecords = getRecords();
-
-        for (Record rec : allRecords) {
-            if (rec.getRecordName().equals(record.getRecordName())) {
-                allRecords.remove(rec);
-                break;
-            }
-        }
-
-        deleteExpense(record);
-
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
-            return "Delete Record Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Delete Record Failed";
-        }
-    }
-
-    public static ArrayList<Expense> getExpenses() {
-        ArrayList<Expense> allExpenses = new ArrayList<>();
-        try {
-            return mapper.readValue(EXPENSE_FILE, new TypeReference<ArrayList<Expense>>() {});
+	public static ArrayList<Record> getRecords() {
+		ArrayList<Record> allRecords = new ArrayList<>();
+		try {
+			return mapper.readValue(RECORD_FILE, new TypeReference<ArrayList<Record>>() {});
 
 
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            allExpenses.clear();
-            return allExpenses;
-        }
-    }
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			allRecords.clear();
+			return allRecords;
+		}
+	}
 
-    public static ArrayList<Expense> getExpenses(Record record) {
-        ArrayList<Expense> allExpenses = new ArrayList<>();
-        try {
-            allExpenses = mapper.readValue(EXPENSE_FILE, new TypeReference<ArrayList<Expense>>() {});
-            ArrayList<Expense> recordExpenses = new ArrayList<>();
+	public static String createRecord(Record record) {
+		ArrayList<Record> allRecords = getRecords();
 
-            for (Expense exp : allExpenses) {
-                if (exp.getExpenseRecordId() == record.getRecordId()) {
-                    recordExpenses.add(exp);
-                }
-            }
+		for (Record rec : allRecords) {
+			if (rec.getRecordName().equals(record.getRecordName())) {
+				return "Create Record Failed (" + record.getRecordName() + ") Already Created";
+			}
+		}
 
-            return recordExpenses;
-            
+		allRecords.add(record);
 
+		try {
 
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            allExpenses.clear();
-            return allExpenses;
-        }
-    }
+			mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
+			return "Create Record Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Create Record Failed";
+		}
+	}
 
-    public static String createExpense(Expense expense) {
-        ArrayList<Expense> allExpenses = getExpenses();
+	public static String updateRecord(Record record) {
+		ArrayList<Record> allRecords = getRecords();
 
-        allExpenses.add(expense);
+		for (int i = 0; i < allRecords.size(); i++) {
+			if (allRecords.get(i).getRecordId() == record.getRecordId()) {
+				allRecords.set(i, record);
+			}
+		}
 
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
-            return "Create Expense Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Create Expense Failed";
-        }
-    }
+		try {
 
-    public static String updateExpense(Expense expense) {
-        ArrayList<Expense> allExpenses = getExpenses();
-        
+			mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
+			return "Update Record Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Update Record Failed";
+		}
+	}
 
-        for (int i = 0; i < allExpenses.size(); i++) {
-            if (allExpenses.get(i).getExpenseId() == expense.getExpenseId()) {
-                allExpenses.set(i, expense);
-                break;
-            }
-        }
+	public static String deleteRecord(Record record) {
+		ArrayList<Record> allRecords = getRecords();
 
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
-            return "Update Expense Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Update Expense Failed";
-        }
-    }
+		for (Record rec : allRecords) {
+			if (rec.getRecordName().equals(record.getRecordName())) {
+				allRecords.remove(rec);
+				break;
+			}
+		}
 
-    public static String deleteExpense(Expense expense) {
-        ArrayList<Expense> allExpenses = getExpenses();
+		deleteExpense(record);
 
-        for (Expense exp : allExpenses) {
-            if (exp.getExpenseId() == expense.getExpenseId()) {
-                allExpenses.remove(exp);
-                break;
-            }
-        }
+		try {
 
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
-            return "Delete Expense Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Delete Expense Failed";
-        }
-    }
+			mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
+			return "Delete Record Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Delete Record Failed";
+		}
+	}
 
-    public static String deleteExpense(Record rec) {
-        ArrayList<Expense> allExpenses = getExpenses();
-
-       allExpenses.removeIf(exp -> exp.getExpenseRecordId() == rec.getRecordId());
-
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
-            return "Delete Expense Successfully";
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            return "Delete Expense Failed";
-        }
-    }
-
-    public static int getMinIdRecord() {
-        ArrayList<Record> allRecords = getRecords();
-        int minId = -1;
-
-        for (Record rec: allRecords) {
-            if (rec.getRecordId() <= minId) {
-                minId = rec.getRecordId() - 1; 
-            }
-        }
-
-        return minId;
-    }
-
-    public static int getMinIdExpense() {
-        ArrayList<Expense> allExpenses = getExpenses();
-        int minId = -1;
-
-        for (Expense exp : allExpenses) {
-            if (exp.getExpenseId() <= minId) {
-                minId = exp.getExpenseId()-1;
-            }
-        }
-
-        return minId;
-    }
-
-    public static ArrayList<Synchronization> getOps() {
-        try {
-            return mapper.readValue(SYNC_FILE, new TypeReference<ArrayList<Synchronization>>(){});
+	public static ArrayList<Expense> getExpenses() {
+		ArrayList<Expense> allExpenses = new ArrayList<>();
+		try {
+			return mapper.readValue(EXPENSE_FILE, new TypeReference<ArrayList<Expense>>() {});
 
 
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-            
-            return new ArrayList<Synchronization>();
-        }
-        
-    }
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			allExpenses.clear();
+			return allExpenses;
+		}
+	}
 
-    public static void addOp(Synchronization op) {
-        ArrayList<Synchronization> allOps = getOps();
+	public static ArrayList<Expense> getExpenses(Record record) {
+		ArrayList<Expense> allExpenses = new ArrayList<>();
+		try {
+			allExpenses = mapper.readValue(EXPENSE_FILE, new TypeReference<ArrayList<Expense>>() {});
+			ArrayList<Expense> recordExpenses = new ArrayList<>();
 
-        if (allOps == null) {
-            return;
-        }
+			for (Expense exp : allExpenses) {
+				if (exp.getExpenseRecordId() == record.getRecordId()) {
+					recordExpenses.add(exp);
+				}
+			}
 
-        allOps.add(op);
+			return recordExpenses;
 
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-        }
 
-    }
-    
-    public static void setAllOps(ArrayList<Synchronization> arr) {
-        try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, arr);
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-        }
-    }
-    
-    public static void deleteLastOp() {
-        ArrayList<Synchronization> allOps = getOps();
-        
-        if (allOps == null || allOps.isEmpty()) {
-            return;
-        }
-        
-        allOps.remove(allOps.size()-1);
-        
-        try {
-            
-            mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
-        } catch (IOException e) {
-            logger.severe(e.getMessage());
-        }
-    }
+
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			allExpenses.clear();
+			return allExpenses;
+		}
+	}
+
+	public static String createExpense(Expense expense) {
+		ArrayList<Expense> allExpenses = getExpenses();
+
+		allExpenses.add(expense);
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
+			return "Create Expense Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Create Expense Failed";
+		}
+	}
+
+	public static String updateExpense(Expense expense) {
+		ArrayList<Expense> allExpenses = getExpenses();
+
+
+		for (int i = 0; i < allExpenses.size(); i++) {
+			if (allExpenses.get(i).getExpenseId() == expense.getExpenseId()) {
+				allExpenses.set(i, expense);
+				break;
+			}
+		}
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
+			return "Update Expense Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Update Expense Failed";
+		}
+	}
+
+	public static String deleteExpense(Expense expense) {
+		ArrayList<Expense> allExpenses = getExpenses();
+
+		for (Expense exp : allExpenses) {
+			if (exp.getExpenseId() == expense.getExpenseId()) {
+				allExpenses.remove(exp);
+				break;
+			}
+		}
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
+			return "Delete Expense Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Delete Expense Failed";
+		}
+	}
+
+	public static String deleteExpense(Record rec) {
+		ArrayList<Expense> allExpenses = getExpenses();
+
+		allExpenses.removeIf(exp -> exp.getExpenseRecordId() == rec.getRecordId());
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
+			return "Delete Expense Successfully";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Delete Expense Failed";
+		}
+	}
+
+	public static int getMinIdRecord() {
+		ArrayList<Record> allRecords = getRecords();
+		int minId = -1;
+
+		for (Record rec : allRecords) {
+			if (rec.getRecordId() <= minId) {
+				minId = rec.getRecordId() - 1;
+			}
+		}
+
+		return minId;
+	}
+
+	public static int getMinIdExpense() {
+		ArrayList<Expense> allExpenses = getExpenses();
+		int minId = -1;
+
+		for (Expense exp : allExpenses) {
+			if (exp.getExpenseId() <= minId) {
+				minId = exp.getExpenseId() - 1;
+			}
+		}
+
+		return minId;
+	}
+
+	public static ArrayList<Synchronization> getOps() {
+		try {
+			return mapper.readValue(SYNC_FILE, new TypeReference<ArrayList<Synchronization>>() {});
+
+
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+
+			return new ArrayList<Synchronization>();
+		}
+
+	}
+
+	public static void addOp(Synchronization op) {
+		ArrayList<Synchronization> allOps = getOps();
+
+		if (allOps == null) {
+			return;
+		}
+
+		allOps.add(op);
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+
+	}
+
+	public static void setAllOps(ArrayList<Synchronization> arr) {
+		try {
+			mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, arr);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+
+	public static void deleteLastOp() {
+		ArrayList<Synchronization> allOps = getOps();
+
+		if (allOps == null || allOps.isEmpty()) {
+			return;
+		}
+
+		allOps.remove(allOps.size() - 1);
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+
+	public static ArrayList<String> getCats() {
+		ArrayList<String> allCats = new ArrayList<>();
+
+		try {
+
+			if (!CAT_FILE.exists()) {
+				CAT_FILE.createNewFile();
+				return allCats;
+			}
+			return mapper.readValue(CAT_FILE, new TypeReference<ArrayList<String>>() {});
+
+
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			allCats.clear();
+			return allCats;
+		}
+	}
+
+	public static String createCat(String newCat) {
+		ArrayList<String> allCats = getCats();
+
+		for (String cat : allCats) {
+			if (cat.equals(newCat)) {
+				return "FAIL";
+			}
+		}
+
+		allCats.add(newCat);
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(CAT_FILE, allCats);
+			return "SUCCESS";
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			return "Create Cat_Failed";
+		}
+	}
 
 }

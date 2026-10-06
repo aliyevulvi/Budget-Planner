@@ -6,7 +6,7 @@ public class Main {
         
         DBManager.main(args);
         // ConsoleUI.startProgram();
-
+        Init.init();
         UIManager.main(args);
     }
 }
