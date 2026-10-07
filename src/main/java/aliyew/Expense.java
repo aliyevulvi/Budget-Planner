@@ -69,6 +69,18 @@ public class Expense {
     public void setExpenseRecordId(int id) {
         this.expenseRecordId = id;
     }
+    
+    public void setExpenseDate(LocalDate ld) {
+        this.expenseDate = ld;
+    }
+    
+    public void setExpenseCat(String cat) {
+        this.expenseCat = cat;
+    }
+    
+    public void setExpenseAmt(Double amt) {
+        this.expenseAmt = amt;
+    }
 
     public static Expense getLastExpense(ArrayList<Expense> allExpenses) {
         Expense lastExpense = allExpenses.get(0);

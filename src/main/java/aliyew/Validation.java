@@ -2,6 +2,7 @@ package aliyew;
 
 import java.time.*;
 import java.time.format.*;
+import java.util.ArrayList;
 
 public class Validation {
 	
@@ -21,5 +22,15 @@ public class Validation {
 	    } else {
 	        return false;
 	    }
+	}
+	
+	public static boolean isValidName(String name, ArrayList<Record> allRecords) {
+	    for (Record rec : allRecords) {
+	        if (rec.getRecordName().equals(name)) {
+	            return false;
+	        }
+	    }
+	    
+	    return true;
 	}
 }

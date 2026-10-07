@@ -11,6 +11,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.*;
 
 import javax.swing.BorderFactory;
@@ -23,6 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.border.*;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
@@ -42,6 +45,7 @@ public class UIManager {
 	private static JPanel reviewPanel = new JPanel();
 	private static Record record = new Record();
 	private static ArrayList<Expense> allExpenses = new ArrayList<>();
+	private static ArrayList<Record> allRecords = new ArrayList<>();
 
 	public static void main(String[] args) {
 		// Pencere çerçevelerini işletim sistemi yerine Swing'in çizmesini sağlar
@@ -92,6 +96,7 @@ public class UIManager {
 		leftPanelButtonConfigruations(leftPanel, settingsButton);
 
 		recordsButton.addActionListener(e -> {
+			rightPanelConfigurationMethod(rightPanel);
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 		});
 
@@ -139,6 +144,7 @@ public class UIManager {
 	}
 
 	public static void rightPanelConfigurationMethod(JPanel rightPanel) {
+		rightPanel.removeAll();
 		rightPanel.setBackground(Color.decode("#f1f1f1"));
 		rightPanel.setBorder(BorderFactory.createEmptyBorder((int)(dynamicHeight * 0.05), (int)(dynamicWidth * 0.05), (int)(dynamicHeight * 0.05), (int)(dynamicWidth * 0.05)));
 
@@ -170,9 +176,10 @@ public class UIManager {
 	}
 
 	private static void recordsPanelConfig(JPanel panel) {
+		panel.removeAll();
 		panel.setBackground(Color.decode("#e3e3e3"));
 
-		ArrayList<Record> allRecords = JsonManager.getRecords();
+		allRecords = JsonManager.getRecords();
 
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
@@ -324,24 +331,85 @@ public class UIManager {
 		reviewPanel.setBackground(Color.decode("#e3e3e3"));
 		reviewPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
-		JLabel recordName = new JLabel(record.getRecordName(), SwingConstants.RIGHT);
-		JLabel recordCreationDate = new JLabel(record.getCreationDate().substring(0, 15), SwingConstants.RIGHT);
-		JLabel recordIncome = new JLabel(record.getRecordIncome() + "", SwingConstants.RIGHT);
-		JLabel recordSaving = new JLabel(record.getRecordSaving() + "", SwingConstants.RIGHT);
 
-		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+		//    REVIEW PANEL NORTH
+		JTextField recordName = new JTextField(record.getRecordName(), SwingConstants.RIGHT);
+		JLabel recordCreationDate = new JLabel(record.getCreationDate().substring(0, 16), SwingConstants.RIGHT);
+		JTextField recordIncome = new JTextField(record.getRecordIncome() + "", SwingConstants.RIGHT);
+		JTextField recordSaving = new JTextField(record.getRecordSaving() + "", SwingConstants.RIGHT);
+
+		recordName.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+
+				allRecords = JsonManager.getRecords();
+				if (Validation.isValidName(recordName.getText().trim(), allRecords)) {
+					record.setRecordName(recordName.getText().trim());
+					JsonManager.updateRecord(record);
+					recordName.setText(record.getRecordName());
+				} else {
+					recordName.setText(record.getRecordName());
+				}
+			}
+		});
+
+		recordIncome.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				if (Validation.isValidAmount(recordIncome.getText().trim())) {
+				    record.setRecordIncome(Double.parseDouble(recordIncome.getText().trim()));
+				    JsonManager.updateRecord(record);
+				    recordIncome.setText(record.getRecordIncome() + "");
+				} else {
+				    recordIncome.setText(record.getRecordIncome() + "");
+				}
+				
+				
+			}
+		});
+
+		recordSaving.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				if (Validation.isValidAmount(recordSaving.getText().trim())) {
+				    record.setRecordSaving(Double.parseDouble(recordSaving.getText().trim()));
+				    JsonManager.updateRecord(record);
+				    recordSaving.setText(record.getRecordSaving() + "");
+				} else {
+				    recordSaving.setText(record.getRecordSaving() + "");
+				}
+			}
+		});
+
+
+		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 30, 10));
+
+		infoPanel.setFocusable(true);
+		recordName.addActionListener(e -> infoPanel.requestFocusInWindow());
+		recordIncome.addActionListener(e -> infoPanel.requestFocusInWindow());
+		recordSaving.addActionListener(e -> infoPanel.requestFocusInWindow());
+
+		infoPanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				infoPanel.requestFocusInWindow();
+			}
+		});
 
 		infoPanel.add(new JLabel("Record Name ", SwingConstants.LEFT));
 		infoPanel.add(recordName);
-		infoPanel.add(new JLabel("Record Date ", SwingConstants.LEFT));
-		infoPanel.add(recordCreationDate);
 		infoPanel.add(new JLabel("Record Income ", SwingConstants.LEFT));
 		infoPanel.add(recordIncome);
 		infoPanel.add(new JLabel("Record Saving ", SwingConstants.LEFT));
 		infoPanel.add(recordSaving);
-		infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+		infoPanel.add(new JLabel("Record Date ", SwingConstants.LEFT));
+		infoPanel.add(recordCreationDate);
+
+		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
+		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
+		infoPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
+		//infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		reviewPanel.add(infoPanel, BorderLayout.NORTH);
 
+
+		//    REVIEW PANEL CENTER
 		JPanel dataPanel = new JPanel(new BorderLayout());
 
 		String[] columns = {"DATE", "CATEGORY", "AMOUNT"};
@@ -357,8 +425,9 @@ public class UIManager {
 			}
 
 			public void setValueAt(Object value, int row, int col) {
-				if (row == getRowCount() - 1) {
+				if (row >= allExpenses.size()) {
 					super.setValueAt(value, row, col);
+					return;
 				}
 
 				Expense originalExp = allExpenses.get(row);
@@ -366,28 +435,27 @@ public class UIManager {
 
 				if (col == 0) {
 					if (!Validation.isValidDate(valStr)) {
-						JOptionPane.showMessageDialog(null, "Geçersiz Tarih!");
+						JOptionPane.showMessageDialog(null, "Invalid Date!");
 						return; // super.setValueAt ÇAĞRILMAZ -> Hücre eski değerinde kalır!
 					}
-					//originalExp.setExpenseDate(LocalDate.parse(valStr, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")));
-				}
-				else if (col == 1) {
+					originalExp.setExpenseDate(LocalDate.parse(valStr, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")));
+				} else if (col == 1) {
 					if (valStr.isEmpty()) {
-						JOptionPane.showMessageDialog(null, "Kategori seçiniz!");
+						JOptionPane.showMessageDialog(null, "Choose Category!");
 						return;
 					}
-					//originalExp.setExpenseCat(valStr);
-				}
-				else if (col == 2) {
+					originalExp.setExpenseCat(valStr);
+				} else if (col == 2) {
 					if (!Validation.isValidAmount(valStr)) {
-						JOptionPane.showMessageDialog(null, "Geçersiz Miktar!");
+						JOptionPane.showMessageDialog(null, "Invalid Amount!");
 						return;
 					}
-					//originalExp.setExpenseAmt(Double.parseDouble(valStr));
+					originalExp.setExpenseAmt(Double.parseDouble(valStr));
 				}
 
 				super.setValueAt(value, row, col);
-				//JsonManager.updateExpense(originalExp);
+				JsonManager.updateExpense(originalExp);
+				allExpenses = JsonManager.getExpenses(record);
 			}
 		};
 
@@ -430,40 +498,72 @@ public class UIManager {
 
 		//table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+		table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+				Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+				if (row == table.getRowCount() - 1) {
+					c.setBackground(Color.WHITE);
+				} else if (row % 2 == 0) {
+					c.setBackground(new Color(152, 202, 255));
+				} else {
+					c.setBackground(new Color(206, 230, 255));
+				}
+
+				return c;
+			}
+		});
+
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		scrollPane.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e) {
+				table.clearSelection();
+			}
+		});
+
+		reviewPanel.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				table.clearSelection();
+			}
+		});
 
 		reviewPanel.add(scrollPane, BorderLayout.CENTER);
 
+
+		//    REVIEW PANEL SOUTH
 		JPanel opPanel = new JPanel(new CardLayout());
 
 		JPanel op1Panel = new JPanel();
 		JPanel op2Panel = new JPanel();
 
 		JButton deleteBtn = new JButton("Delete");
-		JButton updateBtn = new JButton("Update");
 		JButton createBtn = new JButton("Create Expense");
-		JButton quitBtn = new JButton("Quit");
+
 
 		deleteBtn.setBackground(Color.decode("#ed574c"));
 		deleteBtn.setForeground(Color.WHITE);
-		updateBtn.setBackground(Color.decode("#4487eb"));
-		updateBtn.setForeground(Color.WHITE);
-		updateBtn.addActionListener(e -> {
-			int selectedRow = table.getSelectedRow();
 
-
-
-		});
 
 		createBtn.setBackground(Color.decode("#4487eb"));
 		createBtn.setForeground(Color.WHITE);
 		createBtn.addActionListener(e -> {
-			String date = inputF1.getText().trim();
-			String amt = inputF3.getText().trim();
 
-			String category = "";
+			if (table.isEditing()) {
+				table.getCellEditor().stopCellEditing();
+			}
+
+
+			DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+			int lastRow = dtm.getRowCount() - 1;
+
+			String date = String.valueOf(dtm.getValueAt(lastRow, 0)).trim();
+			String category = String.valueOf(dtm.getValueAt(lastRow, 1)).trim();
+			String amt = String.valueOf(dtm.getValueAt(lastRow, 2)).trim();
 
 			JOptionPane jop = new JOptionPane();
 
@@ -482,21 +582,22 @@ public class UIManager {
 				exp.setExpenseRecordId(record.getRecordId());
 				exp.setExpenseId(JsonManager.getMinIdExpense());
 				JsonManager.createExpense(exp);
-
-				DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+				allExpenses.add(exp);
 				dtm.insertRow(dtm.getRowCount() - 1, new Object[] {date, category, amt});
 
+				dtm.setValueAt("", dtm.getRowCount() - 1, 0);
+				dtm.setValueAt("", dtm.getRowCount() - 1, 1);
+				dtm.setValueAt("", dtm.getRowCount() - 1, 2);
+				inputF1.setText("");
+				inputF2.setSelectedIndex(-1);
+				inputF3.setText("");
 			}
 
-			inputF1.setText("");
-			inputF2.setSelectedIndex(-1);
-			inputF3.setText("");
+			((CardLayout)(opPanel.getLayout())).show(opPanel, "OP_1");
 		});
 
 		op1Panel.add(createBtn);
-		op2Panel.add(quitBtn);
 		op2Panel.add(deleteBtn);
-		op2Panel.add(updateBtn);
 
 		String OP_1 = "OP_1";
 		String OP_2 = "OP_2";
@@ -504,18 +605,13 @@ public class UIManager {
 		opPanel.add(op1Panel, OP_1);
 		opPanel.add(op2Panel, OP_2);
 
-		quitBtn.addActionListener(e -> {
-			table.clearSelection();
-			((CardLayout)(opPanel.getLayout())).show(opPanel, OP_1);
-		});
-
 		deleteBtn.addActionListener(ex -> {
 			int selectedRow = table.getSelectedRow();
 			int choice = JOptionPane.showConfirmDialog(null, "Are you sure delete Expense?", null, JOptionPane.YES_NO_OPTION);
 
 			if (choice == JOptionPane.YES_OPTION) {
 				JsonManager.deleteExpense(allExpenses.get(selectedRow));
-
+				allExpenses.remove(selectedRow);
 				DefaultTableModel dtm = (DefaultTableModel) table.getModel();
 				dtm.removeRow(selectedRow);
 				table.clearSelection();

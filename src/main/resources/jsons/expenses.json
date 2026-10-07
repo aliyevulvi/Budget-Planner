@@ -55,13 +55,6 @@
   "expenseAmt" : -10.0,
   "expenseSync" : false
 }, {
-  "expenseId" : -1,
-  "expenseRecordId" : 36,
-  "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "Home",
-  "expenseAmt" : -10.0,
-  "expenseSync" : false
-}, {
   "expenseId" : -2,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 1, 1 ],
@@ -86,18 +79,11 @@
   "expenseId" : -6,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "Home",
+  "expenseCat" : "Other",
   "expenseAmt" : -10.0,
   "expenseSync" : false
 }, {
   "expenseId" : -10,
-  "expenseRecordId" : 36,
-  "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "Home",
-  "expenseAmt" : -10.0,
-  "expenseSync" : false
-}, {
-  "expenseId" : -11,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 1, 1 ],
   "expenseCat" : "Home",
@@ -111,21 +97,7 @@
   "expenseAmt" : -10.0,
   "expenseSync" : false
 }, {
-  "expenseId" : -13,
-  "expenseRecordId" : 36,
-  "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "Home",
-  "expenseAmt" : -10.0,
-  "expenseSync" : false
-}, {
   "expenseId" : -14,
-  "expenseRecordId" : 36,
-  "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "Home",
-  "expenseAmt" : -10.0,
-  "expenseSync" : false
-}, {
-  "expenseId" : -16,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 1, 1 ],
   "expenseCat" : "Home",
@@ -142,7 +114,7 @@
   "expenseId" : -18,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 1, 1 ],
-  "expenseCat" : "Home",
+  "expenseCat" : "Bills",
   "expenseAmt" : -10.0,
   "expenseSync" : false
 }, {
@@ -174,10 +146,73 @@
   "expenseAmt" : -10.0,
   "expenseSync" : false
 }, {
-  "expenseId" : -27,
+  "expenseId" : -28,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2027, 1, 1 ],
+  "expenseCat" : "Other",
+  "expenseAmt" : 100.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -29,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2025, 1, 1 ],
+  "expenseCat" : "Home",
+  "expenseAmt" : 150.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -31,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 1, 1 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 1.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -32,
   "expenseRecordId" : 36,
   "expenseDate" : [ 2026, 1, 1 ],
   "expenseCat" : "Home",
-  "expenseAmt" : -10.0,
+  "expenseAmt" : 123.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -33,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 1, 1 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 1.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -35,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 1, 1 ],
+  "expenseCat" : "Home",
+  "expenseAmt" : 1.7,
+  "expenseSync" : false
+}, {
+  "expenseId" : -36,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2025, 8, 17 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.5,
+  "expenseSync" : false
+}, {
+  "expenseId" : -37,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 1, 1 ],
+  "expenseCat" : "Home",
+  "expenseAmt" : 23.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -38,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 1, 1 ],
+  "expenseCat" : "Home",
+  "expenseAmt" : 22.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : -39,
+  "expenseRecordId" : 36,
+  "expenseDate" : [ 2026, 1, 1 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 15.0,
   "expenseSync" : false
 } ]
