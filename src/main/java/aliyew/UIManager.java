@@ -41,6 +41,7 @@ public class UIManager {
 	private static final String SETTINGS_PANEL = "SETTINGS_PANEL";
 	private static final String REVIEW_PANEL = "REVIEW_PANEL";
 	private static JPanel rightPanel;
+	private static JPanel recordsPanel;
 
 	private static JPanel reviewPanel = new JPanel();
 	private static Record record = new Record();
@@ -85,22 +86,13 @@ public class UIManager {
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 		leftPanel.setPreferredSize(new Dimension((int)(dynamicWidth * 0.20), dynamicHeight));
 
-		JButton recordsButton = new JButton("Records");
-		JButton createRecordButton = new JButton("Create Record");
 		JButton synchronizationButton = new JButton("Synchronization");
 		JButton settingsButton = new JButton("Settings");
 
-		leftPanelButtonConfigruations(leftPanel, recordsButton);
-		leftPanelButtonConfigruations(leftPanel, createRecordButton);
 		leftPanelButtonConfigruations(leftPanel, synchronizationButton);
 		leftPanelButtonConfigruations(leftPanel, settingsButton);
 
-		recordsButton.addActionListener(e -> {
-			rightPanelConfigurationMethod(rightPanel);
-			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
-		});
-
-		createRecordButton.addActionListener(e -> {
+		synchronizationButton.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, CREATE_RECORD_PANEL);
 		});
 
@@ -114,8 +106,8 @@ public class UIManager {
 	public static void leftPanelButtonConfigruations(JPanel jPanel, JButton btn) {
 		btn.setBackground(Color.decode("#124559"));
 		btn.setAlignmentX(JButton.CENTER_ALIGNMENT);
-		//btn.setBorderPainted(false);
-		btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#000000")));
+		btn.setBorderPainted(false);
+		//btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#000000")));
 		btn.setFocusable(false);
 		btn.setForeground(Color.decode("#dbd8d8"));
 		btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int)(screenSize.height * 0.10)));
@@ -151,27 +143,20 @@ public class UIManager {
 
 		rightPanel.setLayout(new CardLayout());
 
-		JPanel loginPanel = new JPanel(new BorderLayout());
-		JPanel recordsPanel = new JPanel(new BorderLayout());
+		recordsPanel = new JPanel(new BorderLayout());
 		JPanel createRecordPanel = new JPanel(new GridBagLayout());
 		JPanel settingsPanel = new JPanel(new BorderLayout());
 
-		loginPanelConfig(loginPanel);
 		recordsPanelConfig(recordsPanel);
 		createRecordPanelConfig(createRecordPanel);
 		settingsPanelConfig(settingsPanel);
 
-		rightPanel.add(loginPanel, LOGIN_PANEL);
 		rightPanel.add(recordsPanel, RECORDS_PANEL);
 		rightPanel.add(createRecordPanel, CREATE_RECORD_PANEL);
 		rightPanel.add(settingsPanel, SETTINGS_PANEL);
 		rightPanel.add(reviewPanel, REVIEW_PANEL);
 
 
-
-	}
-
-	private static void loginPanelConfig(JPanel panel) {
 
 	}
 
@@ -248,7 +233,17 @@ public class UIManager {
 		JScrollPane scrollPane = new JScrollPane(contentPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		JPanel createRecordPanel = new JPanel(new BorderLayout());
+		createRecordPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		JButton createRecordBtn = new JButton("+");
+		createRecordBtn.addActionListener(e -> {
+		    ((CardLayout)(rightPanel.getLayout())).show(rightPanel, CREATE_RECORD_PANEL);
+		});
+		createRecordPanel.add(createRecordBtn, BorderLayout.EAST);
+		
 		panel.add(scrollPane, BorderLayout.CENTER);
+		panel.add(createRecordPanel, BorderLayout.SOUTH);
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
 
@@ -297,22 +292,40 @@ public class UIManager {
 
 		gbc.gridx = 0;
 		gbc.gridy = 3;
-		JButton clearButton = new JButton("Clear");
-		clearButton.setForeground(Color.WHITE);
-		clearButton.setBackground(Color.decode("#ed574c"));
-		clearButton.addActionListener(e -> {
+		JButton cancelBtn = new JButton("Cancel");
+		cancelBtn.setForeground(Color.WHITE);
+		cancelBtn.setBackground(Color.decode("#ed574c"));
+		cancelBtn.addActionListener(e -> {
 			recordNameField.setText("");
 			recordIncomeField.setText("");
 			recordSavingField.setText("");
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 		});
-		panel.add(clearButton, gbc);
+		panel.add(cancelBtn, gbc);
 
 		gbc.gridx = 1;
 		gbc.gridy = 3;
-		JButton createButton = new JButton("Create");
-		createButton.setForeground(Color.WHITE);
-		createButton.setBackground(Color.decode("#4487eb"));
-		panel.add(createButton, gbc);
+		JButton createBtn = new JButton("Create");
+		createBtn.setForeground(Color.WHITE);
+		createBtn.setBackground(Color.decode("#4487eb"));
+		createBtn.addActionListener(e -> {
+		    if (!Validation.isValidName(recordNameField.getText().trim(), allRecords)) {
+		        JOptionPane.showMessageDialog(null, "Record Name is Already Exists!");
+		    } else if (!Validation.isValidAmount(recordIncomeField.getText().trim()) || !Validation.isValidAmount(recordSavingField.getText().trim())) {
+		        JOptionPane.showMessageDialog(null, "Input Amounts Must Be Consist Of Digits!");
+		    } else {
+		        Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()));
+		        newRecord.setRecordId(JsonManager.getMinIdRecord());
+		        JsonManager.createRecord(newRecord);
+		        allRecords.add(newRecord);
+		        recordNameField.setText("");
+		        recordIncomeField.setText("");
+		        recordSavingField.setText("");
+		        recordsPanelConfig(recordsPanel);
+		        ((CardLayout) (rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+		    }
+		});
+		panel.add(createBtn, gbc);
 
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
@@ -346,6 +359,7 @@ public class UIManager {
 					record.setRecordName(recordName.getText().trim());
 					JsonManager.updateRecord(record);
 					recordName.setText(record.getRecordName());
+					recordsPanelConfig(recordsPanel);
 				} else {
 					recordName.setText(record.getRecordName());
 				}
@@ -358,6 +372,7 @@ public class UIManager {
 				    record.setRecordIncome(Double.parseDouble(recordIncome.getText().trim()));
 				    JsonManager.updateRecord(record);
 				    recordIncome.setText(record.getRecordIncome() + "");
+				    recordsPanelConfig(recordsPanel);
 				} else {
 				    recordIncome.setText(record.getRecordIncome() + "");
 				}
@@ -372,6 +387,7 @@ public class UIManager {
 				    record.setRecordSaving(Double.parseDouble(recordSaving.getText().trim()));
 				    JsonManager.updateRecord(record);
 				    recordSaving.setText(record.getRecordSaving() + "");
+				    recordsPanelConfig(recordsPanel);
 				} else {
 				    recordSaving.setText(record.getRecordSaving() + "");
 				}
@@ -538,17 +554,22 @@ public class UIManager {
 		//    REVIEW PANEL SOUTH
 		JPanel opPanel = new JPanel(new CardLayout());
 
-		JPanel op1Panel = new JPanel();
-		JPanel op2Panel = new JPanel();
+		JPanel op1Panel = new JPanel(new BorderLayout());
+		JPanel op2Panel = new JPanel(new BorderLayout());
 
 		JButton deleteBtn = new JButton("Delete");
 		JButton createBtn = new JButton("Create Expense");
+		JButton prevBtn = new JButton("<");
 
 
 		deleteBtn.setBackground(Color.decode("#ed574c"));
-		deleteBtn.setForeground(Color.WHITE);
-
-
+        
+        prevBtn.setBackground(Color.decode("#e8e8e8"));
+        prevBtn.setForeground(Color.WHITE);
+        prevBtn.addActionListener(e -> {
+            ((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+        });
+        
 		createBtn.setBackground(Color.decode("#4487eb"));
 		createBtn.setForeground(Color.WHITE);
 		createBtn.addActionListener(e -> {
@@ -596,8 +617,9 @@ public class UIManager {
 			((CardLayout)(opPanel.getLayout())).show(opPanel, "OP_1");
 		});
 
-		op1Panel.add(createBtn);
-		op2Panel.add(deleteBtn);
+		op1Panel.add(createBtn, BorderLayout.CENTER);
+		op1Panel.add(prevBtn, BorderLayout.EAST);
+		op2Panel.add(deleteBtn, BorderLayout.CENTER);
 
 		String OP_1 = "OP_1";
 		String OP_2 = "OP_2";
