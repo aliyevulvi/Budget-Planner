@@ -1,50 +1,8 @@
 [ {
-  "recordId" : 36,
-  "recordName" : "admin",
-  "creationDate" : "2026-09-01 14:40:27.5654402",
-  "recordIncome" : 15.0,
-  "recordSaving" : 457.0,
-  "recordSync" : true
-}, {
   "recordId" : -1,
-  "recordName" : "test1",
-  "creationDate" : "2026-10-08 10:39:32.715694017",
+  "recordName" : "admin",
+  "creationDate" : "2026-10-09 10:13:17.906258051",
   "recordIncome" : 1.0,
   "recordSaving" : 1.0,
-  "recordSync" : false
-}, {
-  "recordId" : -2,
-  "recordName" : "test2",
-  "creationDate" : "2026-10-08 10:53:29.522585556",
-  "recordIncome" : 22.0,
-  "recordSaving" : 2.0,
-  "recordSync" : false
-}, {
-  "recordId" : -3,
-  "recordName" : "test3",
-  "creationDate" : "2026-10-08 10:55:11.476587624",
-  "recordIncome" : 3.0,
-  "recordSaving" : 3.0,
-  "recordSync" : false
-}, {
-  "recordId" : -4,
-  "recordName" : "test4",
-  "creationDate" : "2026-10-08 10:57:17.042095417",
-  "recordIncome" : 4.0,
-  "recordSaving" : 4.0,
-  "recordSync" : false
-}, {
-  "recordId" : -5,
-  "recordName" : "test5",
-  "creationDate" : "2026-10-08 11:00:32.238645388",
-  "recordIncome" : 5.0,
-  "recordSaving" : 5.0,
-  "recordSync" : false
-}, {
-  "recordId" : -6,
-  "recordName" : "test6",
-  "creationDate" : "2026-10-08 11:04:19.713935978",
-  "recordIncome" : 6.0,
-  "recordSaving" : 6.0,
   "recordSync" : false
 } ]

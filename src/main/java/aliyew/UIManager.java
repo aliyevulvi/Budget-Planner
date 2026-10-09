@@ -184,6 +184,16 @@ public class UIManager {
 			reviewButton.setBackground(Color.decode("#4487eb"));
 			reviewButton.setName(rec.getRecordName());
 
+			deleteButton.addActionListener(e -> {
+			    int choice = JOptionPane.showConfirmDialog(null, "Are you sure delete Record?", null, JOptionPane.YES_NO_OPTION);
+
+			    if (choice == JOptionPane.YES_OPTION) {
+			        JsonManager.deleteRecord(rec);
+			        rightPanelConfigurationMethod(rightPanel);
+			        ((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+			    }
+			});
+			
 			reviewButton.addActionListener(e -> {
 				for (Record rec2 : allRecords) {
 					if (reviewButton.getName().equals(rec2.getRecordName())) {
