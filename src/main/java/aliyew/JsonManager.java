@@ -301,13 +301,11 @@ public class JsonManager {
 		}
 	}
 
-	public static String createCat(String newCat) {
+	public static void createCat(String newCat) {
 		ArrayList<String> allCats = getCats();
-
-		for (String cat : allCats) {
-			if (cat.equals(newCat)) {
-				return "FAIL";
-			}
+		
+		if (allCats.contains(newCat)) {
+		    return;
 		}
 
 		allCats.add(newCat);
@@ -315,10 +313,19 @@ public class JsonManager {
 		try {
 
 			mapper.writerWithDefaultPrettyPrinter().writeValue(CAT_FILE, allCats);
-			return "SUCCESS";
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			return "Create Cat_Failed";
+		}
+	}
+
+	public static void deleteCat(String cat) {
+		ArrayList<String> allCats = getCats();
+		allCats.removeIf(e -> e.equals(cat));
+
+		try {
+			mapper.writerWithDefaultPrettyPrinter().writeValue(CAT_FILE, allCats);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
 		}
 	}
 

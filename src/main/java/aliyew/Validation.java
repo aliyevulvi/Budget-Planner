@@ -33,4 +33,14 @@ public class Validation {
 	    
 	    return true;
 	}
+	
+	public static boolean isValidNameCat(String name, ArrayList<String> cats) {
+	    for (String str : cats) {
+	        if (str.equals(name)) {
+	            return false;
+	        }
+	    }
+	    
+	    return true;
+	}
 }

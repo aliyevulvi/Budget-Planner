@@ -42,6 +42,7 @@ public class UIManager {
 	private static final String REVIEW_PANEL = "REVIEW_PANEL";
 	private static JPanel rightPanel;
 	private static JPanel recordsPanel;
+	private static JPanel settingsPanel;
 
 	private static JPanel reviewPanel = new JPanel();
 	private static Record record = new Record();
@@ -145,7 +146,7 @@ public class UIManager {
 
 		recordsPanel = new JPanel(new BorderLayout());
 		JPanel createRecordPanel = new JPanel(new GridBagLayout());
-		JPanel settingsPanel = new JPanel(new BorderLayout());
+		settingsPanel = new JPanel(new BorderLayout());
 
 		recordsPanelConfig(recordsPanel);
 		createRecordPanelConfig(createRecordPanel);
@@ -185,15 +186,15 @@ public class UIManager {
 			reviewButton.setName(rec.getRecordName());
 
 			deleteButton.addActionListener(e -> {
-			    int choice = JOptionPane.showConfirmDialog(null, "Are you sure delete Record?", null, JOptionPane.YES_NO_OPTION);
+				int choice = JOptionPane.showConfirmDialog(null, "Are you sure delete Record?", null, JOptionPane.YES_NO_OPTION);
 
-			    if (choice == JOptionPane.YES_OPTION) {
-			        JsonManager.deleteRecord(rec);
-			        rightPanelConfigurationMethod(rightPanel);
-			        ((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
-			    }
+				if (choice == JOptionPane.YES_OPTION) {
+					JsonManager.deleteRecord(rec);
+					rightPanelConfigurationMethod(rightPanel);
+					((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+				}
 			});
-			
+
 			reviewButton.addActionListener(e -> {
 				for (Record rec2 : allRecords) {
 					if (reviewButton.getName().equals(rec2.getRecordName())) {
@@ -243,15 +244,15 @@ public class UIManager {
 		JScrollPane scrollPane = new JScrollPane(contentPanel);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		
+
 		JPanel createRecordPanel = new JPanel(new BorderLayout());
-		createRecordPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		createRecordPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		JButton createRecordBtn = new JButton("+");
 		createRecordBtn.addActionListener(e -> {
-		    ((CardLayout)(rightPanel.getLayout())).show(rightPanel, CREATE_RECORD_PANEL);
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, CREATE_RECORD_PANEL);
 		});
 		createRecordPanel.add(createRecordBtn, BorderLayout.EAST);
-		
+
 		panel.add(scrollPane, BorderLayout.CENTER);
 		panel.add(createRecordPanel, BorderLayout.SOUTH);
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
@@ -319,21 +320,21 @@ public class UIManager {
 		createBtn.setForeground(Color.WHITE);
 		createBtn.setBackground(Color.decode("#4487eb"));
 		createBtn.addActionListener(e -> {
-		    if (!Validation.isValidName(recordNameField.getText().trim(), allRecords)) {
-		        JOptionPane.showMessageDialog(null, "Record Name is Already Exists!");
-		    } else if (!Validation.isValidAmount(recordIncomeField.getText().trim()) || !Validation.isValidAmount(recordSavingField.getText().trim())) {
-		        JOptionPane.showMessageDialog(null, "Input Amounts Must Be Consist Of Digits!");
-		    } else {
-		        Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()));
-		        newRecord.setRecordId(JsonManager.getMinIdRecord());
-		        JsonManager.createRecord(newRecord);
-		        allRecords.add(newRecord);
-		        recordNameField.setText("");
-		        recordIncomeField.setText("");
-		        recordSavingField.setText("");
-		        recordsPanelConfig(recordsPanel);
-		        ((CardLayout) (rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
-		    }
+			if (!Validation.isValidName(recordNameField.getText().trim(), allRecords)) {
+				JOptionPane.showMessageDialog(null, "Record Name is Already Exists!");
+			} else if (!Validation.isValidAmount(recordIncomeField.getText().trim()) || !Validation.isValidAmount(recordSavingField.getText().trim())) {
+				JOptionPane.showMessageDialog(null, "Input Amounts Must Be Consist Of Digits!");
+			} else {
+				Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()));
+				newRecord.setRecordId(JsonManager.getMinIdRecord());
+				JsonManager.createRecord(newRecord);
+				allRecords.add(newRecord);
+				recordNameField.setText("");
+				recordIncomeField.setText("");
+				recordSavingField.setText("");
+				recordsPanelConfig(recordsPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+			}
 		});
 		panel.add(createBtn, gbc);
 
@@ -343,7 +344,109 @@ public class UIManager {
 	}
 
 	private static void settingsPanelConfig(JPanel panel) {
+		panel.removeAll();
 		panel.setBackground(Color.decode("#e3e3e3"));
+
+		panel.setLayout(new GridBagLayout());
+
+		ArrayList<String> cats = JsonManager.getCats();
+
+		// ADD CATEGORY
+		JLabel addLbl = new JLabel("Add Category");
+		JTextField catFld = new JTextField("");
+		JButton addBtn = new JButton("Add");
+
+		catFld.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+
+		addBtn.setForeground(Color.WHITE);
+		addBtn.setBackground(Color.decode("#4487eb"));
+		addBtn.addActionListener(e -> {
+			if (!Validation.isValidNameCat(catFld.getText().trim(), cats) || catFld.getText().trim().equals("")) {
+				JOptionPane.showMessageDialog(null, "Category Already Exists");
+			} else {
+				JsonManager.createCat(catFld.getText().trim());
+				JOptionPane.showMessageDialog(null, "New Category Added!");
+				//settingsPanelConfig(settingsPanel);
+				rightPanelConfigurationMethod(rightPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			}
+		});
+
+
+		// DELETE CATEGORY
+		JLabel delLbl = new JLabel("Delete Category");
+		JComboBox<String> catBox = new JComboBox<>();
+		JButton delBtn = new JButton("Delete");
+
+		for (String str : cats) {
+			catBox.addItem(str);
+		}
+
+		delBtn.setForeground(Color.WHITE);
+		delBtn.setBackground(Color.decode("#ed574c"));
+		delBtn.addActionListener(e -> {
+			String selectedCat = (String) catBox.getSelectedItem();
+
+			if (selectedCat.equals("Bills") || selectedCat.equals("Other")) {
+			    JOptionPane.showMessageDialog(null, "You Can't Delete This Category!");
+			} else {
+				JsonManager.deleteCat(selectedCat);
+				JOptionPane.showMessageDialog(null, "Category Deleted!");
+				//settingsPanelConfig(settingsPanel);
+				rightPanelConfigurationMethod(rightPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			}
+		});
+
+		int panelWidth = (int)(dynamicWidth * 0.4);
+		int panelHeight = (int)(dynamicHeight * 0.1);
+
+		GridBagConstraints gbc = new GridBagConstraints();
+
+		gbc.insets = new Insets((int)(panelHeight * 0.1), (int)(panelWidth * 0.1), (int)(panelHeight * 0.15), (int)(panelWidth * 0.1));
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		panel.add(addLbl, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		panel.add(catFld, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		panel.add(addBtn, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		panel.add(delLbl, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		panel.add(catBox, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 1;
+		panel.add(delBtn, gbc);
+		
+		JButton prevBtn = new JButton("<");
+
+		prevBtn.setBackground(Color.decode("#e8e8e8"));
+		prevBtn.setForeground(Color.BLACK);
+		prevBtn.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+		});
+		
+		gbc.gridx = 2;
+		gbc.gridy = 5;
+		panel.add(prevBtn, gbc);
+		
+		panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.BLACK));
+
+
+
 
 	}
 
@@ -379,27 +482,27 @@ public class UIManager {
 		recordIncome.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				if (Validation.isValidAmount(recordIncome.getText().trim())) {
-				    record.setRecordIncome(Double.parseDouble(recordIncome.getText().trim()));
-				    JsonManager.updateRecord(record);
-				    recordIncome.setText(record.getRecordIncome() + "");
-				    recordsPanelConfig(recordsPanel);
+					record.setRecordIncome(Double.parseDouble(recordIncome.getText().trim()));
+					JsonManager.updateRecord(record);
+					recordIncome.setText(record.getRecordIncome() + "");
+					recordsPanelConfig(recordsPanel);
 				} else {
-				    recordIncome.setText(record.getRecordIncome() + "");
+					recordIncome.setText(record.getRecordIncome() + "");
 				}
-				
-				
+
+
 			}
 		});
 
 		recordSaving.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				if (Validation.isValidAmount(recordSaving.getText().trim())) {
-				    record.setRecordSaving(Double.parseDouble(recordSaving.getText().trim()));
-				    JsonManager.updateRecord(record);
-				    recordSaving.setText(record.getRecordSaving() + "");
-				    recordsPanelConfig(recordsPanel);
+					record.setRecordSaving(Double.parseDouble(recordSaving.getText().trim()));
+					JsonManager.updateRecord(record);
+					recordSaving.setText(record.getRecordSaving() + "");
+					recordsPanelConfig(recordsPanel);
 				} else {
-				    recordSaving.setText(record.getRecordSaving() + "");
+					recordSaving.setText(record.getRecordSaving() + "");
 				}
 			}
 		});
@@ -573,13 +676,13 @@ public class UIManager {
 
 
 		deleteBtn.setBackground(Color.decode("#ed574c"));
-        
-        prevBtn.setBackground(Color.decode("#e8e8e8"));
-        prevBtn.setForeground(Color.WHITE);
-        prevBtn.addActionListener(e -> {
-            ((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
-        });
-        
+
+		prevBtn.setBackground(Color.decode("#e8e8e8"));
+		prevBtn.setForeground(Color.BLACK);
+		prevBtn.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+		});
+
 		createBtn.setBackground(Color.decode("#4487eb"));
 		createBtn.setForeground(Color.WHITE);
 		createBtn.addActionListener(e -> {
