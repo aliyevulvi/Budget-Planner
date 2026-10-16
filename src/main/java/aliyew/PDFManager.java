@@ -35,23 +35,23 @@ public class PDFManager {
 
 			doc.add(headerParagraph);
 
-			
-			
+
+
 			PdfPTable infoTable = new PdfPTable(2);
 			PdfPCell info1 = new PdfPCell(new Phrase("Record Name", contentFont2));
 			PdfPCell info2 = new PdfPCell(new Phrase(report.getRecord().getRecordName(), contentFont2));
 			PdfPCell info3 = new PdfPCell(new Phrase("Record Income", contentFont2));
-			PdfPCell info4 = new PdfPCell(new Phrase(report.getRecord().getRecordIncome()+"", contentFont2));
+			PdfPCell info4 = new PdfPCell(new Phrase(report.getRecord().getRecordIncome() + "", contentFont2));
 			PdfPCell info7 = new PdfPCell(new Phrase("Record Saving", contentFont2));
-			PdfPCell info8 = new PdfPCell(new Phrase(report.getRecord().getRecordSaving()+"", contentFont2));
+			PdfPCell info8 = new PdfPCell(new Phrase(report.getRecord().getRecordSaving() + "", contentFont2));
 			PdfPCell info5 = new PdfPCell(new Phrase("Record Date", contentFont2));
-			PdfPCell info6 = new PdfPCell(new Phrase((report.getRecord().getCreationDate()+"").substring(0,16), contentFont2));
-			
+			PdfPCell info6 = new PdfPCell(new Phrase((report.getRecord().getCreationDate() + "").substring(0, 16), contentFont2));
+
 			info2.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			info4.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			info6.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			info8.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			
+
 			info1.setBorder(PdfPCell.TOP);
 			info2.setBorder(PdfPCell.TOP);
 			info3.setBorder(PdfPCell.NO_BORDER);
@@ -71,14 +71,14 @@ public class PDFManager {
 			infoTable.addCell(info8);
 			infoTable.addCell(info5);
 			infoTable.addCell(info6);
-			
+
 			infoTable.setWidthPercentage(100f);
 			infoTable.setSpacingAfter(50f);
-			
-			
-			
+
+
+
 			doc.add(infoTable);
-		
+
 
 			PdfPTable expenseTable = new PdfPTable(3);
 			expenseTable.setWidthPercentage(100f);
@@ -128,7 +128,7 @@ public class PDFManager {
 
 			for (Map.Entry<String, Double> entry : report.getCategorizedMap().entrySet()) {
 				PdfPCell cell1 = new PdfPCell(new Phrase(entry.getKey(), FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
-				PdfPCell cell2 = new PdfPCell(new Phrase(entry.getValue()+"", FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
+				PdfPCell cell2 = new PdfPCell(new Phrase(entry.getValue() + "", FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK)));
 
 				cell1.setBackgroundColor(new Color(152, 202, 255));
 				cell2.setBackgroundColor(new Color(206, 230, 255));
@@ -140,8 +140,19 @@ public class PDFManager {
 
 				categorizedTable.addCell(cell1);
 				categorizedTable.addCell(cell2);
+				//System.out.println(entry.getKey() +" | " + entry.getValue());
 			}
-			
+
+			if (report.getCategorizedMap().size() % 2 != 0) {
+				PdfPCell empty1 = new PdfPCell(new Phrase(""));
+				PdfPCell empty2 = new PdfPCell(new Phrase(""));
+				empty1.setBorder(PdfPCell.TOP);
+				empty2.setBorder(PdfPCell.TOP);
+				categorizedTable.addCell(empty1);
+				categorizedTable.addCell(empty2);
+			}
+
+
 			categorizedTable.setSpacingAfter(50f);
 
 			doc.add(categorizedTable);
@@ -158,23 +169,23 @@ public class PDFManager {
 			headerCell3.setBorder(PdfPCell.RIGHT | PdfPCell.BOTTOM);
 
 			resultTable.addCell(headerCell3);
-			
+
 			addCell2Table(resultTable, "Total Expenses", false, true);
-			addCell2Table(resultTable, report.getTotalExpense()+"", false, false);
+			addCell2Table(resultTable, report.getTotalExpense() + "", false, false);
 			addCell2Table(resultTable, "Balance", false, true);
-			addCell2Table(resultTable, (Math.round((report.getTotalExpense()+report.getRecord().getRecordIncome()) * 100.0) / 100.0)+"", false, false);
+			addCell2Table(resultTable, (Math.round((report.getTotalExpense() + report.getRecord().getRecordIncome()) * 100.0) / 100.0) + "", false, false);
 			addCell2Table(resultTable, "Highest Expense", false, true);
-			addCell2Table(resultTable, report.getHighestExpense() == null ? "0" : report.getHighestExpense().getExpenseAmt()+"" , false, false);
+			addCell2Table(resultTable, report.getHighestExpense() == null ? "0" : report.getHighestExpense().getExpenseAmt() + "", false, false);
 			addCell2Table(resultTable, "Smallest Expense", false, true);
-			addCell2Table(resultTable, report.getSmallestExpense() == null ? "0" : report.getSmallestExpense().getExpenseAmt()+"", false, false);
+			addCell2Table(resultTable, report.getSmallestExpense() == null ? "0" : report.getSmallestExpense().getExpenseAmt() + "", false, false);
 			addCell2Table(resultTable, "First Expense", false, true);
-			addCell2Table(resultTable, report.getFirstExpense() == null ? "0" : report.getFirstExpense().getExpenseDate()+"", false, false);
+			addCell2Table(resultTable, report.getFirstExpense() == null ? "0" : report.getFirstExpense().getExpenseDate() + "", false, false);
 			addCell2Table(resultTable, "Last Expense", false, true);
-			addCell2Table(resultTable, report.getLastExpense() == null ? "0" : report.getLastExpense().getExpenseDate()+"", false, false);
-			
+			addCell2Table(resultTable, report.getLastExpense() == null ? "0" : report.getLastExpense().getExpenseDate() + "", false, false);
+
 
 			doc.add(resultTable);
-			
+
 
 
 

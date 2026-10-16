@@ -28,6 +28,7 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.time.LocalDate;
 import java.time.format.*;
 
@@ -44,7 +45,7 @@ public class UIManager {
 	private static JPanel recordsPanel;
 	private static JPanel settingsPanel;
 
-	private static JPanel reviewPanel = new JPanel();
+	private static JScrollPane reviewScrollPane = new JScrollPane();
 	private static Record record = new Record();
 	private static ArrayList<Expense> allExpenses = new ArrayList<>();
 	private static ArrayList<Record> allRecords = new ArrayList<>();
@@ -155,7 +156,7 @@ public class UIManager {
 		rightPanel.add(recordsPanel, RECORDS_PANEL);
 		rightPanel.add(createRecordPanel, CREATE_RECORD_PANEL);
 		rightPanel.add(settingsPanel, SETTINGS_PANEL);
-		rightPanel.add(reviewPanel, REVIEW_PANEL);
+		rightPanel.add(reviewScrollPane, REVIEW_PANEL);
 
 
 
@@ -388,7 +389,7 @@ public class UIManager {
 			String selectedCat = (String) catBox.getSelectedItem();
 
 			if (selectedCat.equals("Bills") || selectedCat.equals("Other")) {
-			    JOptionPane.showMessageDialog(null, "You Can't Delete This Category!");
+				JOptionPane.showMessageDialog(null, "You Can't Delete This Category!");
 			} else {
 				JsonManager.deleteCat(selectedCat);
 				JOptionPane.showMessageDialog(null, "Category Deleted!");
@@ -430,7 +431,7 @@ public class UIManager {
 		gbc.gridx = 2;
 		gbc.gridy = 1;
 		panel.add(delBtn, gbc);
-		
+
 		JButton prevBtn = new JButton("<");
 
 		prevBtn.setBackground(Color.decode("#e8e8e8"));
@@ -438,12 +439,12 @@ public class UIManager {
 		prevBtn.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 		});
-		
+
 		gbc.gridx = 2;
 		gbc.gridy = 5;
 		panel.add(prevBtn, gbc);
-		
-		panel.setBorder(BorderFactory.createMatteBorder(1,1,1,1, Color.BLACK));
+
+		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
 
 
 
@@ -451,8 +452,8 @@ public class UIManager {
 	}
 
 	private static void reviewPanelConfig() {
-		//reviewPanel = new JPanel(new BorderLayout());
-		reviewPanel.setLayout(new BorderLayout());
+		JPanel reviewPanel = new JPanel();
+		reviewPanel.setLayout(new BoxLayout(reviewPanel, BoxLayout.Y_AXIS));
 		reviewPanel.removeAll();
 		reviewPanel.setBackground(Color.decode("#e3e3e3"));
 		reviewPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
@@ -535,7 +536,7 @@ public class UIManager {
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
 		infoPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
 		//infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
-		reviewPanel.add(infoPanel, BorderLayout.NORTH);
+		reviewPanel.add(infoPanel);
 
 
 		//    REVIEW PANEL CENTER
@@ -661,7 +662,7 @@ public class UIManager {
 			}
 		});
 
-		reviewPanel.add(scrollPane, BorderLayout.CENTER);
+		reviewPanel.add(scrollPane);
 
 
 		//    REVIEW PANEL SOUTH
@@ -770,6 +771,36 @@ public class UIManager {
 			}
 		});
 
-		reviewPanel.add(opPanel, BorderLayout.SOUTH);
+		reviewPanel.add(opPanel);
+
+		JPanel exportPanel = new JPanel();
+
+		JButton pdfBtn = new JButton("Export As Pdf");
+		pdfBtn.addActionListener(e -> {
+			HashMap<String, Double> categorizedMap = new HashMap<>();
+            allExpenses = JsonManager.getExpenses(record);
+            
+            for (Expense exp : allExpenses) {
+                if (!categorizedMap.containsKey(exp.getExpenseCat())) {
+                    categorizedMap.put(exp.getExpenseCat(), Math.round(exp.getExpenseAmt()*100)/100.0);
+                } else {
+                    categorizedMap.replace(exp.getExpenseCat(), categorizedMap.get(exp.getExpenseCat())+(Math.round(exp.getExpenseAmt()*100)/100.0));
+                }
+                
+                //System.out.println(exp.getExpenseCat() +" | "+ exp.getExpenseAmt());
+            }
+            
+			PDFManager.createPdf(new Report(record, allExpenses, categorizedMap));
+		});
+		JButton csvBtn = new JButton("Export As Csv");
+
+		exportPanel.add(pdfBtn);
+		exportPanel.add(csvBtn);
+		reviewPanel.add(exportPanel);
+
+		reviewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		reviewScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		reviewScrollPane.setViewportView(reviewPanel);
+
 	}
 }
