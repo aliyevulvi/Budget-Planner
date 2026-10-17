@@ -778,24 +778,36 @@ public class UIManager {
 		JButton pdfBtn = new JButton("Export As Pdf");
 		pdfBtn.addActionListener(e -> {
 			HashMap<String, Double> categorizedMap = new HashMap<>();
-            allExpenses = JsonManager.getExpenses(record);
-            
-            for (Expense exp : allExpenses) {
-                if (!categorizedMap.containsKey(exp.getExpenseCat())) {
-                    categorizedMap.put(exp.getExpenseCat(), Math.round(exp.getExpenseAmt()*100)/100.0);
-                } else {
-                    categorizedMap.replace(exp.getExpenseCat(), categorizedMap.get(exp.getExpenseCat())+(Math.round(exp.getExpenseAmt()*100)/100.0));
-                }
-                
-                //System.out.println(exp.getExpenseCat() +" | "+ exp.getExpenseAmt());
-            }
-            
+			allExpenses = JsonManager.getExpenses(record);
+
+			for (Expense exp : allExpenses) {
+				if (!categorizedMap.containsKey(exp.getExpenseCat())) {
+					categorizedMap.put(exp.getExpenseCat(), Math.round(exp.getExpenseAmt() * 100) / 100.0);
+				} else {
+					categorizedMap.replace(exp.getExpenseCat(), categorizedMap.get(exp.getExpenseCat()) + (Math.round(exp.getExpenseAmt() * 100) / 100.0));
+				}
+			}
+
 			PDFManager.createPdf(new Report(record, allExpenses, categorizedMap));
 		});
-		JButton csvBtn = new JButton("Export As Csv");
+		JButton xlsxBtn = new JButton("Export As Xlsx");
+		xlsxBtn.addActionListener(e -> {
+			HashMap<String, Double> categorizedMap = new HashMap<>();
+			allExpenses = JsonManager.getExpenses(record);
+
+			for (Expense exp : allExpenses) {
+				if (!categorizedMap.containsKey(exp.getExpenseCat())) {
+					categorizedMap.put(exp.getExpenseCat(), Math.round(exp.getExpenseAmt() * 100) / 100.0);
+				} else {
+					categorizedMap.replace(exp.getExpenseCat(), categorizedMap.get(exp.getExpenseCat()) + (Math.round(exp.getExpenseAmt() * 100) / 100.0));
+				}
+			}
+
+			XlsxManager.createXlsx(record, allExpenses, categorizedMap);
+		});
 
 		exportPanel.add(pdfBtn);
-		exportPanel.add(csvBtn);
+		exportPanel.add(xlsxBtn);
 		reviewPanel.add(exportPanel);
 
 		reviewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
