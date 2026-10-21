@@ -379,6 +379,7 @@ public class UIManager {
 		JComboBox<String> catBox = new JComboBox<>();
 		JButton delBtn = new JButton("Delete");
 
+		catBox.addItem("Default");
 		for (String str : cats) {
 			catBox.addItem(str);
 		}
@@ -388,7 +389,7 @@ public class UIManager {
 		delBtn.addActionListener(e -> {
 			String selectedCat = (String) catBox.getSelectedItem();
 
-			if (selectedCat.equals("Bills") || selectedCat.equals("Other")) {
+			if (selectedCat.equals("Default")) {
 				JOptionPane.showMessageDialog(null, "You Can't Delete This Category!");
 			} else {
 				JsonManager.deleteCat(selectedCat);
@@ -398,6 +399,8 @@ public class UIManager {
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			}
 		});
+
+		JSeparator jsep = new JSeparator(SwingConstants.HORIZONTAL);
 
 		int panelWidth = (int)(dynamicWidth * 0.4);
 		int panelHeight = (int)(dynamicHeight * 0.1);
@@ -440,8 +443,113 @@ public class UIManager {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 		});
 
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		panel.add(jsep, gbc);
+
+
+		// PAYMENT TEMPLATE CREATING
+		JComboBox<String> categoryBox = new JComboBox<>();
+
+		ArrayList<String> categories = JsonManager.getCats();
+		for (String str : categories) {
+			categoryBox.addItem(str);
+		}
+		JTextField catJtf = new JTextField(10);
+
+		JButton payTempBtn = new JButton("Create");
+		payTempBtn.addActionListener(e -> {
+
+			if (Validation.isValidAmount(catJtf.getText().trim())) {
+				JsonManager.createPT(new PT((String)(categoryBox.getSelectedItem()), Double.parseDouble(catJtf.getText().trim())));
+			    rightPanelConfigurationMethod(rightPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			} else {
+				JOptionPane.showMessageDialog(null, "Amount is Invalid!");
+			}
+
+			categoryBox.setSelectedIndex(-1);
+			catJtf.setText("");
+		});
+
+
+		//    PAYMENT TEMPLAYE DELETING
+		JComboBox<String> ptCb = new JComboBox<>();
+		ArrayList<PT> allPTs = JsonManager.getPTs();
+
+		for (PT pt : allPTs) {
+			ptCb.addItem(pt.toString());
+		}
+
+		JButton ptDelBtn = new JButton("Delete");
+		ptDelBtn.addActionListener(e -> {
+			int selIndex = ptCb.getSelectedIndex();
+
+			JsonManager.deletePT(allPTs.get(selIndex));
+			rightPanelConfigurationMethod(rightPanel);
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+
+		});
+
+
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.gridwidth = 1;
+		panel.add(new JLabel("Create Payment Template"), gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 4;
+		panel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 4;
+		panel.add(new JLabel(""), gbc);
+
+
+
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		panel.add(categoryBox, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 5;
+		panel.add(catJtf, gbc);
+
 		gbc.gridx = 2;
 		gbc.gridy = 5;
+		panel.add(payTempBtn, gbc);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 6;
+		panel.add(new JLabel("Delete Payment Template"), gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 6;
+		panel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 6;
+		panel.add(new JLabel(""), gbc);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 7;
+		panel.add(ptCb, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 7;
+		panel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 7;
+		panel.add(ptDelBtn, gbc);
+
+        
+
+
+
+		gbc.gridx = 2;
+		gbc.gridy = 8;
 		panel.add(prevBtn, gbc);
 
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
@@ -453,6 +561,7 @@ public class UIManager {
 
 	private static void reviewPanelConfig() {
 		JPanel reviewPanel = new JPanel();
+		reviewPanel.removeAll();
 		reviewPanel.setLayout(new BoxLayout(reviewPanel, BoxLayout.Y_AXIS));
 		reviewPanel.removeAll();
 		reviewPanel.setBackground(Color.decode("#e3e3e3"));
@@ -507,9 +616,30 @@ public class UIManager {
 				}
 			}
 		});
+		
+		JComboBox<String> ptCb = new JComboBox<>();
+		ArrayList<PT> allPTs = JsonManager.getPTs();
+		
+		for (PT pt : allPTs) {
+		    ptCb.addItem(pt.toString());
+		}
+		
+		JButton addPtBtn = new JButton("Add");
+		addPtBtn.addActionListener(e -> {
+		    PT selPt = allPTs.get(ptCb.getSelectedIndex());
+		    Expense expenseTemp = new Expense(LocalDate.now(), selPt.getPTCat(), selPt.getPTAmt());
+		    expenseTemp.setExpenseRecordId(record.getRecordId());
+		    JsonManager.createExpense(expenseTemp);
+		    allExpenses = JsonManager.getExpenses(record);
+		    rightPanelConfigurationMethod(rightPanel);
+		    reviewPanelConfig();
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, REVIEW_PANEL);
+		    
+		    
+		});
 
 
-		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 30, 10));
+		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 30, 10));
 
 		infoPanel.setFocusable(true);
 		recordName.addActionListener(e -> infoPanel.requestFocusInWindow());
@@ -531,6 +661,8 @@ public class UIManager {
 		infoPanel.add(recordSaving);
 		infoPanel.add(new JLabel("Record Date ", SwingConstants.LEFT));
 		infoPanel.add(recordCreationDate);
+		infoPanel.add(ptCb);
+		infoPanel.add(addPtBtn);
 
 		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);

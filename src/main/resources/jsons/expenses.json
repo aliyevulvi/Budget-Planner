@@ -33,4 +33,179 @@
   "expenseCat" : "test1",
   "expenseAmt" : -5.0,
   "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 49.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : -65.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
+}, {
+  "expenseId" : 0,
+  "expenseRecordId" : -1,
+  "expenseDate" : [ 2026, 10, 21 ],
+  "expenseCat" : "Bills",
+  "expenseAmt" : 13.0,
+  "expenseSync" : false
 } ]

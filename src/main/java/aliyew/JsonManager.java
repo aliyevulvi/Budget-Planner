@@ -17,6 +17,7 @@ public class JsonManager {
 	private static final File EXPENSE_FILE = new File("src/main/resources/jsons/expenses.json");
 	private static final File SYNC_FILE = new File("src/main/resources/jsons/syncQueue.json");
 	private static final File CAT_FILE = new File("src/main/resources/jsons/category.json");
+	private static final File PAYMENT_TEMPLATES_FILE = new File("src/main/resources/jsons/payment_templates.json");
 
 	public static ArrayList<Record> getRecords() {
 		ArrayList<Record> allRecords = new ArrayList<>();
@@ -324,6 +325,55 @@ public class JsonManager {
 
 		try {
 			mapper.writerWithDefaultPrettyPrinter().writeValue(CAT_FILE, allCats);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+	
+	public static ArrayList<PT> getPTs() {
+		ArrayList<PT> allPTs = new ArrayList<>();
+
+		try {
+
+			if (!PAYMENT_TEMPLATES_FILE.exists()) {
+				PAYMENT_TEMPLATES_FILE.createNewFile();
+				return allPTs;
+			}
+			return mapper.readValue(PAYMENT_TEMPLATES_FILE, new TypeReference<ArrayList<PT>>() {});
+
+
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			allPTs.clear();
+			return allPTs;
+		}
+	}
+	
+	public static void createPT(PT pt) {
+		ArrayList<PT> allPTs = getPTs();
+
+		for (PT pt1 : allPTs) {
+		    if (pt.getPTCat().equals(pt1.getPTCat()) && pt.getPTAmt() == pt1.getPTAmt()) {
+		        return;
+		    }
+		}
+		
+		allPTs.add(pt);
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(PAYMENT_TEMPLATES_FILE, allPTs);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+	
+	public static void deletePT(PT pt) {
+		ArrayList<PT> allPTs = getPTs();
+		allPTs.removeIf(e -> (e.getPTCat().equals(pt.getPTCat()) && e.getPTAmt() == pt.getPTAmt()));
+
+		try {
+			mapper.writerWithDefaultPrettyPrinter().writeValue(PAYMENT_TEMPLATES_FILE, allPTs);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
