@@ -1,3 +1,4 @@
+
 package aliyew;
 
 import java.awt.BorderLayout;
@@ -51,13 +52,13 @@ public class UIManager {
 	private static ArrayList<Record> allRecords = new ArrayList<>();
 
 	public static void main(String[] args) {
-		// Pencere çerçevelerini işletim sistemi yerine Swing'in çizmesini sağlar
+// Pencere çerçevelerini işletim sistemi yerine Swing'in çizmesini sağlar
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JDialog.setDefaultLookAndFeelDecorated(true);
 
 		JFrame myFrame = getFrame();
 
-		// PANELS
+// PANELS
 		JPanel leftPanel = new JPanel(new BorderLayout());
 		rightPanel = new JPanel(new BorderLayout());
 
@@ -109,7 +110,7 @@ public class UIManager {
 		btn.setBackground(Color.decode("#124559"));
 		btn.setAlignmentX(JButton.CENTER_ALIGNMENT);
 		btn.setBorderPainted(false);
-		//btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#000000")));
+//btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#000000")));
 		btn.setFocusable(false);
 		btn.setForeground(Color.decode("#dbd8d8"));
 		btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int)(screenSize.height * 0.10)));
@@ -129,7 +130,7 @@ public class UIManager {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// btn.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.WHITE));
+// btn.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.WHITE));
 			}
 
 		});
@@ -221,7 +222,7 @@ public class UIManager {
 			gbc.gridx = 1;
 			buttonPanel.add(reviewButton, gbc);
 
-			//buttonPanel.setMaximumSize(new Dimension((int) (dynamicWidth*0.05), (int) (dynamicHeight*0.1)));
+//buttonPanel.setMaximumSize(new Dimension((int) (dynamicWidth*0.05), (int) (dynamicHeight*0.1)));
 			buttonPanel.setBackground(Color.LIGHT_GRAY);
 
 
@@ -352,7 +353,7 @@ public class UIManager {
 
 		ArrayList<String> cats = JsonManager.getCats();
 
-		// ADD CATEGORY
+// ADD CATEGORY
 		JLabel addLbl = new JLabel("Add Category");
 		JTextField catFld = new JTextField("");
 		JButton addBtn = new JButton("Add");
@@ -367,14 +368,14 @@ public class UIManager {
 			} else {
 				JsonManager.createCat(catFld.getText().trim());
 				JOptionPane.showMessageDialog(null, "New Category Added!");
-				//settingsPanelConfig(settingsPanel);
+//settingsPanelConfig(settingsPanel);
 				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			}
 		});
 
 
-		// DELETE CATEGORY
+// DELETE CATEGORY
 		JLabel delLbl = new JLabel("Delete Category");
 		JComboBox<String> catBox = new JComboBox<>();
 		JButton delBtn = new JButton("Delete");
@@ -394,7 +395,7 @@ public class UIManager {
 			} else {
 				JsonManager.deleteCat(selectedCat);
 				JOptionPane.showMessageDialog(null, "Category Deleted!");
-				//settingsPanelConfig(settingsPanel);
+//settingsPanelConfig(settingsPanel);
 				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			}
@@ -449,7 +450,7 @@ public class UIManager {
 		panel.add(jsep, gbc);
 
 
-		// PAYMENT TEMPLATE CREATING
+// PAYMENT TEMPLATE CREATING
 		JComboBox<String> categoryBox = new JComboBox<>();
 
 		ArrayList<String> categories = JsonManager.getCats();
@@ -463,7 +464,7 @@ public class UIManager {
 
 			if (Validation.isValidAmount(catJtf.getText().trim())) {
 				JsonManager.createPT(new PT((String)(categoryBox.getSelectedItem()), Double.parseDouble(catJtf.getText().trim())));
-			    rightPanelConfigurationMethod(rightPanel);
+				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			} else {
 				JOptionPane.showMessageDialog(null, "Amount is Invalid!");
@@ -474,7 +475,7 @@ public class UIManager {
 		});
 
 
-		//    PAYMENT TEMPLAYE DELETING
+//    PAYMENT TEMPLAYE DELETING
 		JComboBox<String> ptCb = new JComboBox<>();
 		ArrayList<PT> allPTs = JsonManager.getPTs();
 
@@ -519,7 +520,7 @@ public class UIManager {
 		gbc.gridx = 2;
 		gbc.gridy = 5;
 		panel.add(payTempBtn, gbc);
-		
+
 		gbc.gridx = 0;
 		gbc.gridy = 6;
 		panel.add(new JLabel("Delete Payment Template"), gbc);
@@ -531,7 +532,7 @@ public class UIManager {
 		gbc.gridx = 2;
 		gbc.gridy = 6;
 		panel.add(new JLabel(""), gbc);
-		
+
 		gbc.gridx = 0;
 		gbc.gridy = 7;
 		panel.add(ptCb, gbc);
@@ -544,12 +545,74 @@ public class UIManager {
 		gbc.gridy = 7;
 		panel.add(ptDelBtn, gbc);
 
-        
+		gbc.gridx = 0;
+		gbc.gridy = 8;
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		panel.add(jsep, gbc);
 
+		gbc.gridwidth =  1;
+		gbc.gridx = 0;
+		gbc.gridy = 9;
+		panel.add(new JLabel("Data Operations"), gbc);
 
+		gbc.gridx = 1;
+		gbc.gridy = 9;
+		panel.add(new JLabel(""), gbc);
 
 		gbc.gridx = 2;
-		gbc.gridy = 8;
+		gbc.gridy = 9;
+		panel.add(new JLabel(""), gbc);
+
+		JButton resetBtn = new JButton("Reset");
+		JButton backupBtn = new JButton("Backup");
+		JButton restoreBtn = new JButton("Restore");
+
+		resetBtn.setForeground(Color.WHITE);
+		resetBtn.setBackground(Color.decode("#ed574c"));
+		resetBtn.addActionListener(e -> {
+			int choice = JOptionPane.showConfirmDialog(null, "Are you sure delete all data?", null, JOptionPane.YES_NO_OPTION);
+
+			if (choice == JOptionPane.YES_OPTION) {
+				allRecords = JsonManager.getRecords();
+
+				for (Record rec : allRecords) {
+					JsonManager.deleteRecord(rec);
+				}
+
+				allRecords.clear();
+				rightPanelConfigurationMethod(rightPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			}
+
+		});
+
+		backupBtn.setForeground(Color.WHITE);
+		backupBtn.setBackground(Color.decode("#00B050"));
+		backupBtn.addActionListener(e -> {
+			JOptionPane.showMessageDialog(rightPanel, BackupManager.createBackup());
+		});
+
+		restoreBtn.setForeground(Color.WHITE);
+		restoreBtn.setBackground(Color.decode("#4487eb"));
+		restoreBtn.addActionListener(e -> {
+
+		});
+
+
+		gbc.gridx = 0;
+		gbc.gridy = 10;
+		panel.add(resetBtn, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 10;
+		panel.add(backupBtn, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 10;
+		panel.add(restoreBtn, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 11;
 		panel.add(prevBtn, gbc);
 
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
@@ -568,7 +631,7 @@ public class UIManager {
 		reviewPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
 
-		//    REVIEW PANEL NORTH
+//    REVIEW PANEL NORTH
 		JTextField recordName = new JTextField(record.getRecordName(), SwingConstants.RIGHT);
 		JLabel recordCreationDate = new JLabel(record.getCreationDate().substring(0, 16), SwingConstants.RIGHT);
 		JTextField recordIncome = new JTextField(record.getRecordIncome() + "", SwingConstants.RIGHT);
@@ -616,26 +679,26 @@ public class UIManager {
 				}
 			}
 		});
-		
+
 		JComboBox<String> ptCb = new JComboBox<>();
 		ArrayList<PT> allPTs = JsonManager.getPTs();
-		
+
 		for (PT pt : allPTs) {
-		    ptCb.addItem(pt.toString());
+			ptCb.addItem(pt.toString());
 		}
-		
+
 		JButton addPtBtn = new JButton("Add");
 		addPtBtn.addActionListener(e -> {
-		    PT selPt = allPTs.get(ptCb.getSelectedIndex());
-		    Expense expenseTemp = new Expense(LocalDate.now(), selPt.getPTCat(), selPt.getPTAmt());
-		    expenseTemp.setExpenseRecordId(record.getRecordId());
-		    JsonManager.createExpense(expenseTemp);
-		    allExpenses = JsonManager.getExpenses(record);
-		    rightPanelConfigurationMethod(rightPanel);
-		    reviewPanelConfig();
+			PT selPt = allPTs.get(ptCb.getSelectedIndex());
+			Expense expenseTemp = new Expense(LocalDate.now(), selPt.getPTCat(), selPt.getPTAmt());
+			expenseTemp.setExpenseRecordId(record.getRecordId());
+			JsonManager.createExpense(expenseTemp);
+			allExpenses = JsonManager.getExpenses(record);
+			rightPanelConfigurationMethod(rightPanel);
+			reviewPanelConfig();
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, REVIEW_PANEL);
-		    
-		    
+
+
 		});
 
 
@@ -667,11 +730,11 @@ public class UIManager {
 		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
 		infoPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
-		//infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+//infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		reviewPanel.add(infoPanel);
 
 
-		//    REVIEW PANEL CENTER
+//    REVIEW PANEL CENTER
 		JPanel dataPanel = new JPanel(new BorderLayout());
 
 		String[] columns = {"DATE", "CATEGORY", "AMOUNT"};
@@ -680,10 +743,10 @@ public class UIManager {
 			int editableRow = -1;
 
 			public boolean isCellEditable(int row, int column) {
-				//if (row == getRowCount() - 1)
-//					return row == getRowCount() - 1;
+//if (row == getRowCount() - 1)
+// return row == getRowCount() - 1;
 				return true;
-				//return row == editableRow;
+//return row == editableRow;
 			}
 
 			public void setValueAt(Object value, int row, int col) {
@@ -758,7 +821,7 @@ public class UIManager {
 			}
 		};
 
-		//table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 			@Override
@@ -797,7 +860,7 @@ public class UIManager {
 		reviewPanel.add(scrollPane);
 
 
-		//    REVIEW PANEL SOUTH
+//    REVIEW PANEL SOUTH
 		JPanel opPanel = new JPanel(new CardLayout());
 
 		JPanel op1Panel = new JPanel(new BorderLayout());
@@ -906,8 +969,10 @@ public class UIManager {
 		reviewPanel.add(opPanel);
 
 		JPanel exportPanel = new JPanel();
-
 		JButton pdfBtn = new JButton("Export As Pdf");
+		pdfBtn.setForeground(Color.WHITE);
+		pdfBtn.setBackground(Color.decode("#FF2C2C"));
+
 		pdfBtn.addActionListener(e -> {
 			HashMap<String, Double> categorizedMap = new HashMap<>();
 			allExpenses = JsonManager.getExpenses(record);
@@ -923,6 +988,9 @@ public class UIManager {
 			PDFManager.createPdf(new Report(record, allExpenses, categorizedMap));
 		});
 		JButton xlsxBtn = new JButton("Export As Xlsx");
+
+		xlsxBtn.setForeground(Color.WHITE);
+		xlsxBtn.setBackground(Color.decode("#00B050"));
 		xlsxBtn.addActionListener(e -> {
 			HashMap<String, Double> categorizedMap = new HashMap<>();
 			allExpenses = JsonManager.getExpenses(record);
