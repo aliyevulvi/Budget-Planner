@@ -1,4 +1,3 @@
-
 package aliyew;
 
 import java.awt.BorderLayout;
@@ -27,11 +26,13 @@ import javax.swing.SwingConstants;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.time.LocalDate;
 import java.time.format.*;
+import java.io.File;
 
 public class UIManager {
 	private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -595,7 +596,22 @@ public class UIManager {
 		restoreBtn.setForeground(Color.WHITE);
 		restoreBtn.setBackground(Color.decode("#4487eb"));
 		restoreBtn.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setFileFilter(new FileNameExtensionFilter("Zip Files Only", "zip"));
 
+			int result = fileChooser.showOpenDialog(rightPanel);
+
+			if (result == JFileChooser.APPROVE_OPTION) {
+				File selFile = fileChooser.getSelectedFile();
+
+				if (selFile.getName().startsWith("budgetplanner_backup")) {
+					JOptionPane.showMessageDialog(null, BackupManager.restoreBackup(selFile.getAbsolutePath()));
+					rightPanelConfigurationMethod(rightPanel);
+					((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+				} else {
+					JOptionPane.showMessageDialog(null, "File Name Should Starts \"budgetplanner_backup\"");
+				}
+			}
 		});
 
 

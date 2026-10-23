@@ -1,1 +1,8 @@
-[ ]
+[ {
+  "recordId" : -1,
+  "recordName" : "admin",
+  "creationDate" : "2026-10-09 10:13:17.906258051",
+  "recordIncome" : 1.0,
+  "recordSaving" : 1.0,
+  "recordSync" : false
+} ]
