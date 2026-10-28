@@ -57,7 +57,7 @@ public class JsonManager {
 		ArrayList<Record> allRecords = getRecords();
 
 		for (int i = 0; i < allRecords.size(); i++) {
-			if (allRecords.get(i).getRecordId() == record.getRecordId()) {
+			if (allRecords.get(i).getRecordId().equals(record.getRecordId())) {
 				allRecords.set(i, record);
 			}
 		}
@@ -75,13 +75,7 @@ public class JsonManager {
 	public static String deleteRecord(Record record) {
 		ArrayList<Record> allRecords = getRecords();
 
-		for (Record rec : allRecords) {
-			if (rec.getRecordName().equals(record.getRecordName())) {
-				allRecords.remove(rec);
-				break;
-			}
-		}
-
+        allRecords.removeIf(rec -> rec.getRecordId().equals(record.getRecordId()));
 		deleteExpense(record);
 
 		try {
@@ -114,11 +108,11 @@ public class JsonManager {
 			ArrayList<Expense> recordExpenses = new ArrayList<>();
 
 			for (Expense exp : allExpenses) {
-				if (exp.getExpenseRecordId() == record.getRecordId()) {
+				if (exp.getExpenseRecordId().equals(record.getRecordId())) {
 					recordExpenses.add(exp);
 				}
 			}
-
+            
 			return recordExpenses;
 
 
@@ -150,7 +144,7 @@ public class JsonManager {
 
 
 		for (int i = 0; i < allExpenses.size(); i++) {
-			if (allExpenses.get(i).getExpenseId() == expense.getExpenseId()) {
+			if (allExpenses.get(i).getExpenseId().equals(expense.getExpenseId())) {
 				allExpenses.set(i, expense);
 				break;
 			}
@@ -169,12 +163,7 @@ public class JsonManager {
 	public static String deleteExpense(Expense expense) {
 		ArrayList<Expense> allExpenses = getExpenses();
 
-		for (Expense exp : allExpenses) {
-			if (exp.getExpenseId() == expense.getExpenseId()) {
-				allExpenses.remove(exp);
-				break;
-			}
-		}
+		allExpenses.removeIf(exp -> exp.getExpenseId().equals(expense.getExpenseId()));
 
 		try {
 
@@ -199,32 +188,6 @@ public class JsonManager {
 			logger.severe(e.getMessage());
 			return "Delete Expense Failed";
 		}
-	}
-
-	public static int getMinIdRecord() {
-		ArrayList<Record> allRecords = getRecords();
-		int minId = -1;
-
-		for (Record rec : allRecords) {
-			if (rec.getRecordId() <= minId) {
-				minId = rec.getRecordId() - 1;
-			}
-		}
-
-		return minId;
-	}
-
-	public static int getMinIdExpense() {
-		ArrayList<Expense> allExpenses = getExpenses();
-		int minId = -1;
-
-		for (Expense exp : allExpenses) {
-			if (exp.getExpenseId() <= minId) {
-				minId = exp.getExpenseId() - 1;
-			}
-		}
-
-		return minId;
 	}
 
 	public static ArrayList<Synchronization> getOps() {

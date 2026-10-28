@@ -1,3 +1,6 @@
 link.txt
 src/main/resources/logs/
 target/
+backups/
+reports/
+xlsx's/

@@ -16,17 +16,34 @@ public class DBManager {
 	private static final Logger logger = LogManager.getLogger(DBManager.class.getName());
 
 	public static void main(String[] args) {
+
+		try (Connection conn = DriverManager.getConnection(System.getenv("DB_URL"));
+					Statement stmt = conn.createStatement()) {
+
+		
+			stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS app_schema;");
+
+			stmt.executeUpdate("SET search_path TO app_schema;");
+
+			System.out.println("Özel şema başarıyla oluşturuldu ve aktif edildi!");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-			String sqlQuery = "CREATE TABLE IF NOT EXISTS tb_records ( "
-							  + "record_id SERIAL PRIMARY KEY, "
+			String sqlQuery = "CREATE TABLE IF NOT EXISTS app_schema.tb_records ( "
+							  + "record_id VARCHAR(36) PRIMARY KEY, "
 							  + "record_name VARCHAR(20) UNIQUE NOT NULL, "
 							  + "record_income DOUBLE PRECISION NOT NULL, "
 							  + "record_saving DOUBLE PRECISION NOT NULL, "
 							  + "record_ts TIMESTAMP NOT NULL "
 							  + ");";
-			String sqlQuery2 = "CREATE TABLE IF NOT EXISTS tb_expenses ( "
-							   + " expense_id SERIAL PRIMARY KEY, "
-							   + " expense_record_id INT REFERENCES tb_records(record_id) ON DELETE CASCADE, "
+			String sqlQuery2 = "CREATE TABLE IF NOT EXISTS app_schema.tb_expenses ( "
+							   + " expense_id VARCHAR(36) PRIMARY KEY, "
+							   + " expense_record_id VARCHAR(36) REFERENCES tb_records(record_id) ON DELETE CASCADE, "
 							   + "expense_date DATE NOT NULL, "
 							   + "expense_cat VARCHAR(50) NOT NULL, "
 							   + "expense_amt DOUBLE PRECISION NOT NULL);";
@@ -63,8 +80,8 @@ public class DBManager {
 				ResultSet rs = preparedStatement.executeQuery();
 
 				while (rs.next()) {
-					allRecords.add(new Record(rs.getInt("record_id"), rs.getString("record_name"),
-											  rs.getTimestamp("record_ts") + "", rs.getDouble("record_income"),
+					allRecords.add(new Record(rs.getString("record_id"), rs.getString("record_name"),
+											  rs.getTimestamp("record_ts").toInstant(), rs.getDouble("record_income"),
 											  rs.getDouble("record_saving")));
 				}
 			}
@@ -85,29 +102,22 @@ public class DBManager {
 				String insertQuery = "INSERT INTO tb_records (record_name, record_income, record_saving, record_ts) VALUES (?, ?, ?, ?);";
 
 				PreparedStatement pStatement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-				pStatement.setString(1, newRecord.getRecordName());
-				pStatement.setDouble(2, newRecord.getRecordIncome());
-				pStatement.setDouble(3, newRecord.getRecordSaving());
-				pStatement.setTimestamp(4, Timestamp.valueOf(newRecord.getCreationDate()));
+				pStatement.setString(1, newRecord.getRecordId());
+				pStatement.setString(2, newRecord.getRecordName());
+				pStatement.setDouble(3, newRecord.getRecordIncome());
+				pStatement.setDouble(4, newRecord.getRecordSaving());
+				pStatement.setTimestamp(5, Timestamp.from(newRecord.getRecordCreationDate()));
 				pStatement.executeUpdate();
-
-				ResultSet rs = pStatement.getGeneratedKeys();
-
-				if (rs.next()) {
-					newRecord.setRecordId(rs.getInt(1));
-					newRecord.setRecordSync(true);
-				}
-
 
 			}
 
-			return "Create Record Successfully";
+			return "SUCCESS";
 
 
 		} catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
-			return "Create Record Failed";
-			
+			return "FAIL";
+
 		}
 	}
 
@@ -118,20 +128,20 @@ public class DBManager {
 			pstmt.setString(1, rec.getRecordName());
 			pstmt.setDouble(2, rec.getRecordIncome());
 			pstmt.setDouble(3, rec.getRecordSaving());
-			pstmt.setInt(4, rec.getRecordId());
+			pstmt.setString(4, rec.getRecordId());
 			int affectedRows = pstmt.executeUpdate();
 
 			conn.close();
 
 			if (affectedRows == 1) {
 				rec.setRecordSync(true);
-				return "Update Record Successfully";
+				return "SUCCESS";
 			}
-			return "Update Record Failed";
+			return "FAIL";
 
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
-			return "Update Record Failed";
+			return "FAIL";
 		}
 	}
 
@@ -140,19 +150,19 @@ public class DBManager {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "DELETE FROM tb_records WHERE record_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, rec.getRecordId());
+			pstmt.setString(1, rec.getRecordId());
 			int affectedRows = pstmt.executeUpdate();
 
 
 			conn.close();
 			if (affectedRows == 1) {
 				rec.setRecordSync(true);
-				return "Delete Record Successfully";
+				return "SUCCESS";
 			}
-			return "Delete Record Failed";
+			return "FAIL";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
-			return "Delete Record Failed";
+			return "FAIL";
 
 		}
 
@@ -165,11 +175,11 @@ public class DBManager {
 			String sqlQuery = "SELECT * FROM tb_expenses WHERE expense_record_id = ?;";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, rec.getRecordId());
+			pstmt.setString(1, rec.getRecordId());
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				allExpenses.add(new Expense(rs.getInt("expense_id"), rs.getInt("expense_record_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getDouble("expense_amt")));
+				allExpenses.add(new Expense(rs.getString("expense_id"), rs.getString("expense_record_id"), rs.getDate("expense_date").toLocalDate(), rs.getString("expense_cat"), rs.getDouble("expense_amt")));
 			}
 			conn.close();
 			return allExpenses;
@@ -188,24 +198,20 @@ public class DBManager {
 			String insertQuery = "INSERT INTO tb_expenses(expense_record_id, expense_date, expense_cat, expense_amt) "
 								 + "VALUES (?,?,?,?);";
 			PreparedStatement pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-			pstmt.setInt(1, exp.getExpenseRecordId());
-			pstmt.setObject(2, exp.getExpenseDate());
-			pstmt.setString(3, exp.getExpenseCat());
-			pstmt.setDouble(4, exp.getExpenseAmt());
+			pstmt.setString(1, exp.getExpenseId());
+			pstmt.setString(2, exp.getExpenseRecordId());
+			pstmt.setObject(3, exp.getExpenseDate());
+			pstmt.setString(4, exp.getExpenseCat());
+			pstmt.setDouble(5, exp.getExpenseAmt());
 			pstmt.executeUpdate();
 
-			ResultSet rs = pstmt.getGeneratedKeys();
-			if (rs.next()) {
-				exp.setExpenseId(rs.getInt(1));
-				exp.setExpenseSync(true);
-			}
 			conn.close();
 
-			return "Create Expense Successfully";
+			return "SUCCESS";
 
 		} catch (SQLException e) {
 			logger.severe(() -> e.getMessage() + " | " + e.getSQLState());
-			return "Create Expense Failed";
+			return "FAIL";
 		}
 	}
 
@@ -216,18 +222,18 @@ public class DBManager {
 			pstmt.setObject(1, expense.getExpenseDate());
 			pstmt.setString(2, expense.getExpenseCat());
 			pstmt.setDouble(3, expense.getExpenseAmt());
-			pstmt.setInt(4, expense.getExpenseId());
+			pstmt.setString(4, expense.getExpenseId());
 			int affectedRows = pstmt.executeUpdate();
 			conn.close();
 
 			if (affectedRows == 1) {
 				expense.setExpenseSync(true);
-				return "Update Expense Successfully";
+				return "SUCCESS";
 			}
-			return "Update Expense Failed";
+			return "FAIL";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
-			return "Update Expense Failed";
+			return "FAIL";
 		}
 	}
 
@@ -236,50 +242,35 @@ public class DBManager {
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, expense.getExpenseId());
+			pstmt.setString(1, expense.getExpenseId());
 			int affectedRows = pstmt.executeUpdate();
 			conn.close();
 
 			if (affectedRows == 1) {
 				expense.setExpenseSync(true);
-				return "Delete Expense Successfully";
+				return "SUCCESS";
 			}
-			return "Delete Expense Failed";
+			return "FAIL";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
-			return "Delete Expense Failed";
+			return "FAIL";
 		}
 	}
-	
+
 	public static String deleteExpense(Record record) {
 
 		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
 			String sqlQuery = "DELETE FROM tb_expenses WHERE expense_record_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-			pstmt.setInt(1, record.getRecordId());
+			pstmt.setString(1, record.getRecordId());
 			pstmt.executeUpdate();
 			conn.close();
 
-		
-			return "Delete Expense Successfully";
+
+			return "SUCCESS";
 		} catch (SQLException e) {
 			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
-			return "Delete Expense Failed";
-		}
-	}
-
-	public static void adminDeleteRecords() {
-
-		try (Connection conn = DriverManager.getConnection(LINK_STRING)) {
-
-			String sqlQuery = "DROP TABLE tb_records;";
-			PreparedStatement preparedStatement = conn.prepareStatement(sqlQuery);
-			preparedStatement.executeUpdate();
-
-			conn.close();
-
-		} catch (SQLException e) {
-			logger.severe(()->e.getMessage() + " | " + e.getSQLState());
+			return "FAIL";
 		}
 	}
 

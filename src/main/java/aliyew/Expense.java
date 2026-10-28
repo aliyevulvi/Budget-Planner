@@ -2,103 +2,111 @@ package aliyew;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Expense {
 
-    private int expenseId = 0;
-    private int expenseRecordId = 0;
-    private LocalDate expenseDate = null;
-    private String expenseCat = "undefined";
-    private double expenseAmt = 0;
-    private boolean expenseSync = false;
+	private String expenseId = "undefined";
+	private String expenseRecordId = "undefined";
+	private LocalDate expenseDate = null;
+	private String expenseCat = "undefined";
+	private double expenseAmt = 0;
+	private boolean expenseSync = false;
 
-    public Expense(int id, int record_id, LocalDate date, String cat, double amount) {
-        this.expenseId = id;
-        this.expenseRecordId = record_id;
-        this.expenseDate = date;
-        this.expenseCat = cat;
-        this.expenseAmt = amount;
-    }
+	public Expense(String id, String record_id, LocalDate date, String cat, double amount) {
+		this.expenseId = id;
+		this.expenseRecordId = record_id;
+		this.expenseDate = date;
+		this.expenseCat = cat;
+		this.expenseAmt = amount;
+	}
 
-    public Expense(LocalDate date, String cat, double amount) {
-        this.expenseDate = date;
-        this.expenseCat = cat;
-        this.expenseAmt = amount;
-    }
-
-    public Expense() {
-
-    }
-    
-    public Expense(int id) {
-        this.expenseId = id;
-    }
-
-    public int getExpenseId() {
-        return this.expenseId;
-    }
-
-    public int getExpenseRecordId() {
-        return this.expenseRecordId;
-    }
-
-    public LocalDate getExpenseDate() {
-        return this.expenseDate;
-    }
-
-    public String getExpenseCat() {
-        return this.expenseCat;
-    }
-
-    public double getExpenseAmt() {
-        return this.expenseAmt;
-    }
-
-    public boolean getExpenseSync() {
-        return this.expenseSync;
-    }
-
-    public void setExpenseId(int id) {
-        this.expenseId = id;
-    }
-
-    public void setExpenseSync(boolean bool) {
-        this.expenseSync = bool;
-    }
-
-    public void setExpenseRecordId(int id) {
-        this.expenseRecordId = id;
-    }
-    
-    public void setExpenseDate(LocalDate ld) {
-        this.expenseDate = ld;
-    }
-    
-    public void setExpenseCat(String cat) {
-        this.expenseCat = cat;
-    }
-    
-    public void setExpenseAmt(Double amt) {
-        this.expenseAmt = amt;
-    }
-
-    public static Expense getLastExpense(ArrayList<Expense> allExpenses) {
-        Expense lastExpense = allExpenses.get(0);
-
-        for (Expense expense : allExpenses) {
-            if (expense.getExpenseDate().isAfter(lastExpense.getExpenseDate())) {
-                lastExpense = expense;
+	public Expense(LocalDate date, String cat, double amount) {
+		this.expenseDate = date;
+		this.expenseCat = cat;
+		this.expenseAmt = amount;
+		
+		String uuidStr = UUID.randomUUID().toString();
+		
+		ArrayList<Expense> allExpenses = JsonManager.getExpenses();
+        
+        for (int i = 0; i < allExpenses.size(); i++) {
+            if (allExpenses.get(i).getExpenseId().equals(uuidStr)) {
+                uuidStr = UUID.randomUUID().toString();
+                i = -1;
             }
         }
+        
+        this.expenseId = uuidStr;
+	}
 
-        return lastExpense;
-    }
+	public Expense() {
 
-    @Override
-    public String toString() {
-        return "|[ %9d ] [ %15s ] [ %10s ] [ %9.2f ] [ %5s ]|".formatted(expenseId, expenseDate.toString(), expenseCat, expenseAmt, expenseSync);
+	}
 
-    }
+	public Expense(String id) {
+		this.expenseId = id;
+	}
 
-   
+	public String getExpenseId() {
+		return this.expenseId;
+	}
+
+	public String getExpenseRecordId() {
+		return this.expenseRecordId;
+	}
+
+	public LocalDate getExpenseDate() {
+		return this.expenseDate;
+	}
+
+	public String getExpenseCat() {
+		return this.expenseCat;
+	}
+
+	public double getExpenseAmt() {
+		return this.expenseAmt;
+	}
+
+	public boolean getExpenseSync() {
+		return this.expenseSync;
+	}
+
+	public void setExpenseId(String id) {
+		this.expenseId = id;
+	}
+
+	public void setExpenseSync(boolean bool) {
+		this.expenseSync = bool;
+	}
+
+	public void setExpenseRecordId(String id) {
+		this.expenseRecordId = id;
+	}
+
+	public void setExpenseDate(LocalDate ld) {
+		this.expenseDate = ld;
+	}
+
+	public void setExpenseCat(String cat) {
+		this.expenseCat = cat;
+	}
+
+	public void setExpenseAmt(Double amt) {
+		this.expenseAmt = amt;
+	}
+
+	public static Expense getLastExpense(ArrayList<Expense> allExpenses) {
+		Expense lastExpense = allExpenses.get(0);
+
+		for (Expense expense : allExpenses) {
+			if (expense.getExpenseDate().isAfter(lastExpense.getExpenseDate())) {
+				lastExpense = expense;
+			}
+		}
+
+		return lastExpense;
+	}
+
+
 }

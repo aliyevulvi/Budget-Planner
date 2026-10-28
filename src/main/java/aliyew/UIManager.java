@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.time.LocalDate;
 import java.time.format.*;
 import java.io.File;
+import java.time.ZoneId;
 
 public class UIManager {
 	private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -329,7 +330,6 @@ public class UIManager {
 				JOptionPane.showMessageDialog(null, "Input Amounts Must Be Consist Of Digits!");
 			} else {
 				Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()));
-				newRecord.setRecordId(JsonManager.getMinIdRecord());
 				JsonManager.createRecord(newRecord);
 				allRecords.add(newRecord);
 				recordNameField.setText("");
@@ -649,7 +649,7 @@ public class UIManager {
 
 //    REVIEW PANEL NORTH
 		JTextField recordName = new JTextField(record.getRecordName(), SwingConstants.RIGHT);
-		JLabel recordCreationDate = new JLabel(record.getCreationDate().substring(0, 16), SwingConstants.RIGHT);
+		JLabel recordCreationDate = new JLabel(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Istanbul")).format(record.getRecordCreationDate()), SwingConstants.RIGHT);
 		JTextField recordIncome = new JTextField(record.getRecordIncome() + "", SwingConstants.RIGHT);
 		JTextField recordSaving = new JTextField(record.getRecordSaving() + "", SwingConstants.RIGHT);
 
@@ -926,7 +926,6 @@ public class UIManager {
 			} else {
 				Expense exp = new Expense(LocalDate.parse(date, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), category, Double.parseDouble(amt));
 				exp.setExpenseRecordId(record.getRecordId());
-				exp.setExpenseId(JsonManager.getMinIdExpense());
 				JsonManager.createExpense(exp);
 				allExpenses.add(exp);
 				dtm.insertRow(dtm.getRowCount() - 1, new Object[] {date, category, amt});

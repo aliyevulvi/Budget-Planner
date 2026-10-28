@@ -1,10 +1,14 @@
 package aliyew;
 
+import java.util.UUID;
+import java.util.ArrayList;
+import java.time.Instant;
+
 public class Record {
 
-    private int recordId = 0;
+    private String recordId = "undefined";
     private String recordName = "undefined";
-    private String creationDate = "undefined";
+    private Instant recordCreationDate = null;
     private double recordIncome = 0;
     private double recordSaving = 0;
     private boolean recordSync = false;
@@ -17,19 +21,32 @@ public class Record {
         this.recordName = name;
         this.recordIncome = income;
         this.recordSaving = saving;
-        setRecordDate();
+        this.recordCreationDate = Instant.now();
+        
+        String uuidStr = UUID.randomUUID().toString();
+        
+        ArrayList<Record> allRecords = JsonManager.getRecords();
+        
+        for (int i = 0; i < allRecords.size(); i++) {
+            if (allRecords.get(i).getRecordId().equals(uuidStr)) {
+                uuidStr = UUID.randomUUID().toString();
+                i = -1;
+            }
+        }
+        
+        this.recordId = uuidStr;
     }
 
-    public Record(int id, String name, String ts) {
+    public Record(String id, String name, Instant date) {
         this.recordId = id;
         this.recordName = name;
-        this.creationDate = ts;
+        this.recordCreationDate = date;
     }
 
-    public Record(int id, String name, String ts, double income, double saving) {
+    public Record(String id, String name, Instant date, double income, double saving) {
         this.recordId = id;
         this.recordName = name;
-        this.creationDate = ts;
+        this.recordCreationDate = date;
         this.recordIncome = income;
         this.recordSaving = saving;
     }
@@ -38,11 +55,11 @@ public class Record {
         return this.recordName;
     }
 
-    public String getCreationDate() {
-        return this.creationDate;
+    public Instant getRecordCreationDate() {
+        return this.recordCreationDate;
     }
 
-    public int getRecordId() {
+    public String getRecordId() {
         return this.recordId;
     }
 
@@ -58,7 +75,7 @@ public class Record {
         return this.recordSync;
     }
 
-    public void setRecordId(int id) {
+    public void setRecordId(String id) {
         this.recordId = id;
     }
 
@@ -74,25 +91,12 @@ public class Record {
         this.recordSaving = amt;
     }
 
-    public void setRecordDate() {
-        this.creationDate = java.sql.Timestamp.from(java.time.Instant.now())+"";
+    public void setRecordCreationDate(Instant date) {
+        this.recordCreationDate = date;
     }
 
     public void setRecordSync(boolean bool) {
         this.recordSync = bool;
-    }
-
-    public void getRecordInfo() {
-
-        System.out.println("[ ----------------------------------- ]");
-        System.out.printf("[ %-15s%-20s ]\n", "Record Name: ",this.getRecordName());
-        System.out.printf("[ %-15s%-20s ]\n", "Record ID : ", this.getRecordId()+"");
-        System.out.printf("[ %-15s%-20s ]\n", "Income : ", this.getRecordIncome()+"");
-        System.out.printf("[ %-15s%-20s ]\n", "Saving : ", this.getRecordSaving()+"");
-        System.out.printf("[ %-15s%-20s ]\n", "Created : ", this.getCreationDate().substring(0, 16)+"");
-        System.out.printf("[ %-15s%-20s ]\n", "Sync : ", this.getRecordSync()+"");
-        System.out.println("[ ----------------------------------- ]");
-
     }
 
 }

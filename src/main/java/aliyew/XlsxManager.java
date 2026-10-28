@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.Color;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 
 public class XlsxManager {
 	public static void createXlsx(Record record, ArrayList<Expense> allExpenses, HashMap<String, Double> categorizedMap) {
@@ -18,7 +20,7 @@ public class XlsxManager {
 		safeRecordName += ".xlsx";
 
 		try (Workbook wb = new XSSFWorkbook();
-					FileOutputStream fileOut = new FileOutputStream(safeRecordName)) {
+					FileOutputStream fileOut = new FileOutputStream("xlsx\'s/"+safeRecordName)) {
 			Sheet sheet = wb.createSheet("Expenses");
 
 			CellStyle headerStyle1 = wb.createCellStyle();
@@ -74,7 +76,7 @@ public class XlsxManager {
 			Cell cell33 = row3.createCell(3);
 			cell33.setCellValue(record.getRecordSaving());
 			Cell cell43 = row4.createCell(3);
-			cell43.setCellValue(record.getCreationDate().substring(0, 16));
+			cell43.setCellValue(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Istanbul")).format(record.getRecordCreationDate()));                    
 
 			cell11.setCellStyle(headerStyle1);
 			cell21.setCellStyle(headerStyle1);

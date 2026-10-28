@@ -3,6 +3,8 @@ package aliyew;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 
 import org.openpdf.text.Document;
 import org.openpdf.text.Element;
@@ -23,7 +25,7 @@ public class PDFManager {
 		Document doc = new Document(PageSize.A4);
 		try {
 			String safeRecordName = report.getRecord().getRecordName().replaceAll("[\\\\/:*?\"<>|]", "_");
-			PdfWriter.getInstance(doc, new FileOutputStream(safeRecordName + "_report.pdf"));
+			PdfWriter.getInstance(doc, new FileOutputStream("reports/"+safeRecordName + "_report.pdf"));
 			Font headerFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 28, Color.BLACK);
 			Font contentFont2 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK);
 
@@ -45,7 +47,8 @@ public class PDFManager {
 			PdfPCell info7 = new PdfPCell(new Phrase("Record Saving", contentFont2));
 			PdfPCell info8 = new PdfPCell(new Phrase(report.getRecord().getRecordSaving() + "", contentFont2));
 			PdfPCell info5 = new PdfPCell(new Phrase("Record Date", contentFont2));
-			PdfPCell info6 = new PdfPCell(new Phrase((report.getRecord().getCreationDate() + "").substring(0, 16), contentFont2));
+			PdfPCell info6 = new PdfPCell(new Phrase(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Istanbul")).format(report.getRecord().getRecordCreationDate()), contentFont2));
+
 
 			info2.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			info4.setHorizontalAlignment(Element.ALIGN_RIGHT);
