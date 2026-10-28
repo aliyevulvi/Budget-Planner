@@ -41,131 +41,95 @@ public class Synchronization {
 		this.expense = expense;
 	}
 
-	public boolean retryOp() {
+	//public boolean retryOp() {
 
-		switch (op) {
-		case "CREATE_RECORD" :
-			return createRecord();
-		case "UPDATE_RECORD" :
-			return updateRecord();
-		case "DELETE_RECORD" :
-			return deleteRecord();
-		case "CREATE_EXPENSE" :
-			return createExpense();
-		case "UPDATE_EXPENSE" :
-			return updateExpense();
-		case "DELETE_EXPENSE" :
-			return deleteExpense();
-		default :
-			return false;
-		}
-	}
+//		switch (op) {
+//		case "CREATE_RECORD" :
+//			return createRecord();
+//		case "UPDATE_RECORD" :
+//			return updateRecord();
+//		case "DELETE_RECORD" :
+//			return deleteRecord();
+//		case "CREATE_EXPENSE" :
+//			return createExpense();
+//		case "UPDATE_EXPENSE" :
+//			return updateExpense();
+//		case "DELETE_EXPENSE" :
+//			return deleteExpense();
+//		default :
+//			return false;
+//		}
+//	}
 
-	public boolean createRecord() {
-		Record oldRecord = new Record();
-		oldRecord.setRecordId(record.getRecordId());
-		oldRecord.setRecordName(record.getRecordName());
+//	
+//	public boolean updateRecord() {
+//		DBManager.updateRecord(record);
 
-		DBManager.createRecord(record);
+//		if (record.getRecordSync()) {
+//			JsonManager.updateRecord(record);
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
-		if (record.getRecordSync()) {
-			ArrayList<Expense> allExpenses = JsonManager.getExpenses(oldRecord);
-			JsonManager.deleteRecord(oldRecord);
-			JsonManager.createRecord(record);
+//	public boolean deleteRecord() {
+//		DBManager.deleteRecord(record);
 
-			for (Expense exp : allExpenses) {
-				exp.setExpenseRecordId(record.getRecordId());
-				JsonManager.createExpense(exp);
-			}
+//		if (record.getRecordSync()) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
-			ArrayList<Synchronization> allOps = JsonManager.getOps();
+//	public boolean createExpense() {
+//		Expense oldExpense = new Expense();
+//		oldExpense.setExpenseId(expense.getExpenseId());
 
-			for (Synchronization sync : allOps) {
-				if (sync.getRecord() != null && sync.getRecord().getRecordId() == oldRecord.getRecordId()) {
-					sync.getRecord().setRecordId(record.getRecordId());
-				}
+//		DBManager.createExpense(expense);
 
-				if (sync.getExpense() != null && sync.getExpense().getExpenseRecordId() == oldRecord.getRecordId()) {
-					sync.getExpense().setExpenseRecordId(record.getRecordId());
-				}
-			}
+//		if (expense.getExpenseSync()) {
+//			JsonManager.deleteExpense(oldExpense);
+//			JsonManager.createExpense(expense);
 
-			JsonManager.setAllOps(allOps);
+//			ArrayList<Synchronization> allOps = JsonManager.getOps();
 
-			return true;
-		} else {
-			return false;
-		}
-	}
+//			for (Synchronization sync : allOps) {
+//				if (sync.getExpense() != null && sync.getExpense().getExpenseId() == oldExpense.getExpenseId()) {
+//					sync.getExpense().setExpenseId(expense.getExpenseId());
+//				}
+//			}
 
-	public boolean updateRecord() {
-		DBManager.updateRecord(record);
+//			JsonManager.setAllOps(allOps);
 
-		if (record.getRecordSync()) {
-			JsonManager.updateRecord(record);
-			return true;
-		} else {
-			return false;
-		}
-	}
+//			return true;
+//		} else {
+//			return false;
+//		}
 
-	public boolean deleteRecord() {
-		DBManager.deleteRecord(record);
+//	}
 
-		if (record.getRecordSync()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	public boolean updateExpense() {
+//		DBManager.updateExpense(expense);
 
-	public boolean createExpense() {
-		Expense oldExpense = new Expense();
-		oldExpense.setExpenseId(expense.getExpenseId());
+//		if (expense.getExpenseSync()) {
+//			JsonManager.updateExpense(expense);
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
-		DBManager.createExpense(expense);
+//	public boolean deleteExpense() {
+//		DBManager.deleteExpense(expense);
 
-		if (expense.getExpenseSync()) {
-			JsonManager.deleteExpense(oldExpense);
-			JsonManager.createExpense(expense);
-
-			ArrayList<Synchronization> allOps = JsonManager.getOps();
-
-			for (Synchronization sync : allOps) {
-				if (sync.getExpense() != null && sync.getExpense().getExpenseId() == oldExpense.getExpenseId()) {
-					sync.getExpense().setExpenseId(expense.getExpenseId());
-				}
-			}
-
-			JsonManager.setAllOps(allOps);
-
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-	public boolean updateExpense() {
-		DBManager.updateExpense(expense);
-
-		if (expense.getExpenseSync()) {
-			JsonManager.updateExpense(expense);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public boolean deleteExpense() {
-		DBManager.deleteExpense(expense);
-
-		if (expense.getExpenseSync()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//		if (expense.getExpenseSync()) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
 
 }
