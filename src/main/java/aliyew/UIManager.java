@@ -44,9 +44,12 @@ public class UIManager {
 	private static final String CREATE_RECORD_PANEL = "CREATE_RECORD_PANEL";
 	private static final String SETTINGS_PANEL = "SETTINGS_PANEL";
 	private static final String REVIEW_PANEL = "REVIEW_PANEL";
+	private static final String SYNC_PANEL = "SYNC_PANEL";
 	private static JPanel rightPanel;
 	private static JPanel recordsPanel;
 	private static JPanel settingsPanel;
+	private static JPanel syncPanel;
+	private static JPanel reviewPanel;
 
 	private static JScrollPane reviewScrollPane = new JScrollPane();
 	private static Record record = new Record();
@@ -94,11 +97,12 @@ public class UIManager {
 		JButton synchronizationButton = new JButton("Synchronization");
 		JButton settingsButton = new JButton("Settings");
 
-		leftPanelButtonConfigruations(leftPanel, synchronizationButton);
 		leftPanelButtonConfigruations(leftPanel, settingsButton);
+		leftPanelButtonConfigruations(leftPanel, synchronizationButton);
 
 		synchronizationButton.addActionListener(e -> {
-			((CardLayout)(rightPanel.getLayout())).show(rightPanel, CREATE_RECORD_PANEL);
+			syncPanelConfig();
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, SYNC_PANEL);
 		});
 
 		settingsButton.addActionListener(e -> {
@@ -151,15 +155,19 @@ public class UIManager {
 		recordsPanel = new JPanel(new BorderLayout());
 		JPanel createRecordPanel = new JPanel(new GridBagLayout());
 		settingsPanel = new JPanel(new BorderLayout());
+		syncPanel = new JPanel(new BorderLayout());
+		reviewPanel = new JPanel();
 
 		recordsPanelConfig(recordsPanel);
 		createRecordPanelConfig(createRecordPanel);
 		settingsPanelConfig(settingsPanel);
+		syncPanelConfig();
 
 		rightPanel.add(recordsPanel, RECORDS_PANEL);
 		rightPanel.add(createRecordPanel, CREATE_RECORD_PANEL);
 		rightPanel.add(settingsPanel, SETTINGS_PANEL);
-		rightPanel.add(reviewScrollPane, REVIEW_PANEL);
+		rightPanel.add(reviewPanel, REVIEW_PANEL);
+		rightPanel.add(syncPanel, SYNC_PANEL);
 
 
 
@@ -194,6 +202,7 @@ public class UIManager {
 
 				if (choice == JOptionPane.YES_OPTION) {
 					JsonManager.deleteRecord(rec);
+					new Synchronization("DELETE_RECORD", rec, null);
 					rightPanelConfigurationMethod(rightPanel);
 					((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 				}
@@ -331,6 +340,7 @@ public class UIManager {
 			} else {
 				Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()));
 				JsonManager.createRecord(newRecord);
+				new Synchronization("CREATE_RECORD", newRecord, null);
 				allRecords.add(newRecord);
 				recordNameField.setText("");
 				recordIncomeField.setText("");
@@ -578,6 +588,7 @@ public class UIManager {
 
 				for (Record rec : allRecords) {
 					JsonManager.deleteRecord(rec);
+					new Synchronization("DELETE_RECORD", rec, null);
 				}
 
 				allRecords.clear();
@@ -639,12 +650,14 @@ public class UIManager {
 	}
 
 	private static void reviewPanelConfig() {
-		JPanel reviewPanel = new JPanel();
-		reviewPanel.removeAll();
 		reviewPanel.setLayout(new BoxLayout(reviewPanel, BoxLayout.Y_AXIS));
-		reviewPanel.removeAll();
-		reviewPanel.setBackground(Color.decode("#e3e3e3"));
-		reviewPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
+        reviewPanel.removeAll();
+        
+		JPanel wrapperPanel = new JPanel();
+		wrapperPanel.removeAll();
+		wrapperPanel.setLayout(new BoxLayout(wrapperPanel, BoxLayout.Y_AXIS));
+		wrapperPanel.setBackground(Color.decode("#e3e3e3"));
+		wrapperPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
 
 //    REVIEW PANEL NORTH
@@ -660,6 +673,7 @@ public class UIManager {
 				if (Validation.isValidName(recordName.getText().trim(), allRecords)) {
 					record.setRecordName(recordName.getText().trim());
 					JsonManager.updateRecord(record);
+					new Synchronization("UPDATE_RECORD", record, null);
 					recordName.setText(record.getRecordName());
 					recordsPanelConfig(recordsPanel);
 				} else {
@@ -673,6 +687,7 @@ public class UIManager {
 				if (Validation.isValidAmount(recordIncome.getText().trim())) {
 					record.setRecordIncome(Double.parseDouble(recordIncome.getText().trim()));
 					JsonManager.updateRecord(record);
+					new Synchronization("UPDATE_RECORD", record, null);
 					recordIncome.setText(record.getRecordIncome() + "");
 					recordsPanelConfig(recordsPanel);
 				} else {
@@ -688,6 +703,7 @@ public class UIManager {
 				if (Validation.isValidAmount(recordSaving.getText().trim())) {
 					record.setRecordSaving(Double.parseDouble(recordSaving.getText().trim()));
 					JsonManager.updateRecord(record);
+					new Synchronization("UPDATE_RECORD", record, null);
 					recordSaving.setText(record.getRecordSaving() + "");
 					recordsPanelConfig(recordsPanel);
 				} else {
@@ -709,6 +725,7 @@ public class UIManager {
 			Expense expenseTemp = new Expense(LocalDate.now(), selPt.getPTCat(), selPt.getPTAmt());
 			expenseTemp.setExpenseRecordId(record.getRecordId());
 			JsonManager.createExpense(expenseTemp);
+			new Synchronization("CREATE_EXPENSE", null, expenseTemp);
 			allExpenses = JsonManager.getExpenses(record);
 			rightPanelConfigurationMethod(rightPanel);
 			reviewPanelConfig();
@@ -747,7 +764,7 @@ public class UIManager {
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
 		infoPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
 //infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
-		reviewPanel.add(infoPanel);
+		wrapperPanel.add(infoPanel);
 
 
 //    REVIEW PANEL CENTER
@@ -796,6 +813,7 @@ public class UIManager {
 
 				super.setValueAt(value, row, col);
 				JsonManager.updateExpense(originalExp);
+				new Synchronization("UPDATE_EXPENSE", null, originalExp);
 				allExpenses = JsonManager.getExpenses(record);
 			}
 		};
@@ -867,13 +885,13 @@ public class UIManager {
 			}
 		});
 
-		reviewPanel.addMouseListener(new MouseAdapter() {
+		wrapperPanel.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				table.clearSelection();
 			}
 		});
 
-		reviewPanel.add(scrollPane);
+		wrapperPanel.add(scrollPane);
 
 
 //    REVIEW PANEL SOUTH
@@ -927,6 +945,7 @@ public class UIManager {
 				Expense exp = new Expense(LocalDate.parse(date, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), category, Double.parseDouble(amt));
 				exp.setExpenseRecordId(record.getRecordId());
 				JsonManager.createExpense(exp);
+				new Synchronization("CREATE_EXPENSE", null, exp);
 				allExpenses.add(exp);
 				dtm.insertRow(dtm.getRowCount() - 1, new Object[] {date, category, amt});
 
@@ -957,6 +976,7 @@ public class UIManager {
 
 			if (choice == JOptionPane.YES_OPTION) {
 				JsonManager.deleteExpense(allExpenses.get(selectedRow));
+				new Synchronization("DELETE_EXPENSE", null, allExpenses.get(selectedRow));
 				allExpenses.remove(selectedRow);
 				DefaultTableModel dtm = (DefaultTableModel) table.getModel();
 				dtm.removeRow(selectedRow);
@@ -981,7 +1001,8 @@ public class UIManager {
 			}
 		});
 
-		reviewPanel.add(opPanel);
+		
+		//        EXPORT PANEL
 
 		JPanel exportPanel = new JPanel();
 		JButton pdfBtn = new JButton("Export As Pdf");
@@ -1023,11 +1044,70 @@ public class UIManager {
 
 		exportPanel.add(pdfBtn);
 		exportPanel.add(xlsxBtn);
-		reviewPanel.add(exportPanel);
 
 		reviewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		reviewScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		reviewScrollPane.setViewportView(reviewPanel);
+		reviewScrollPane.setViewportView(wrapperPanel);
+		reviewPanel.add(reviewScrollPane);
+		reviewPanel.add(opPanel);
+		reviewPanel.add(exportPanel);
+
+	}
+
+	public static void syncPanelConfig() {
+		syncPanel.removeAll();
+		syncPanel.setBackground(Color.decode("#e3e3e3"));
+		syncPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
+
+
+		//    CENTER PANEL
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+		JLabel countLbl = new JLabel(JsonManager.getOps().size() + " Operations Pending", SwingConstants.CENTER);
+        JPanel lblPanel = new JPanel();
+        lblPanel.setBorder(BorderFactory.createEmptyBorder(10,10,30,10));
+        lblPanel.add(countLbl);
+        
+		centerPanel.add(lblPanel);
+
+		if (JsonManager.getOps().size() != 0) {
+			String[] columns = {"Object", "Operation", "Detail"};
+			DefaultTableModel dtm = new DefaultTableModel(columns, 0);
+			ArrayList<Synchronization> allOps = JsonManager.getOps();
+			for (Synchronization syncOp : allOps) {
+				dtm.addRow(new Object[] {syncOp.getOp().split("_")[1], syncOp.getOp().split("_")[0], (syncOp.getRecord() != null ? syncOp.getRecord().getRecordName() : syncOp.getExpense().getExpenseDate() + " | " + syncOp.getExpense().getExpenseCat() + " | " + syncOp.getExpense().getExpenseAmt())});
+			}
+			JTable table = new JTable(dtm);
+			JScrollPane scrollPane = new JScrollPane(table);
+			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			centerPanel.add(scrollPane);
+		}
+		//    SOUTH PANEL
+		JPanel southPanel = new JPanel();
+
+
+		JButton syncBtn = new JButton("Start Synchron");
+		syncBtn.setForeground(Color.WHITE);
+		syncBtn.setBackground(Color.decode("#4487eb"));
+		syncBtn.addActionListener(e -> {
+			JOptionPane.showMessageDialog(null, DBManager.sync());
+			rightPanelConfigurationMethod(rightPanel);
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, SYNC_PANEL);
+		});
+
+		JButton prevBtn = new JButton("<");
+		prevBtn.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+		});
+
+		if (JsonManager.getOps().size() != 0) {
+			southPanel.add(syncBtn);
+		}
+		southPanel.add(prevBtn);
+
+		syncPanel.add(centerPanel, BorderLayout.CENTER);
+		syncPanel.add(southPanel, BorderLayout.SOUTH);
 
 	}
 }

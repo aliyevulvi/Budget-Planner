@@ -1,6 +1,8 @@
 link.txt
 src/main/resources/logs/
+src/main/resources/jsons/
 target/
 backups/
 reports/
 xlsx's/
+

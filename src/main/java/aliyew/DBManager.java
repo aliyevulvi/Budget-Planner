@@ -61,7 +61,7 @@ public class DBManager {
 		}
 	}
 
-	public static String sync() throws SQLException {
+	public static String sync() {
 		ArrayList<Synchronization> syncQueue = JsonManager.getOps();
 
 		Connection conn = null;
@@ -92,8 +92,8 @@ public class DBManager {
 					break;
 				}
 			}
-            
-            syncQueue.clear();
+
+			syncQueue.clear();
 			conn.commit();
 			JsonManager.setAllOps(syncQueue);
 
@@ -101,17 +101,25 @@ public class DBManager {
 
 		} catch (Exception e) {
 			logger.severe(() -> e.getMessage());
-			if (conn != null) {
-				conn.rollback();
+			try {
+				if (conn != null) {
+					conn.rollback();
+				}
+			} catch (Exception ex) {
+
 			}
 
-			return "Synchronization Failed : "+e.getMessage();
+			return "Synchronization Failed : " + e.getMessage();
 		} finally {
-			if (conn != null) {
-				conn.setAutoCommit(true);
-				conn.close();
+			try {
+				if (conn != null) {
+					conn.setAutoCommit(true);
+					conn.close();
+				}
+			} catch (Exception ex) {
+
 			}
-			
+
 		}
 	}
 
