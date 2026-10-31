@@ -30,10 +30,19 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.Map;
 import java.time.LocalDate;
 import java.time.format.*;
 import java.io.File;
 import java.time.ZoneId;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+
 
 public class UIManager {
 	private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -50,6 +59,7 @@ public class UIManager {
 	private static JPanel settingsPanel;
 	private static JPanel syncPanel;
 	private static JPanel reviewPanel;
+	private static JPanel chartsPanel = new JPanel();
 
 	private static JScrollPane reviewScrollPane = new JScrollPane();
 	private static Record record = new Record();
@@ -651,8 +661,8 @@ public class UIManager {
 
 	private static void reviewPanelConfig() {
 		reviewPanel.setLayout(new BoxLayout(reviewPanel, BoxLayout.Y_AXIS));
-        reviewPanel.removeAll();
-        
+		reviewPanel.removeAll();
+
 		JPanel wrapperPanel = new JPanel();
 		wrapperPanel.removeAll();
 		wrapperPanel.setLayout(new BoxLayout(wrapperPanel, BoxLayout.Y_AXIS));
@@ -763,7 +773,6 @@ public class UIManager {
 		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
 		infoPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
-//infoPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 		wrapperPanel.add(infoPanel);
 
 
@@ -815,6 +824,7 @@ public class UIManager {
 				JsonManager.updateExpense(originalExp);
 				new Synchronization("UPDATE_EXPENSE", null, originalExp);
 				allExpenses = JsonManager.getExpenses(record);
+				createOrRefreshChartPanel();
 			}
 		};
 
@@ -892,7 +902,10 @@ public class UIManager {
 		});
 
 		wrapperPanel.add(scrollPane);
+		wrapperPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
 
+		createOrRefreshChartPanel();
+		wrapperPanel.add(chartsPanel);
 
 //    REVIEW PANEL SOUTH
 		JPanel opPanel = new JPanel(new CardLayout());
@@ -1001,7 +1014,7 @@ public class UIManager {
 			}
 		});
 
-		
+
 		//        EXPORT PANEL
 
 		JPanel exportPanel = new JPanel();
@@ -1064,10 +1077,10 @@ public class UIManager {
 		JPanel centerPanel = new JPanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		JLabel countLbl = new JLabel(JsonManager.getOps().size() + " Operations Pending", SwingConstants.CENTER);
-        JPanel lblPanel = new JPanel();
-        lblPanel.setBorder(BorderFactory.createEmptyBorder(10,10,30,10));
-        lblPanel.add(countLbl);
-        
+		JPanel lblPanel = new JPanel();
+		lblPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
+		lblPanel.add(countLbl);
+
 		centerPanel.add(lblPanel);
 
 		if (JsonManager.getOps().size() != 0) {
@@ -1109,5 +1122,96 @@ public class UIManager {
 		syncPanel.add(centerPanel, BorderLayout.CENTER);
 		syncPanel.add(southPanel, BorderLayout.SOUTH);
 
+	}
+
+	public static void createOrRefreshChartPanel() {
+		chartsPanel.removeAll();
+		//    CHARTS PANEL
+		int chartWidth = (int)(dynamicWidth * 0.50);
+		int chartHeight = (int)(dynamicHeight * 0.3);
+		Dimension chartSize = new Dimension(chartWidth, chartHeight);
+
+
+		chartsPanel.setLayout(new GridLayout(3, 1, 0, 10));
+		chartsPanel.setPreferredSize(new Dimension(chartWidth, dynamicHeight));
+
+		//    RESULTS
+		if (JsonManager.getExpenses(record).size() > 0) {
+			JPanel resultPanel = new JPanel(new GridLayout(4, 4, 50, 10));
+			Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
+			Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
+
+			resultPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
+
+			Report recordReport = new Report(record, JsonManager.getExpenses(), null);
+
+			resultPanel.add(new JLabel("Total Expense", SwingConstants.LEFT));
+			resultPanel.add(new JLabel(recordReport.getTotalExpense() + "", SwingConstants.RIGHT));
+			resultPanel.add(new JLabel("Total Balance", SwingConstants.LEFT));
+			resultPanel.add(new JLabel((record.getRecordIncome() + recordReport.getTotalExpense()) + "", SwingConstants.RIGHT));
+			resultPanel.add(new JLabel("First Expense", SwingConstants.LEFT));
+			resultPanel.add(new JLabel(recordReport.getFirstExpense().getExpenseDate() + "", SwingConstants.RIGHT));
+			resultPanel.add(new JLabel("Last Expense", SwingConstants.LEFT));
+			resultPanel.add(new JLabel(recordReport.getLastExpense().getExpenseDate() + "", SwingConstants.RIGHT));
+
+			chartsPanel.add(resultPanel);
+		}
+
+		//    PIE CHART
+		allExpenses = JsonManager.getExpenses(record);
+
+		HashMap<String, Double> categorizedMap2 = new HashMap<>();
+
+		for (Expense exp : allExpenses) {
+			if (!categorizedMap2.containsKey(exp.getExpenseCat())) {
+				categorizedMap2.put(exp.getExpenseCat(), exp.getExpenseAmt());
+				continue;
+			}
+			categorizedMap2.put(exp.getExpenseCat(), categorizedMap2.get(exp.getExpenseCat()) + exp.getExpenseAmt());
+
+		}
+
+		for (Map.Entry<String, Double> es : categorizedMap2.entrySet()) {
+			categorizedMap2.put(es.getKey(), Math.abs(categorizedMap2.get(es.getKey())));
+		}
+
+		DefaultPieDataset dpd = new DefaultPieDataset();
+
+		for (Map.Entry<String, Double> es : categorizedMap2.entrySet()) {
+			dpd.setValue(es.getKey(), es.getValue());
+		}
+
+		JFreeChart pieChart = ChartFactory.createPieChart("Expense Distribution", dpd, false, false, false);
+
+		ChartPanel pieChartPanel = new ChartPanel(pieChart);
+		pieChartPanel.setPreferredSize(chartSize);
+		pieChartPanel.setMaximumSize(chartSize);
+		chartsPanel.add(pieChartPanel);
+
+		//    LINE CHART
+		TreeMap<LocalDate, Double> categorizedMap3 = new TreeMap<>();
+
+		for (Expense exp : allExpenses) {
+			if (!categorizedMap3.containsKey(exp.getExpenseDate())) {
+				categorizedMap3.put(exp.getExpenseDate(), exp.getExpenseAmt());
+				continue;
+			}
+
+			categorizedMap3.put(exp.getExpenseDate(), categorizedMap3.get(exp.getExpenseDate()) + exp.getExpenseAmt());
+		}
+
+
+
+		DefaultCategoryDataset dcd = new DefaultCategoryDataset();
+
+		for (Map.Entry<LocalDate, Double> es : categorizedMap3.entrySet()) {
+			dcd.addValue(es.getValue(), "Total Expense", es.getKey());
+		}
+
+		JFreeChart lineChart = ChartFactory.createLineChart("Expense Distribution", "Days", "Amount", dcd);
+		ChartPanel lineChartPanel = new ChartPanel(lineChart);
+		pieChartPanel.setPreferredSize(chartSize);
+		pieChartPanel.setMaximumSize(chartSize);
+		chartsPanel.add(lineChartPanel);
 	}
 }

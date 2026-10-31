@@ -178,7 +178,7 @@ public class JsonManager {
 	public static String deleteExpense(Record rec) {
 		ArrayList<Expense> allExpenses = getExpenses();
 
-		allExpenses.removeIf(exp -> exp.getExpenseRecordId() == rec.getRecordId());
+		allExpenses.removeIf(exp -> exp.getExpenseRecordId().equals(rec.getRecordId()));
 
 		try {
 
