@@ -11,7 +11,6 @@ public class Expense {
 	private LocalDate expenseDate = null;
 	private String expenseCat = "undefined";
 	private double expenseAmt = 0;
-	private boolean expenseSync = false;
 
 	public Expense(String id, String record_id, LocalDate date, String cat, double amount) {
 		this.expenseId = id;
@@ -68,16 +67,9 @@ public class Expense {
 		return this.expenseAmt;
 	}
 
-	public boolean getExpenseSync() {
-		return this.expenseSync;
-	}
 
 	public void setExpenseId(String id) {
 		this.expenseId = id;
-	}
-
-	public void setExpenseSync(boolean bool) {
-		this.expenseSync = bool;
 	}
 
 	public void setExpenseRecordId(String id) {

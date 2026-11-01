@@ -37,6 +37,7 @@ public class DBManager {
 							  + "record_name VARCHAR(20) UNIQUE NOT NULL, "
 							  + "record_income DOUBLE PRECISION NOT NULL, "
 							  + "record_saving DOUBLE PRECISION NOT NULL, "
+							  + "record_period DATE NOT NULL, "
 							  + "record_ts TIMESTAMP NOT NULL "
 							  + ");";
 			String sqlQuery2 = "CREATE TABLE IF NOT EXISTS app_schema.tb_expenses ( "
@@ -133,7 +134,7 @@ public class DBManager {
 				while (rs.next()) {
 					allRecords.add(new Record(rs.getString("record_id"), rs.getString("record_name"),
 											  rs.getTimestamp("record_ts").toInstant(), rs.getDouble("record_income"),
-											  rs.getDouble("record_saving")));
+											  rs.getDouble("record_saving"), rs.getDate("record_period").toLocalDate()));
 				}
 			}
 
@@ -149,14 +150,15 @@ public class DBManager {
 
 	public static void createRecord(Connection conn, Record newRecord) throws SQLException {
 
-		String insertQuery = "INSERT INTO app_schema.tb_records (record_id, record_name, record_income, record_saving, record_ts) VALUES (?, ?, ?, ?, ?);";
+		String insertQuery = "INSERT INTO app_schema.tb_records (record_id, record_name, record_income, record_saving, record_period, record_ts) VALUES (?, ?, ?, ?, ?, ?);";
 		try (PreparedStatement pStatement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
 
 			pStatement.setString(1, newRecord.getRecordId());
 			pStatement.setString(2, newRecord.getRecordName());
 			pStatement.setDouble(3, newRecord.getRecordIncome());
 			pStatement.setDouble(4, newRecord.getRecordSaving());
-			pStatement.setTimestamp(5, Timestamp.from(newRecord.getRecordCreationDate()));
+			pStatement.setDate(5, java.sql.Date.valueOf(newRecord.getRecordPeriod()));
+			pStatement.setTimestamp(6, Timestamp.from(newRecord.getRecordCreationDate()));
 			pStatement.executeUpdate();
 
 		}
@@ -165,13 +167,14 @@ public class DBManager {
 
 	public static void updateRecord(Connection conn, Record rec) throws SQLException {
 
-		String sqlQuery = "UPDATE app_schema.tb_records SET record_name = ?, record_income = ?, record_saving = ? WHERE record_id = ?;";
+		String sqlQuery = "UPDATE app_schema.tb_records SET record_name = ?, record_income = ?, record_saving = ?, record_period = ? WHERE record_id = ?;";
 		try (PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
 
 			pstmt.setString(1, rec.getRecordName());
 			pstmt.setDouble(2, rec.getRecordIncome());
 			pstmt.setDouble(3, rec.getRecordSaving());
-			pstmt.setString(4, rec.getRecordId());
+			pstmt.setDate(4, java.sql.Date.valueOf(rec.getRecordPeriod()));
+			pstmt.setString(5, rec.getRecordId());
 			int affectedRows = pstmt.executeUpdate();
 		}
 	}

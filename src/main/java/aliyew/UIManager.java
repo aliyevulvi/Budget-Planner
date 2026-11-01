@@ -27,12 +27,16 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
-import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+import java.time.*;
 import java.time.format.*;
 import java.io.File;
 import java.time.ZoneId;
@@ -326,6 +330,30 @@ public class UIManager {
 
 		gbc.gridx = 0;
 		gbc.gridy = 3;
+		panel.add(new JLabel("Record Period: "), gbc);
+
+		Calendar cal = Calendar.getInstance();
+		Date currentDate = cal.getTime();
+		cal.add(Calendar.YEAR, -10);
+		Date earliestDate = cal.getTime();
+		cal.add(Calendar.YEAR, 10);
+		Date latestDate = cal.getTime();
+
+		SpinnerDateModel sdm = new SpinnerDateModel(currentDate, earliestDate, latestDate, Calendar.MONTH);
+
+		JSpinner jspin = new JSpinner(sdm);
+
+		JSpinner.DateEditor editor = new JSpinner.DateEditor(jspin, "MM yyyy");
+		editor.getTextField().setEditable(false);
+		jspin.setEditor(editor);
+
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		panel.add(jspin, gbc);
+
+
+		gbc.gridx = 0;
+		gbc.gridy = 4;
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.setForeground(Color.WHITE);
 		cancelBtn.setBackground(Color.decode("#ed574c"));
@@ -338,7 +366,7 @@ public class UIManager {
 		panel.add(cancelBtn, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		JButton createBtn = new JButton("Create");
 		createBtn.setForeground(Color.WHITE);
 		createBtn.setBackground(Color.decode("#4487eb"));
@@ -348,7 +376,9 @@ public class UIManager {
 			} else if (!Validation.isValidAmount(recordIncomeField.getText().trim()) || !Validation.isValidAmount(recordSavingField.getText().trim())) {
 				JOptionPane.showMessageDialog(null, "Input Amounts Must Be Consist Of Digits!");
 			} else {
-				Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()));
+				Date selectedDate = (Date) jspin.getValue();
+				LocalDate period = YearMonth.from(selectedDate.toInstant().atZone(ZoneId.systemDefault())).atDay(1);
+				Record newRecord = new Record(recordNameField.getText().trim(), Double.parseDouble(recordIncomeField.getText().trim()), Double.parseDouble(recordSavingField.getText().trim()), period);
 				JsonManager.createRecord(newRecord);
 				new Synchronization("CREATE_RECORD", newRecord, null);
 				allRecords.add(newRecord);
@@ -676,6 +706,31 @@ public class UIManager {
 		JTextField recordIncome = new JTextField(record.getRecordIncome() + "", SwingConstants.RIGHT);
 		JTextField recordSaving = new JTextField(record.getRecordSaving() + "", SwingConstants.RIGHT);
 
+		Calendar cal = Calendar.getInstance();
+		Date currentDate = Date.from(record.getRecordPeriod().atStartOfDay(ZoneId.systemDefault()).toInstant());
+		cal.add(Calendar.YEAR, -10);
+		Date earliestDate = cal.getTime();
+		cal.add(Calendar.YEAR, 10);
+		Date latestDate = cal.getTime();
+
+		SpinnerDateModel sdm = new SpinnerDateModel(currentDate, earliestDate, latestDate, Calendar.MONTH);
+
+		JSpinner periodSpinner = new JSpinner(sdm);
+
+		JSpinner.DateEditor editor = new JSpinner.DateEditor(periodSpinner, "MM yyyy");
+		editor.getTextField().setEditable(false);
+		periodSpinner.setEditor(editor);
+		
+		periodSpinner.addChangeListener(e -> {
+		    Date selectedDate = (Date) periodSpinner.getValue();
+		    LocalDate period = YearMonth.from(selectedDate.toInstant().atZone(ZoneId.systemDefault())).atDay(1);
+		    
+		    record.setRecordPeriod(period);
+		    JsonManager.updateRecord(record);
+			new Synchronization("UPDATE_RECORD", record, null);
+		    
+		});
+
 		recordName.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 
@@ -745,7 +800,7 @@ public class UIManager {
 		});
 
 
-		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 30, 10));
+		JPanel infoPanel = new JPanel(new GridLayout(6, 2, 30, 10));
 
 		infoPanel.setFocusable(true);
 		recordName.addActionListener(e -> infoPanel.requestFocusInWindow());
@@ -767,6 +822,8 @@ public class UIManager {
 		infoPanel.add(recordSaving);
 		infoPanel.add(new JLabel("Record Date ", SwingConstants.LEFT));
 		infoPanel.add(recordCreationDate);
+		infoPanel.add(new JLabel("Record Period ", SwingConstants.LEFT));
+		infoPanel.add(periodSpinner);
 		infoPanel.add(ptCb);
 		infoPanel.add(addPtBtn);
 

@@ -46,6 +46,8 @@ public class PDFManager {
 			PdfPCell info4 = new PdfPCell(new Phrase(report.getRecord().getRecordIncome() + "", contentFont2));
 			PdfPCell info7 = new PdfPCell(new Phrase("Record Saving", contentFont2));
 			PdfPCell info8 = new PdfPCell(new Phrase(report.getRecord().getRecordSaving() + "", contentFont2));
+			PdfPCell info9 = new PdfPCell(new Phrase("Record Period", contentFont2));
+			PdfPCell info10 = new PdfPCell(new Phrase(report.getRecord().getRecordPeriod().getMonth() + "/" + report.getRecord().getRecordPeriod().getYear(), contentFont2));
 			PdfPCell info5 = new PdfPCell(new Phrase("Record Date", contentFont2));
 			PdfPCell info6 = new PdfPCell(new Phrase(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").withZone(ZoneId.of("Europe/Istanbul")).format(report.getRecord().getRecordCreationDate()), contentFont2));
 
@@ -54,6 +56,7 @@ public class PDFManager {
 			info4.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			info6.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			info8.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			info10.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
 			info1.setBorder(PdfPCell.TOP);
 			info2.setBorder(PdfPCell.TOP);
@@ -61,6 +64,8 @@ public class PDFManager {
 			info4.setBorder(PdfPCell.NO_BORDER);
 			info7.setBorder(PdfPCell.NO_BORDER);
 			info8.setBorder(PdfPCell.NO_BORDER);
+			info9.setBorder(PdfPCell.NO_BORDER);
+			info10.setBorder(PdfPCell.NO_BORDER);
 			info5.setBorder(PdfPCell.BOTTOM);
 			info6.setBorder(PdfPCell.BOTTOM);
 			info5.setPaddingBottom(5f);
@@ -72,6 +77,8 @@ public class PDFManager {
 			infoTable.addCell(info4);
 			infoTable.addCell(info7);
 			infoTable.addCell(info8);
+			infoTable.addCell(info9);
+			infoTable.addCell(info10);
 			infoTable.addCell(info5);
 			infoTable.addCell(info6);
 

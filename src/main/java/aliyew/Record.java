@@ -3,24 +3,26 @@ package aliyew;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class Record {
 
     private String recordId = "undefined";
     private String recordName = "undefined";
+    private LocalDate recordPeriod = null;
     private Instant recordCreationDate = null;
     private double recordIncome = 0;
     private double recordSaving = 0;
-    private boolean recordSync = false;
 
     public Record() {
         
     }
 
-    public Record(String name, double income, double saving) {
+    public Record(String name, double income, double saving, LocalDate period) {
         this.recordName = name;
         this.recordIncome = income;
         this.recordSaving = saving;
+        this.recordPeriod = period;
         this.recordCreationDate = Instant.now();
         
         String uuidStr = UUID.randomUUID().toString();
@@ -43,12 +45,13 @@ public class Record {
         this.recordCreationDate = date;
     }
 
-    public Record(String id, String name, Instant date, double income, double saving) {
+    public Record(String id, String name, Instant date, double income, double saving, LocalDate period) {
         this.recordId = id;
         this.recordName = name;
         this.recordCreationDate = date;
         this.recordIncome = income;
         this.recordSaving = saving;
+        this.recordPeriod = period;
     }
 
     public String getRecordName() {
@@ -70,9 +73,9 @@ public class Record {
     public double getRecordSaving() {
         return this.recordSaving;
     }
-
-    public boolean getRecordSync() {
-        return this.recordSync;
+    
+    public LocalDate getRecordPeriod() {
+        return this.recordPeriod;
     }
 
     public void setRecordId(String id) {
@@ -94,9 +97,9 @@ public class Record {
     public void setRecordCreationDate(Instant date) {
         this.recordCreationDate = date;
     }
-
-    public void setRecordSync(boolean bool) {
-        this.recordSync = bool;
+    
+    public void setRecordPeriod(LocalDate period) {
+        this.recordPeriod = period;
     }
 
 }
