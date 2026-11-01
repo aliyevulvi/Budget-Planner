@@ -720,15 +720,15 @@ public class UIManager {
 		JSpinner.DateEditor editor = new JSpinner.DateEditor(periodSpinner, "MM yyyy");
 		editor.getTextField().setEditable(false);
 		periodSpinner.setEditor(editor);
-		
+
 		periodSpinner.addChangeListener(e -> {
-		    Date selectedDate = (Date) periodSpinner.getValue();
-		    LocalDate period = YearMonth.from(selectedDate.toInstant().atZone(ZoneId.systemDefault())).atDay(1);
-		    
-		    record.setRecordPeriod(period);
-		    JsonManager.updateRecord(record);
+			Date selectedDate = (Date) periodSpinner.getValue();
+			LocalDate period = YearMonth.from(selectedDate.toInstant().atZone(ZoneId.systemDefault())).atDay(1);
+
+			record.setRecordPeriod(period);
+			JsonManager.updateRecord(record);
 			new Synchronization("UPDATE_RECORD", record, null);
-		    
+
 		});
 
 		recordName.addFocusListener(new FocusAdapter() {
@@ -787,7 +787,7 @@ public class UIManager {
 		JButton addPtBtn = new JButton("Add");
 		addPtBtn.addActionListener(e -> {
 			PT selPt = allPTs.get(ptCb.getSelectedIndex());
-			Expense expenseTemp = new Expense(LocalDate.now(), selPt.getPTCat(), selPt.getPTAmt());
+			Expense expenseTemp = new Expense(record.getRecordPeriod(), selPt.getPTCat(), selPt.getPTAmt());
 			expenseTemp.setExpenseRecordId(record.getRecordId());
 			JsonManager.createExpense(expenseTemp);
 			new Synchronization("CREATE_EXPENSE", null, expenseTemp);
@@ -858,11 +858,12 @@ public class UIManager {
 				String valStr = String.valueOf(value).trim();
 
 				if (col == 0) {
-					if (!Validation.isValidDate(valStr)) {
+					if (valStr.isEmpty()) {
 						JOptionPane.showMessageDialog(null, "Invalid Date!");
-						return; // super.setValueAt ÇAĞRILMAZ -> Hücre eski değerinde kalır!
+						return;
 					}
-					originalExp.setExpenseDate(LocalDate.parse(valStr, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")));
+					valStr = valStr + "/" + record.getRecordPeriod().getYear();
+					originalExp.setExpenseDate(LocalDate.parse(valStr, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy][d.M.yyyy][dd.M.yyyy][d.MM.yyyy]")));
 				} else if (col == 1) {
 					if (valStr.isEmpty()) {
 						JOptionPane.showMessageDialog(null, "Choose Category!");
@@ -892,7 +893,15 @@ public class UIManager {
 
 		model.addRow(new Object[] {"", "", ""});
 
-		JTextField inputF1 = new JTextField();
+		JComboBox<String> inputF1 = new JComboBox<>();
+
+		YearMonth yearMonth = YearMonth.of(record.getRecordPeriod().getYear(), record.getRecordPeriod().getMonthValue());
+		int daysAmt = yearMonth.lengthOfMonth();
+
+		for (int i = 1; i <= daysAmt; i++) {
+			inputF1.addItem(i + "/" + record.getRecordPeriod().getMonthValue());
+		}
+
 		JComboBox<String> inputF2 = new JComboBox<>();
 
 		ArrayList<String> cats = JsonManager.getCats();
@@ -1005,6 +1014,9 @@ public class UIManager {
 				category = inputF2.getSelectedItem().toString();
 			}
 
+			date = date + "/" + record.getRecordPeriod().getYear();
+			//date = date.replaceAll("[\\/]", ".");
+			System.out.println(date);
 			if (!Validation.isValidDate(date)) {
 				jop.showMessageDialog(null, "Date is not valid!");
 			} else if (!Validation.isValidAmount(amt)) {
@@ -1012,7 +1024,7 @@ public class UIManager {
 			} else if (inputF2.getSelectedItem() == null) {
 				jop.showMessageDialog(null, "Choose a category!");
 			} else {
-				Expense exp = new Expense(LocalDate.parse(date, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]")), category, Double.parseDouble(amt));
+				Expense exp = new Expense(LocalDate.parse(date, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy][dd/MM/yyyy][d/MM/yyyy][dd/M/yyyy]")), category, Double.parseDouble(amt));
 				exp.setExpenseRecordId(record.getRecordId());
 				JsonManager.createExpense(exp);
 				new Synchronization("CREATE_EXPENSE", null, exp);
@@ -1022,9 +1034,10 @@ public class UIManager {
 				dtm.setValueAt("", dtm.getRowCount() - 1, 0);
 				dtm.setValueAt("", dtm.getRowCount() - 1, 1);
 				dtm.setValueAt("", dtm.getRowCount() - 1, 2);
-				inputF1.setText("");
+				inputF1.setSelectedIndex(-1);
 				inputF2.setSelectedIndex(-1);
 				inputF3.setText("");
+				createOrRefreshChartPanel();
 			}
 
 			((CardLayout)(opPanel.getLayout())).show(opPanel, "OP_1");
@@ -1051,6 +1064,7 @@ public class UIManager {
 				DefaultTableModel dtm = (DefaultTableModel) table.getModel();
 				dtm.removeRow(selectedRow);
 				table.clearSelection();
+				createOrRefreshChartPanel();
 			} else {
 
 			}

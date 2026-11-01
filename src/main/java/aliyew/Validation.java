@@ -5,42 +5,42 @@ import java.time.format.*;
 import java.util.ArrayList;
 
 public class Validation {
-	
-	
+
+
 	public static boolean isValidDate(String input) {
 		try {
-			LocalDate.parse(input, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy]"));
+			LocalDate.parse(input, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy][dd/MM/yyyy][d/MM/yyyy][dd/M/yyyy]"));
 			return true;
 		} catch (Exception a) {
 			return false;
 		}
 	}
-	
+
 	public static boolean isValidAmount(String input) {
-	    if (input.matches("-?\\d+(\\.\\d+)?")) {
-	        return true;
-	    } else {
-	        return false;
-	    }
+		if (input.matches("-?\\d+(\\.\\d+)?")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
+
 	public static boolean isValidName(String name, ArrayList<Record> allRecords) {
-	    for (Record rec : allRecords) {
-	        if (rec.getRecordName().equals(name)) {
-	            return false;
-	        }
-	    }
-	    
-	    return true;
+		for (Record rec : allRecords) {
+			if (rec.getRecordName().equals(name)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
-	
+
 	public static boolean isValidNameCat(String name, ArrayList<String> cats) {
-	    for (String str : cats) {
-	        if (str.equals(name)) {
-	            return false;
-	        }
-	    }
-	    
-	    return true;
+		for (String str : cats) {
+			if (str.equals(name)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
