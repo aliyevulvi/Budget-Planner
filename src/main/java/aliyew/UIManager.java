@@ -36,6 +36,7 @@ import java.util.TreeMap;
 import java.util.Map;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Comparator;
 import java.time.*;
 import java.time.format.*;
 import java.io.File;
@@ -799,8 +800,16 @@ public class UIManager {
 
 		});
 
+		JComboBox<String> sortingBox = new JComboBox<>();
+		sortingBox.addItem("Default");
+		sortingBox.addItem("Chronological");
+		sortingBox.addItem("Asc. Expense");
+		sortingBox.addItem("Desc. Expense");
+		allExpenses = JsonManager.getExpenses(record);
 
-		JPanel infoPanel = new JPanel(new GridLayout(6, 2, 30, 10));
+
+
+		JPanel infoPanel = new JPanel(new GridLayout(7, 2, 10, 10));
 
 		infoPanel.setFocusable(true);
 		recordName.addActionListener(e -> infoPanel.requestFocusInWindow());
@@ -826,6 +835,7 @@ public class UIManager {
 		infoPanel.add(periodSpinner);
 		infoPanel.add(ptCb);
 		infoPanel.add(addPtBtn);
+		infoPanel.add(sortingBox);
 
 		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
@@ -863,7 +873,7 @@ public class UIManager {
 						return;
 					}
 					valStr = valStr + "/" + record.getRecordPeriod().getYear();
-					originalExp.setExpenseDate(LocalDate.parse(valStr, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy][d.M.yyyy][dd.M.yyyy][d.MM.yyyy]")));
+					originalExp.setExpenseDate(LocalDate.parse(valStr, DateTimeFormatter.ofPattern("[dd.MM.yy][yyyy-MM-dd][d.M.yy][dd.M.yy][d.MM.yy][d/M/yyyy][dd/M/yyyy][d/MM/yyyy]")));
 				} else if (col == 1) {
 					if (valStr.isEmpty()) {
 						JOptionPane.showMessageDialog(null, "Choose Category!");
@@ -886,8 +896,29 @@ public class UIManager {
 			}
 		};
 
+		sortingBox.addActionListener(e -> {
+			String selectedType = (String) sortingBox.getSelectedItem();
+
+			if (selectedType == null || selectedType.equals("Default")) {
+				allExpenses = JsonManager.getExpenses(record);
+			} else if (selectedType.equals("Chronological")) {
+				allExpenses.sort(Comparator.comparing(Expense::getExpenseDate));
+			} else if (selectedType.equals("Asc. Expense")) {
+				allExpenses.sort(Comparator.comparingDouble(Expense::getExpenseAmt));
+			} else if (selectedType.equals("Desc. Expense")) {
+				allExpenses.sort(Comparator.comparingDouble(Expense::getExpenseAmt).reversed());
+			} else {
+				return;
+			}
+
+			model.setRowCount(0);
+			for (Expense exp : allExpenses) {
+				model.addRow(new Object[] {exp.getExpenseDate().getDayOfMonth() + "/" + exp.getExpenseDate().getMonthValue(), exp.getExpenseCat(), exp.getExpenseAmt()});
+			}
+		});
+
 		for (Expense exp : allExpenses) {
-			model.addRow(new Object[] {exp.getExpenseDate(), exp.getExpenseCat(), exp.getExpenseAmt()});
+			model.addRow(new Object[] {exp.getExpenseDate().getDayOfMonth() + "/" + exp.getExpenseDate().getMonthValue(), exp.getExpenseCat(), exp.getExpenseAmt()});
 		}
 
 

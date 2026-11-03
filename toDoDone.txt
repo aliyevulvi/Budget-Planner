@@ -1,3 +1,6 @@
 +1. Graphic Charts to review panel
 +2. Records will be based on months
 +3. Expenses will be combobox in review panel
+4. Comparison between records
++5. Sorting Expenses
+6. Limits & Aims
