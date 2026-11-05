@@ -59,11 +59,14 @@ public class UIManager {
 	private static final String SETTINGS_PANEL = "SETTINGS_PANEL";
 	private static final String REVIEW_PANEL = "REVIEW_PANEL";
 	private static final String SYNC_PANEL = "SYNC_PANEL";
+	private static final String COMPARE_PANEL = "COMPARE_PANEL";
+
 	private static JPanel rightPanel;
 	private static JPanel recordsPanel;
 	private static JPanel settingsPanel;
 	private static JPanel syncPanel;
 	private static JPanel reviewPanel;
+	private static JPanel comparePanel;
 	private static JPanel chartsPanel = new JPanel();
 
 	private static JScrollPane reviewScrollPane = new JScrollPane();
@@ -172,6 +175,7 @@ public class UIManager {
 		settingsPanel = new JPanel(new BorderLayout());
 		syncPanel = new JPanel(new BorderLayout());
 		reviewPanel = new JPanel();
+		comparePanel = new JPanel(new BorderLayout());
 
 		recordsPanelConfig(recordsPanel);
 		createRecordPanelConfig(createRecordPanel);
@@ -183,6 +187,7 @@ public class UIManager {
 		rightPanel.add(settingsPanel, SETTINGS_PANEL);
 		rightPanel.add(reviewPanel, REVIEW_PANEL);
 		rightPanel.add(syncPanel, SYNC_PANEL);
+		rightPanel.add(comparePanel, COMPARE_PANEL);
 
 
 
@@ -807,6 +812,16 @@ public class UIManager {
 		sortingBox.addItem("Desc. Expense");
 		allExpenses = JsonManager.getExpenses(record);
 
+		JButton compareBtn = new JButton("Compare");
+		compareBtn.addActionListener(e -> {
+			if (JsonManager.getRecords().size() > 1) {
+				comparePanelConfig();
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, COMPARE_PANEL);
+			} else {
+				JOptionPane.showMessageDialog(null, "Another Record Doesn't Exist");
+			}
+		});
+
 
 
 		JPanel infoPanel = new JPanel(new GridLayout(7, 2, 10, 10));
@@ -836,6 +851,7 @@ public class UIManager {
 		infoPanel.add(ptCb);
 		infoPanel.add(addPtBtn);
 		infoPanel.add(sortingBox);
+		infoPanel.add(compareBtn);
 
 		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
 		Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
@@ -1315,5 +1331,93 @@ public class UIManager {
 		pieChartPanel.setPreferredSize(chartSize);
 		pieChartPanel.setMaximumSize(chartSize);
 		chartsPanel.add(lineChartPanel);
+	}
+
+	public static void comparePanelConfig() {
+		comparePanel.removeAll();
+		comparePanel.setLayout(new BorderLayout());
+
+		//    NORTH (RECORD SELECTION)
+		JComboBox<String> recordBox = new JComboBox<>();
+
+		recordBox.addItem("-- Select Record to Compare --");
+		ArrayList<Record> allRecords = JsonManager.getRecords();
+		for (Record rec : allRecords) {
+			if (rec.getRecordId().equals(record.getRecordId())) {
+				continue;
+			}
+
+			recordBox.addItem(rec.getRecordName());
+		}
+		
+		JPanel northPanel = new JPanel();
+		northPanel.add(recordBox);
+
+		comparePanel.add(northPanel, BorderLayout.NORTH);
+
+		//    CENTER (STATISTICS)
+		String[] columns = {" ", "Record 1", "Record 2"};
+		DefaultTableModel model = new DefaultTableModel(columns, 0);
+		JTable compareTable = new JTable(model);
+		JScrollPane scrollPane = new JScrollPane(compareTable);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
+		recordBox.addActionListener(e -> {
+			Record selRecord = null;
+			String selRecName = (String) recordBox.getSelectedItem();
+
+			if (selRecName == null || selRecName.equals("-- Select Record to Compare --")) {
+				model.setRowCount(0);
+				return;
+			}
+
+			for (Record rec : JsonManager.getRecords()) {
+				if (rec.getRecordName().equals(selRecName)) {
+					selRecord = rec;
+					break;
+				}
+			}
+
+			if (selRecord != null) {
+				model.setRowCount(0);
+				ArrayList<Expense> recExpenses = JsonManager.getExpenses(record);
+				ArrayList<Expense> selRecExpenses = JsonManager.getExpenses(selRecord);
+
+				double totalAmt1 = 0;
+				double totalAmt2 = 0;
+
+				for (Expense exp : recExpenses) {
+					totalAmt1 += exp.getExpenseAmt();
+				}
+
+				for (Expense exp : selRecExpenses) {
+					totalAmt2 += exp.getExpenseAmt();
+				}
+
+				model.addRow(new Object[] {"Record Name", record.getRecordName(), selRecord.getRecordName()});
+				model.addRow(new Object[] {"Record Period", record.getRecordPeriod().getMonthValue() + "/" + record.getRecordPeriod().getYear(), selRecord.getRecordPeriod().getMonthValue() + "/" + selRecord.getRecordPeriod().getYear()});
+				model.addRow(new Object[] {"Record Income", record.getRecordIncome() + "", selRecord.getRecordIncome() + ""});
+				model.addRow(new Object[] {"Record Expenses", totalAmt1 + "", totalAmt2 + ""});
+
+			}
+
+			comparePanel.revalidate();
+			comparePanel.repaint();
+
+
+		});
+
+
+
+		comparePanel.add(scrollPane, BorderLayout.CENTER);
+
+		//    SOUTH (Prev)
+
+		JButton prevBtn = new JButton("<");
+		prevBtn.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, REVIEW_PANEL);
+		});
+
+		comparePanel.add(prevBtn, BorderLayout.SOUTH);
 	}
 }
