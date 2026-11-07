@@ -18,6 +18,7 @@ public class JsonManager {
 	private static final File SYNC_FILE = new File("src/main/resources/jsons/syncQueue.json");
 	private static final File CAT_FILE = new File("src/main/resources/jsons/category.json");
 	private static final File PAYMENT_TEMPLATES_FILE = new File("src/main/resources/jsons/payment_templates.json");
+	private static final File LIMIT_FILE = new File("src/main/resources/jsons/limits.json");
 
 	public static ArrayList<Record> getRecords() {
 		ArrayList<Record> allRecords = new ArrayList<>();
@@ -75,8 +76,9 @@ public class JsonManager {
 	public static String deleteRecord(Record record) {
 		ArrayList<Record> allRecords = getRecords();
 
-        allRecords.removeIf(rec -> rec.getRecordId().equals(record.getRecordId()));
+		allRecords.removeIf(rec -> rec.getRecordId().equals(record.getRecordId()));
 		deleteExpense(record);
+		deleteLimits(record);
 
 		try {
 
@@ -112,7 +114,7 @@ public class JsonManager {
 					recordExpenses.add(exp);
 				}
 			}
-            
+
 			return recordExpenses;
 
 
@@ -267,9 +269,9 @@ public class JsonManager {
 
 	public static void createCat(String newCat) {
 		ArrayList<String> allCats = getCats();
-		
+
 		if (allCats.contains(newCat)) {
-		    return;
+			return;
 		}
 
 		allCats.add(newCat);
@@ -292,7 +294,7 @@ public class JsonManager {
 			logger.severe(e.getMessage());
 		}
 	}
-	
+
 	public static ArrayList<PT> getPTs() {
 		ArrayList<PT> allPTs = new ArrayList<>();
 
@@ -311,16 +313,16 @@ public class JsonManager {
 			return allPTs;
 		}
 	}
-	
+
 	public static void createPT(PT pt) {
 		ArrayList<PT> allPTs = getPTs();
 
 		for (PT pt1 : allPTs) {
-		    if (pt.getPTCat().equals(pt1.getPTCat()) && pt.getPTAmt() == pt1.getPTAmt()) {
-		        return;
-		    }
+			if (pt.getPTCat().equals(pt1.getPTCat()) && pt.getPTAmt() == pt1.getPTAmt()) {
+				return;
+			}
 		}
-		
+
 		allPTs.add(pt);
 
 		try {
@@ -330,7 +332,7 @@ public class JsonManager {
 			logger.severe(e.getMessage());
 		}
 	}
-	
+
 	public static void deletePT(PT pt) {
 		ArrayList<PT> allPTs = getPTs();
 		allPTs.removeIf(e -> (e.getPTCat().equals(pt.getPTCat()) && e.getPTAmt() == pt.getPTAmt()));
@@ -341,5 +343,68 @@ public class JsonManager {
 			logger.severe(e.getMessage());
 		}
 	}
+
+	//    LIMIT    JSON
+	public static ArrayList<Limit> getLimits() {
+		ArrayList<Limit> allLimits = new ArrayList<>();
+
+		try {
+
+			if (!LIMIT_FILE.exists()) {
+				LIMIT_FILE.createNewFile();
+				return allLimits;
+			}
+			return mapper.readValue(LIMIT_FILE, new TypeReference<ArrayList<Limit>>() {});
+
+
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+			allLimits.clear();
+			return allLimits;
+		}
+	}
+
+	public static void createLimit(Limit lim) {
+		ArrayList<Limit> allLimits = getLimits();
+
+		for (Limit limit : allLimits) {
+			if (limit.getLimitCat().equals(lim.getLimitCat()) && limit.getLimitAmt() == lim.getLimitAmt() && limit.getLimitRecordName().equals(lim.getLimitRecordName())) {
+				return;
+			}
+		}
+
+		allLimits.add(lim);
+
+		try {
+
+			mapper.writerWithDefaultPrettyPrinter().writeValue(LIMIT_FILE, allLimits);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+
+	public static void deleteLimit(Limit lim) {
+		ArrayList<Limit> allLimits = getLimits();
+		allLimits.removeIf(e -> (e.getLimitCat().equals(lim.getLimitCat()) && e.getLimitAmt() == lim.getLimitAmt() && e.getLimitRecordName().equals(lim.getLimitRecordName())));
+
+		try {
+			mapper.writerWithDefaultPrettyPrinter().writeValue(LIMIT_FILE, allLimits);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+	
+	public static void deleteLimits(Record record) {
+		ArrayList<Limit> allLimits = getLimits();
+		allLimits.removeIf(e -> (e.getLimitRecordName().equals(record.getRecordName())));
+
+		try {
+			mapper.writerWithDefaultPrettyPrinter().writeValue(LIMIT_FILE, allLimits);
+		} catch (IOException e) {
+			logger.severe(e.getMessage());
+		}
+	}
+	
+	
 
 }

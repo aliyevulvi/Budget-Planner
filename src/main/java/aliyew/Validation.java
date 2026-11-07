@@ -17,7 +17,7 @@ public class Validation {
 	}
 
 	public static boolean isValidAmount(String input) {
-		if (input.matches("-?\\d+(\\.\\d+)?")) {
+		if (input.matches("\\d+(\\.\\d+)?")) {
 			return true;
 		} else {
 			return false;

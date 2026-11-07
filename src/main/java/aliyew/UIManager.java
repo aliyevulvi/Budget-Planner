@@ -128,6 +128,9 @@ public class UIManager {
 		});
 
 
+		//    SOUTH (Limits)
+
+
 	}
 
 	public static void leftPanelButtonConfigruations(JPanel jPanel, JButton btn) {
@@ -684,8 +687,109 @@ public class UIManager {
 		gbc.gridy = 10;
 		panel.add(restoreBtn, gbc);
 
-		gbc.gridx = 2;
+		//    LIMIT OPERATIONS
+
+		gbc.gridwidth = 3;
+		gbc.gridx = 0;
 		gbc.gridy = 11;
+		panel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+
+		JComboBox<String> limitCatBox = new JComboBox<>();
+		JComboBox<String> recordBox = new JComboBox<>();
+		JTextField limitAmt = new JTextField();
+
+		limitCatBox.addItem("Default");
+		limitCatBox.addItem("General");
+		for (String cat : JsonManager.getCats()) {
+			limitCatBox.addItem(cat);
+		}
+
+		recordBox.addItem("Default");
+		for (Record rec : JsonManager.getRecords()) {
+			recordBox.addItem(rec.getRecordName());
+		}
+
+
+		JButton addLimitBtn = new JButton("Add");
+		addLimitBtn.addActionListener(e -> {
+			String selCat = (String) limitCatBox.getSelectedItem();
+			String selRec = (String) recordBox.getSelectedItem();
+			String selAmt = (String) limitAmt.getText().trim();
+
+			if (selCat.equals("Default")) {
+				JOptionPane.showMessageDialog(null, "Please Choose Category!");
+			} else if (selRec.equals("Default")) {
+				JOptionPane.showMessageDialog(null, "Please Choose Record!");
+			} else if (!Validation.isValidAmount(selAmt)) {
+				JOptionPane.showMessageDialog(null, "Please Enter Valid Amount!");
+			} else {
+				JsonManager.createLimit(new Limit(selCat, Double.parseDouble(selAmt), selRec));
+				JOptionPane.showMessageDialog(null, "Limit Created Successfully!");
+				rightPanelConfigurationMethod(rightPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			}
+
+
+
+
+			limitCatBox.setSelectedItem(-1);
+			recordBox.setSelectedItem(-1);
+			limitAmt.setText("");
+
+
+		});
+
+		gbc.gridwidth = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 12;
+		panel.add(limitCatBox, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 12;
+		panel.add(recordBox, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 12;
+		panel.add(limitAmt, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 13;
+		panel.add(addLimitBtn, gbc);
+
+		JComboBox<String> deleteLimitBox = new JComboBox<>();
+
+		deleteLimitBox.addItem("Default");
+		for (Limit lim : JsonManager.getLimits()) {
+			deleteLimitBox.addItem(lim.toString());
+		}
+
+		JButton deleteLimitBtn = new JButton("Delete");
+		deleteLimitBtn.addActionListener(e -> {
+			String selValue = (String) deleteLimitBox.getSelectedItem();
+			if (!selValue.equals("Default")) {
+				JsonManager.deleteLimit(Limit.fromString(selValue));
+				JOptionPane.showMessageDialog(null, "Limit Deleted Successfully!");
+				rightPanelConfigurationMethod(rightPanel);
+				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			}
+		});
+
+		gbc.gridx = 0;
+		gbc.gridy = 14;
+		panel.add(deleteLimitBox, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 14;
+		panel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 14;
+		panel.add(deleteLimitBtn, gbc);
+
+
+
+		gbc.gridx = 2;
+		gbc.gridy = 15;
 		panel.add(prevBtn, gbc);
 
 		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
@@ -1016,7 +1120,31 @@ public class UIManager {
 
 		wrapperPanel.add(scrollPane);
 		wrapperPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        
+        //    LIMITS
+        JPanel limitPanel = new JPanel();
+        limitPanel.setLayout(new BoxLayout(limitPanel, BoxLayout.Y_AXIS));
+        
+        ArrayList<Limit> allLimits = new ArrayList<>();
 
+		for (Limit limit : JsonManager.getLimits()) {
+			if (limit.getLimitRecordName().equals(record.getRecordName())) {
+				allLimits.add(limit);
+			}
+		}
+
+		chartsPanel.setLayout(new GridLayout(3 + allLimits.size(), 1, 0, 10));
+
+		if (allLimits.size() > 0) {
+
+			for (Limit limit : allLimits) {
+				limitPanel.add(new JLabel("Limit: "+ limit.getLimitCat()));
+				limitPanel.add(createLimitBar(limit));
+			}
+			wrapperPanel.add(limitPanel);
+
+		}
+        
 		createOrRefreshChartPanel();
 		wrapperPanel.add(chartsPanel);
 
@@ -1250,11 +1378,12 @@ public class UIManager {
 		Dimension chartSize = new Dimension(chartWidth, chartHeight);
 
 
-		chartsPanel.setLayout(new GridLayout(3, 1, 0, 10));
 		chartsPanel.setPreferredSize(new Dimension(chartWidth, dynamicHeight));
+
 
 		//    RESULTS
 		if (JsonManager.getExpenses(record).size() > 0) {
+
 			JPanel resultPanel = new JPanel(new GridLayout(4, 4, 50, 10));
 			Border matteBorder = BorderFactory.createMatteBorder(2, 0, 2, 0, Color.BLACK);
 			Border emptyBorder = BorderFactory.createEmptyBorder(10, 15, 10, 15);
@@ -1349,7 +1478,7 @@ public class UIManager {
 
 			recordBox.addItem(rec.getRecordName());
 		}
-		
+
 		JPanel northPanel = new JPanel();
 		northPanel.add(recordBox);
 
@@ -1360,7 +1489,7 @@ public class UIManager {
 		DefaultTableModel model = new DefaultTableModel(columns, 0);
 		JTable compareTable = new JTable(model);
 		JScrollPane scrollPane = new JScrollPane(compareTable);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 		recordBox.addActionListener(e -> {
 			Record selRecord = null;
@@ -1419,5 +1548,32 @@ public class UIManager {
 		});
 
 		comparePanel.add(prevBtn, BorderLayout.SOUTH);
+	}
+
+	public static JProgressBar createLimitBar(Limit limit) {
+		double totalExpense = 0;
+
+		for (Expense exp : JsonManager.getExpenses(record)) {
+			if (limit.getLimitCat().equals("General")) {
+				totalExpense += exp.getExpenseAmt();
+			} else if (limit.getLimitCat().equals(exp.getExpenseCat())) {
+			    totalExpense += exp.getExpenseAmt();
+
+			}
+		}
+
+		JProgressBar progressBar = new JProgressBar(0, (int) limit.getLimitAmt());
+		progressBar.setValue((int) totalExpense);
+		progressBar.setStringPainted(true);
+		progressBar.setString(limit.getLimitCat() + " : \t" + progressBar.getString());
+		
+		if (limit.getLimitAmt() > totalExpense) {
+		    progressBar.setForeground(Color.GREEN);
+		} else {
+		    progressBar.setForeground(Color.RED);
+		}
+
+		return progressBar;
+
 	}
 }
