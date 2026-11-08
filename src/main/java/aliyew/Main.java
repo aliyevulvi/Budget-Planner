@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         
-        DBManager.main(args);
+        //DBManager.main(args);
         // ConsoleUI.startProgram();
         Init.init();
         UIManager.main(args);

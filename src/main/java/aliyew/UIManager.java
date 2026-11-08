@@ -1108,24 +1108,44 @@ public class UIManager {
 		scrollPane.addMouseListener(new MouseAdapter() {
 
 			public void mousePressed(MouseEvent e) {
+
+				if (table.isEditing()) {
+					table.getCellEditor().stopCellEditing();
+				}
 				table.clearSelection();
 			}
 		});
 
 		wrapperPanel.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
+
+				if (table.isEditing()) {
+					table.getCellEditor().stopCellEditing();
+				}
 				table.clearSelection();
 			}
 		});
 
+		rightPanel.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+
+				if (table.isEditing()) {
+					table.getCellEditor().stopCellEditing();
+				}
+				table.clearSelection();
+			}
+		});
+
+
 		wrapperPanel.add(scrollPane);
 		wrapperPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
-        
-        //    LIMITS
-        JPanel limitPanel = new JPanel();
-        limitPanel.setLayout(new BoxLayout(limitPanel, BoxLayout.Y_AXIS));
-        
-        ArrayList<Limit> allLimits = new ArrayList<>();
+
+		//    LIMITS
+		JPanel limitPanel = new JPanel();
+		//limitPanel.setBorder(BorderFactory.createEmptyBorder(10, (int) (dynamicWidth*0.1), 10, (int) (dynamicWidth*0.1)));
+		limitPanel.setLayout(new BoxLayout(limitPanel, BoxLayout.Y_AXIS));
+
+		ArrayList<Limit> allLimits = new ArrayList<>();
 
 		for (Limit limit : JsonManager.getLimits()) {
 			if (limit.getLimitRecordName().equals(record.getRecordName())) {
@@ -1133,18 +1153,23 @@ public class UIManager {
 			}
 		}
 
-		chartsPanel.setLayout(new GridLayout(3 + allLimits.size(), 1, 0, 10));
+		chartsPanel.setLayout(new GridLayout(3, 1, 0, 10));
 
 		if (allLimits.size() > 0) {
+			JPanel lblPanel = new JPanel();
+			lblPanel.add(new JLabel("Record Limits", SwingConstants.LEFT));
+			wrapperPanel.add(lblPanel);
 
 			for (Limit limit : allLimits) {
-				limitPanel.add(new JLabel("Limit: "+ limit.getLimitCat()));
+				limitPanel.add(new JLabel("Limit: " + limit.getLimitCat()));
 				limitPanel.add(createLimitBar(limit));
 			}
 			wrapperPanel.add(limitPanel);
 
 		}
-        
+
+		wrapperPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+
 		createOrRefreshChartPanel();
 		wrapperPanel.add(chartsPanel);
 
@@ -1372,14 +1397,15 @@ public class UIManager {
 
 	public static void createOrRefreshChartPanel() {
 		chartsPanel.removeAll();
+
 		//    CHARTS PANEL
-		int chartWidth = (int)(dynamicWidth * 0.50);
-		int chartHeight = (int)(dynamicHeight * 0.3);
+		int chartWidth = (int)(dynamicWidth * 0.65);
+		int chartHeight = (int)(dynamicHeight * 0.2);
 		Dimension chartSize = new Dimension(chartWidth, chartHeight);
 
 
 		chartsPanel.setPreferredSize(new Dimension(chartWidth, dynamicHeight));
-
+		chartsPanel.setMaximumSize(new Dimension(chartWidth, dynamicHeight));
 
 		//    RESULTS
 		if (JsonManager.getExpenses(record).size() > 0) {
@@ -1457,8 +1483,8 @@ public class UIManager {
 
 		JFreeChart lineChart = ChartFactory.createLineChart("Expense Distribution", "Days", "Amount", dcd);
 		ChartPanel lineChartPanel = new ChartPanel(lineChart);
-		pieChartPanel.setPreferredSize(chartSize);
-		pieChartPanel.setMaximumSize(chartSize);
+		lineChartPanel.setPreferredSize(chartSize);
+		lineChartPanel.setMaximumSize(chartSize);
 		chartsPanel.add(lineChartPanel);
 	}
 
@@ -1557,7 +1583,7 @@ public class UIManager {
 			if (limit.getLimitCat().equals("General")) {
 				totalExpense += exp.getExpenseAmt();
 			} else if (limit.getLimitCat().equals(exp.getExpenseCat())) {
-			    totalExpense += exp.getExpenseAmt();
+				totalExpense += exp.getExpenseAmt();
 
 			}
 		}
@@ -1565,12 +1591,13 @@ public class UIManager {
 		JProgressBar progressBar = new JProgressBar(0, (int) limit.getLimitAmt());
 		progressBar.setValue((int) totalExpense);
 		progressBar.setStringPainted(true);
-		progressBar.setString(limit.getLimitCat() + " : \t" + progressBar.getString());
-		
+		progressBar.setString(limit.getLimitCat() + " : \t" + progressBar.getString() + " ( " + totalExpense + " / " + limit.getLimitAmt() + " )");
+		progressBar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
 		if (limit.getLimitAmt() > totalExpense) {
-		    progressBar.setForeground(Color.GREEN);
+			progressBar.setForeground(Color.GREEN);
 		} else {
-		    progressBar.setForeground(Color.RED);
+			progressBar.setForeground(Color.RED);
 		}
 
 		return progressBar;

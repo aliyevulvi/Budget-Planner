@@ -3,4 +3,4 @@
 +3. Expenses will be combobox in review panel
 +4. Comparison between records
 +5. Sorting Expenses
-6. Limits & Aims
++6. Limits & Aims
