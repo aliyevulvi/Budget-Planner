@@ -9,26 +9,39 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-
 public class JsonManager {
 	private static final Logger logger = LogManager.getLogger(JsonManager.class.getName());
 	private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-	private static final File RECORD_FILE = new File("src/main/resources/jsons/records.json");
-	private static final File EXPENSE_FILE = new File("src/main/resources/jsons/expenses.json");
-	private static final File SYNC_FILE = new File("src/main/resources/jsons/syncQueue.json");
-	private static final File CAT_FILE = new File("src/main/resources/jsons/category.json");
-	private static final File PAYMENT_TEMPLATES_FILE = new File("src/main/resources/jsons/payment_templates.json");
-	private static final File LIMIT_FILE = new File("src/main/resources/jsons/limits.json");
+
+	// Dinamik 'data' klasörünü baz alan dosya yolları (JAR'ın yanında veya proje kökünde çalışır)
+	private static final File DATA_DIR = PathManager.getDataDirectory();
+	
+	private static final File RECORD_FILE = new File(DATA_DIR, "records.json");
+	private static final File EXPENSE_FILE = new File(DATA_DIR, "expenses.json");
+	private static final File SYNC_FILE = new File(DATA_DIR, "syncQueue.json");
+	private static final File CAT_FILE = new File(DATA_DIR, "category.json");
+	private static final File PAYMENT_TEMPLATES_FILE = new File(DATA_DIR, "payment_templates.json");
+	private static final File LIMIT_FILE = new File(DATA_DIR, "limits.json");
+
+	// Yardımcı metot: Dosya yoksa boş bir JSON array ([]) oluşturur
+	private static void ensureFileExists(File file) {
+		try {
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				mapper.writerWithDefaultPrettyPrinter().writeValue(file, new ArrayList<>());
+			}
+		} catch (IOException e) {
+			logger.severe("Dosya oluşturulamadı: " + file.getName() + " - " + e.getMessage());
+		}
+	}
 
 	public static ArrayList<Record> getRecords() {
+		ensureFileExists(RECORD_FILE);
 		ArrayList<Record> allRecords = new ArrayList<>();
 		try {
 			return mapper.readValue(RECORD_FILE, new TypeReference<ArrayList<Record>>() {});
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			allRecords.clear();
 			return allRecords;
 		}
 	}
@@ -45,7 +58,7 @@ public class JsonManager {
 		allRecords.add(record);
 
 		try {
-
+			ensureFileExists(RECORD_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
 			return "Create Record Successfully";
 		} catch (IOException e) {
@@ -64,7 +77,7 @@ public class JsonManager {
 		}
 
 		try {
-
+			ensureFileExists(RECORD_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
 			return "Update Record Successfully";
 		} catch (IOException e) {
@@ -81,7 +94,7 @@ public class JsonManager {
 		deleteLimits(record);
 
 		try {
-
+			ensureFileExists(RECORD_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(RECORD_FILE, allRecords);
 			return "Delete Record Successfully";
 		} catch (IOException e) {
@@ -91,19 +104,18 @@ public class JsonManager {
 	}
 
 	public static ArrayList<Expense> getExpenses() {
+		ensureFileExists(EXPENSE_FILE);
 		ArrayList<Expense> allExpenses = new ArrayList<>();
 		try {
 			return mapper.readValue(EXPENSE_FILE, new TypeReference<ArrayList<Expense>>() {});
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			allExpenses.clear();
 			return allExpenses;
 		}
 	}
 
 	public static ArrayList<Expense> getExpenses(Record record) {
+		ensureFileExists(EXPENSE_FILE);
 		ArrayList<Expense> allExpenses = new ArrayList<>();
 		try {
 			allExpenses = mapper.readValue(EXPENSE_FILE, new TypeReference<ArrayList<Expense>>() {});
@@ -116,23 +128,18 @@ public class JsonManager {
 			}
 
 			return recordExpenses;
-
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			allExpenses.clear();
 			return allExpenses;
 		}
 	}
 
 	public static String createExpense(Expense expense) {
 		ArrayList<Expense> allExpenses = getExpenses();
-
 		allExpenses.add(expense);
 
 		try {
-
+			ensureFileExists(EXPENSE_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
 			return "Create Expense Successfully";
 		} catch (IOException e) {
@@ -144,7 +151,6 @@ public class JsonManager {
 	public static String updateExpense(Expense expense) {
 		ArrayList<Expense> allExpenses = getExpenses();
 
-
 		for (int i = 0; i < allExpenses.size(); i++) {
 			if (allExpenses.get(i).getExpenseId().equals(expense.getExpenseId())) {
 				allExpenses.set(i, expense);
@@ -153,7 +159,7 @@ public class JsonManager {
 		}
 
 		try {
-
+			ensureFileExists(EXPENSE_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
 			return "Update Expense Successfully";
 		} catch (IOException e) {
@@ -164,11 +170,10 @@ public class JsonManager {
 
 	public static String deleteExpense(Expense expense) {
 		ArrayList<Expense> allExpenses = getExpenses();
-
 		allExpenses.removeIf(exp -> exp.getExpenseId().equals(expense.getExpenseId()));
 
 		try {
-
+			ensureFileExists(EXPENSE_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
 			return "Delete Expense Successfully";
 		} catch (IOException e) {
@@ -179,11 +184,10 @@ public class JsonManager {
 
 	public static String deleteExpense(Record rec) {
 		ArrayList<Expense> allExpenses = getExpenses();
-
 		allExpenses.removeIf(exp -> exp.getExpenseRecordId().equals(rec.getRecordId()));
 
 		try {
-
+			ensureFileExists(EXPENSE_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(EXPENSE_FILE, allExpenses);
 			return "Delete Expense Successfully";
 		} catch (IOException e) {
@@ -193,38 +197,33 @@ public class JsonManager {
 	}
 
 	public static ArrayList<Synchronization> getOps() {
+		ensureFileExists(SYNC_FILE);
 		try {
 			return mapper.readValue(SYNC_FILE, new TypeReference<ArrayList<Synchronization>>() {});
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-
 			return new ArrayList<Synchronization>();
 		}
-
 	}
 
 	public static void addOp(Synchronization op) {
 		ArrayList<Synchronization> allOps = getOps();
-
 		if (allOps == null) {
-			return;
+			allOps = new ArrayList<>();
 		}
-
 		allOps.add(op);
 
 		try {
-
+			ensureFileExists(SYNC_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
-
 	}
 
 	public static void setAllOps(ArrayList<Synchronization> arr) {
 		try {
+			ensureFileExists(SYNC_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, arr);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -233,15 +232,13 @@ public class JsonManager {
 
 	public static void deleteLastOp() {
 		ArrayList<Synchronization> allOps = getOps();
-
 		if (allOps == null || allOps.isEmpty()) {
 			return;
 		}
-
 		allOps.remove(allOps.size() - 1);
 
 		try {
-
+			ensureFileExists(SYNC_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(SYNC_FILE, allOps);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -249,35 +246,25 @@ public class JsonManager {
 	}
 
 	public static ArrayList<String> getCats() {
+		ensureFileExists(CAT_FILE);
 		ArrayList<String> allCats = new ArrayList<>();
-
 		try {
-
-			if (!CAT_FILE.exists()) {
-				CAT_FILE.createNewFile();
-				return allCats;
-			}
 			return mapper.readValue(CAT_FILE, new TypeReference<ArrayList<String>>() {});
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			allCats.clear();
 			return allCats;
 		}
 	}
 
 	public static void createCat(String newCat) {
 		ArrayList<String> allCats = getCats();
-
 		if (allCats.contains(newCat)) {
 			return;
 		}
-
 		allCats.add(newCat);
 
 		try {
-
+			ensureFileExists(CAT_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(CAT_FILE, allCats);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -289,6 +276,7 @@ public class JsonManager {
 		allCats.removeIf(e -> e.equals(cat));
 
 		try {
+			ensureFileExists(CAT_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(CAT_FILE, allCats);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -296,20 +284,12 @@ public class JsonManager {
 	}
 
 	public static ArrayList<PT> getPTs() {
+		ensureFileExists(PAYMENT_TEMPLATES_FILE);
 		ArrayList<PT> allPTs = new ArrayList<>();
-
 		try {
-
-			if (!PAYMENT_TEMPLATES_FILE.exists()) {
-				PAYMENT_TEMPLATES_FILE.createNewFile();
-				return allPTs;
-			}
 			return mapper.readValue(PAYMENT_TEMPLATES_FILE, new TypeReference<ArrayList<PT>>() {});
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			allPTs.clear();
 			return allPTs;
 		}
 	}
@@ -326,7 +306,7 @@ public class JsonManager {
 		allPTs.add(pt);
 
 		try {
-
+			ensureFileExists(PAYMENT_TEMPLATES_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(PAYMENT_TEMPLATES_FILE, allPTs);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -338,28 +318,20 @@ public class JsonManager {
 		allPTs.removeIf(e -> (e.getPTCat().equals(pt.getPTCat()) && e.getPTAmt() == pt.getPTAmt()));
 
 		try {
+			ensureFileExists(PAYMENT_TEMPLATES_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(PAYMENT_TEMPLATES_FILE, allPTs);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
 	}
 
-	//    LIMIT    JSON
 	public static ArrayList<Limit> getLimits() {
+		ensureFileExists(LIMIT_FILE);
 		ArrayList<Limit> allLimits = new ArrayList<>();
-
 		try {
-
-			if (!LIMIT_FILE.exists()) {
-				LIMIT_FILE.createNewFile();
-				return allLimits;
-			}
 			return mapper.readValue(LIMIT_FILE, new TypeReference<ArrayList<Limit>>() {});
-
-
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
-			allLimits.clear();
 			return allLimits;
 		}
 	}
@@ -376,7 +348,7 @@ public class JsonManager {
 		allLimits.add(lim);
 
 		try {
-
+			ensureFileExists(LIMIT_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(LIMIT_FILE, allLimits);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -388,6 +360,7 @@ public class JsonManager {
 		allLimits.removeIf(e -> (e.getLimitCat().equals(lim.getLimitCat()) && e.getLimitAmt() == lim.getLimitAmt() && e.getLimitRecordName().equals(lim.getLimitRecordName())));
 
 		try {
+			ensureFileExists(LIMIT_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(LIMIT_FILE, allLimits);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
@@ -399,12 +372,10 @@ public class JsonManager {
 		allLimits.removeIf(e -> (e.getLimitRecordName().equals(record.getRecordName())));
 
 		try {
+			ensureFileExists(LIMIT_FILE);
 			mapper.writerWithDefaultPrettyPrinter().writeValue(LIMIT_FILE, allLimits);
 		} catch (IOException e) {
 			logger.severe(e.getMessage());
 		}
 	}
-	
-	
-
 }

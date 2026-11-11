@@ -9,11 +9,16 @@ import java.util.logging.SimpleFormatter;
 public class LogManager {
     
     public LogManager(String className) {
-        
     }
 
     public static Logger getLogger(String className) {
-        File file = new File("src/main/resources/logs/"+className+".log");
+
+        File logDir = new File(PathManager.getAppDirectory(), "logs");
+        if (!logDir.exists()) {
+            logDir.mkdirs();
+        }
+
+        File file = new File(logDir, className + ".log");
         Logger logger = Logger.getLogger(className);
         logger.setUseParentHandlers(false);
 
@@ -22,19 +27,16 @@ public class LogManager {
                 file.createNewFile();
             }
 
-            FileHandler fileHandler = new FileHandler("src/main/resources/logs/"+className+".log", true);
+            FileHandler fileHandler = new FileHandler(file.getAbsolutePath(), true);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.ALL);
             logger.addHandler(fileHandler);
             logger.setLevel(Level.ALL);
 
-            
         } catch (Exception e) {
             logger.severe(e.getMessage());
         }
 
-
         return logger;
     }
-
 }

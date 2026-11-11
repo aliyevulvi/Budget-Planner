@@ -5,6 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -16,11 +17,16 @@ import java.time.ZoneId;
 
 public class XlsxManager {
 	public static void createXlsx(Record record, ArrayList<Expense> allExpenses, HashMap<String, Double> categorizedMap) {
+		File xlsxDir = new File(PathManager.getAppDirectory(), "xlsx_reports");
+		if (!xlsxDir.exists()) {
+			xlsxDir.mkdirs();
+		}
+		
 		String safeRecordName = record.getRecordName().replaceAll("[\\\\/:*?\"<>|]", "_");
-		safeRecordName += ".xlsx";
+		File excelFile = new File(xlsxDir, safeRecordName + ".xlsx");
 
 		try (Workbook wb = new XSSFWorkbook();
-					FileOutputStream fileOut = new FileOutputStream("xlsx\'s/"+safeRecordName)) {
+			FileOutputStream fileOut = new FileOutputStream(excelFile)) {
 			Sheet sheet = wb.createSheet("Expenses");
 
 			CellStyle headerStyle1 = wb.createCellStyle();
@@ -40,10 +46,6 @@ public class XlsxManager {
 
 			headerStyle1.setBorderBottom(BorderStyle.THIN);
 			headerStyle2.setBorderBottom(BorderStyle.THIN);
-			//sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 3));
-//			sheet.addMergedRegion(new CellRangeAddress(2, 2,  2, 3));
-//			sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 3));
-//			sheet.addMergedRegion(new CellRangeAddress(4, 4, 2, 3));
 
 
 			Row row1 = sheet.createRow(1);

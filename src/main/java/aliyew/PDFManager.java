@@ -17,15 +17,26 @@ import org.openpdf.text.pdf.PdfPCell;
 import org.openpdf.text.pdf.PdfPTable;
 import org.openpdf.text.pdf.PdfWriter;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class PDFManager {
 
 	public static String createPdf(Report report) {
 
-		// Document doc = new Document(PageSize.A4, 36, 36, 54, 54);
 		Document doc = new Document(PageSize.A4);
 		try {
+			File reportDir = new File(PathManager.getAppDirectory(), "pdf_reports");
+			if (!reportDir.exists()) {
+				reportDir.mkdirs();
+			}
+			
+			
 			String safeRecordName = report.getRecord().getRecordName().replaceAll("[\\\\/:*?\"<>|]", "_");
-			PdfWriter.getInstance(doc, new FileOutputStream("reports/"+safeRecordName + "_report.pdf"));
+			File pdfFile = new File(reportDir, safeRecordName + "_report.pdf");
+			PdfWriter.getInstance(doc, new FileOutputStream(pdfFile));
+			
 			Font headerFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 28, Color.BLACK);
 			Font contentFont2 = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Color.BLACK);
 

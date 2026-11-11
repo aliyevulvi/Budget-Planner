@@ -7,40 +7,40 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.zip.ZipEntry;
-import java.util.zip.*;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 import java.util.logging.Logger;
 
 public class BackupManager {
 
 	private static final Logger logger = LogManager.getLogger(BackupManager.class.getName());
 
-	private static final String BACKUP_DIR = "backups";
+	private static final File BACKUP_DIR = new File(PathManager.getAppDirectory(), "backups");
 
-	private static final String[] SOURCE_FILES = {
-		"src/main/resources/jsons/records.json",
-		"src/main/resources/jsons/expenses.json"
-	};
+	private static File[] getSourceFiles() {
+		File dataDir = PathManager.getDataDirectory();
+		return new File[] {
+			new File(dataDir, "records.json"),
+			new File(dataDir, "expenses.json")
+		};
+	}
 
 	public static String createBackup() {
-
-		File dir = new File(BACKUP_DIR);
-		if (!dir.exists()) {
-			dir.mkdirs();
+		if (!BACKUP_DIR.exists()) {
+			BACKUP_DIR.mkdirs();
 		}
 
 		String timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-		String zipFilePath = BACKUP_DIR + "/budgetplanner_backup_" + timeStamp + ".zip";
+		File zipFile = new File(BACKUP_DIR, "budgetplanner_backup_" + timeStamp + ".zip");
 
-		logger.info("Backup is starting: " + zipFilePath);
+		logger.info("Backup is starting: " + zipFile.getAbsolutePath());
 
-		try (FileOutputStream fos = new FileOutputStream(zipFilePath);
+		try (FileOutputStream fos = new FileOutputStream(zipFile);
 					ZipOutputStream zos = new ZipOutputStream(fos)) {
 
-			for (String filePath : SOURCE_FILES) {
-				File fileToZip = new File(filePath);
-
+			for (File fileToZip : getSourceFiles()) {
 				if (!fileToZip.exists()) {
-					logger.warning("Backup File Not Found! : " + filePath);
+					logger.warning("Backup File Not Found! : " + fileToZip.getAbsolutePath());
 					continue;
 				}
 
@@ -59,8 +59,8 @@ public class BackupManager {
 				}
 			}
 
-			logger.info("Backup Finished Successfully : " + zipFilePath);
-			return "Backup Successful : " + zipFilePath;
+			logger.info("Backup Finished Successfully : " + zipFile.getAbsolutePath());
+			return "Backup Successful : " + zipFile.getName();
 
 		} catch (IOException e) {
 			logger.severe("Error Occured while Backup : " + e);
@@ -69,12 +69,10 @@ public class BackupManager {
 	}
 
 	public static String restoreBackup(String zipFilePath) {
-		File destDir = new File("src/main/resources/jsons");
+		File destDir = PathManager.getDataDirectory();
 		if (!destDir.exists()) {
 			destDir.mkdirs();
 		}
-
-		boolean found = false;
 
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
 			ZipEntry zipEntry = zis.getNextEntry();
@@ -89,7 +87,6 @@ public class BackupManager {
 					throw new IOException("ZIPSlip Error : " + zipEntry.getName());
 				}
 
-
 				try (FileOutputStream fos = new FileOutputStream(newFile)) {
 					byte[] buffer = new byte[1024];
 					int len;
@@ -97,8 +94,6 @@ public class BackupManager {
 						fos.write(buffer, 0, len);
 					}
 				}
-
-				
 				zipEntry = zis.getNextEntry();
 			}
 
@@ -110,5 +105,4 @@ public class BackupManager {
 			return "Restore Failed! " + e.getMessage();
 		}
 	}
-
 }
