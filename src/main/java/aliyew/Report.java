@@ -59,7 +59,7 @@ public class Report {
         Expense highest = allExpenses.get(0);
 
         for (Expense exp : allExpenses) {
-            if (exp.getExpenseAmt() < highest.getExpenseAmt()) {
+            if (exp.getExpenseAmt() > highest.getExpenseAmt()) {
                 highest = exp;
             }
         }
@@ -71,7 +71,7 @@ public class Report {
         Expense smallest = allExpenses.get(0);
 
         for (Expense exp : allExpenses) {
-            if (exp.getExpenseAmt() > smallest.getExpenseAmt()) {
+            if (exp.getExpenseAmt() < smallest.getExpenseAmt()) {
                 smallest = exp;
             }
         }

@@ -194,7 +194,7 @@ public class PDFManager {
 			addCell2Table(resultTable, "Total Expenses", false, true);
 			addCell2Table(resultTable, report.getTotalExpense() + "", false, false);
 			addCell2Table(resultTable, "Balance", false, true);
-			addCell2Table(resultTable, (Math.round((report.getTotalExpense() + report.getRecord().getRecordIncome()) * 100.0) / 100.0) + "", false, false);
+			addCell2Table(resultTable, (Math.round((report.getRecord().getRecordIncome() - report.getTotalExpense()) * 100.0) / 100.0) + "", false, false);
 			addCell2Table(resultTable, "Highest Expense", false, true);
 			addCell2Table(resultTable, report.getHighestExpense() == null ? "0" : report.getHighestExpense().getExpenseAmt() + "", false, false);
 			addCell2Table(resultTable, "Smallest Expense", false, true);

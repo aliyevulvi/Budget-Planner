@@ -210,7 +210,7 @@ public class XlsxManager {
 			
 			Cell remBalance = sheet.getRow(counter).createCell(5);
 			remBalance.setCellStyle(remStyle);
-			remBalance.setCellValue((new Report(record, allExpenses, categorizedMap)).getTotalExpense()+record.getRecordIncome());
+			remBalance.setCellValue((record.getRecordIncome() - (new Report(record, allExpenses, categorizedMap)).getTotalExpense()));
 
 			for (int i = 0; i < 20; i++) {
 				sheet.autoSizeColumn(i);

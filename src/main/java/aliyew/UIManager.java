@@ -1,34 +1,15 @@
 package aliyew;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,15 +54,6 @@ public class UIManager {
 	private static Record record = new Record();
 	private static ArrayList<Expense> allExpenses = new ArrayList<>();
 	private static ArrayList<Record> allRecords = new ArrayList<>();
-
-	//private static Color rightBackgroundColor = Color.decode("#889696");
-//	private static Color panelBackgroundColor = Color.decode("#b5b0b0");
-//	private static Color buttonColor = Color.decode("#D2D4C8");
-//	private static Color leftBackgroundColor = Color.decode("#B8BDB5");
-//	private static Color hoverButtonColor = Color.decode("#E0E2DB");
-//	private static Color addButtonColor = Color.decode("#4487eb");
-//	private static Color deleteButtonColor = Color.decode("#ed574c");
-//	private static Color prevButtonColor = Color.decode("#BEE4E9");
 
 	private static Color rightBackgroundColor = Color.decode("#F4F6F8"); // Çok açık, modern gri arka plan
 	private static Color panelBackgroundColor = Color.decode("#FFFFFF"); // Kartlar/paneller için saf beyaz
@@ -777,8 +749,8 @@ public class UIManager {
 
 
 
-			limitCatBox.setSelectedItem(-1);
-			recordBox.setSelectedItem(-1);
+			limitCatBox.setSelectedIndex(-1);
+			recordBox.setSelectedIndex(-1);
 			limitAmt.setText("");
 
 
@@ -973,6 +945,7 @@ public class UIManager {
 		JComboBox<String> ptCb = new JComboBox<>();
 		ArrayList<PT> allPTs = JsonManager.getPTs();
 
+        ptCb.addItem("Payment Template");
 		for (PT pt : allPTs) {
 			ptCb.addItem(pt.toString());
 		}
@@ -981,6 +954,14 @@ public class UIManager {
 		addPtBtn.setForeground(Color.WHITE);
 		addPtBtn.setBackground(addButtonColor);
 		addPtBtn.addActionListener(e -> {
+			String selValue = (String) ptCb.getSelectedItem();
+			
+			if (selValue == null || selValue.equals("Payment Template")) {
+			    JOptionPane.showMessageDialog(null, "Please Choose Payment Template!");
+			    return;
+			}
+			
+			
 			PT selPt = allPTs.get(ptCb.getSelectedIndex());
 			Expense expenseTemp = new Expense(record.getRecordPeriod(), selPt.getPTCat(), selPt.getPTAmt());
 			expenseTemp.setExpenseRecordId(record.getRecordId());
@@ -1303,8 +1284,6 @@ public class UIManager {
 			}
 
 			date = date + "/" + record.getRecordPeriod().getYear();
-			//date = date.replaceAll("[\\/]", ".");
-			System.out.println(date);
 			if (!Validation.isValidDate(date)) {
 				jop.showMessageDialog(null, "Date is not valid!");
 			} else if (!Validation.isValidAmount(amt)) {
@@ -1505,12 +1484,12 @@ public class UIManager {
 
 			resultPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
 
-			Report recordReport = new Report(record, JsonManager.getExpenses(), null);
+			Report recordReport = new Report(record, JsonManager.getExpenses(record), null);
 
 			resultPanel.add(new JLabel("Total Expense", SwingConstants.LEFT));
 			resultPanel.add(new JLabel(recordReport.getTotalExpense() + "", SwingConstants.RIGHT));
 			resultPanel.add(new JLabel("Total Balance", SwingConstants.LEFT));
-			resultPanel.add(new JLabel((record.getRecordIncome() + recordReport.getTotalExpense()) + "", SwingConstants.RIGHT));
+			resultPanel.add(new JLabel((record.getRecordIncome() - recordReport.getTotalExpense()) + "", SwingConstants.RIGHT));
 			resultPanel.add(new JLabel("First Expense", SwingConstants.LEFT));
 			resultPanel.add(new JLabel(recordReport.getFirstExpense().getExpenseDate() + "", SwingConstants.RIGHT));
 			resultPanel.add(new JLabel("Last Expense", SwingConstants.LEFT));
