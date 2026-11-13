@@ -4,3 +4,4 @@
 +4. Comparison between records
 +5. Sorting Expenses
 +6. Limits & Aims
+7. Arrangements for only positive inputs

@@ -74,6 +74,25 @@ public class UIManager {
 	private static ArrayList<Expense> allExpenses = new ArrayList<>();
 	private static ArrayList<Record> allRecords = new ArrayList<>();
 
+	//private static Color rightBackgroundColor = Color.decode("#889696");
+//	private static Color panelBackgroundColor = Color.decode("#b5b0b0");
+//	private static Color buttonColor = Color.decode("#D2D4C8");
+//	private static Color leftBackgroundColor = Color.decode("#B8BDB5");
+//	private static Color hoverButtonColor = Color.decode("#E0E2DB");
+//	private static Color addButtonColor = Color.decode("#4487eb");
+//	private static Color deleteButtonColor = Color.decode("#ed574c");
+//	private static Color prevButtonColor = Color.decode("#BEE4E9");
+
+	private static Color rightBackgroundColor = Color.decode("#F4F6F8"); // Çok açık, modern gri arka plan
+	private static Color panelBackgroundColor = Color.decode("#FFFFFF"); // Kartlar/paneller için saf beyaz
+	private static Color buttonColor = Color.decode("#6C7A89");          // Şık ve nötr gri-mavi buton rengi
+	private static Color leftBackgroundColor = Color.decode("#2C3E50");  // Sol menü için derin lacivert-gri (Dark Mode hissi)
+	private static Color hoverButtonColor = Color.decode("#34495E");     // Buton üzerine gelindiğinde (Hover)
+	private static Color addButtonColor = Color.decode("#4487eb");       // Ekle/Onayla butonları için ferah yeşil
+	private static Color deleteButtonColor = Color.decode("#E74C3C");    // Sil/İptal butonları için modern kırmızı
+	private static Color prevButtonColor = Color.decode("#ECF0F1");      // Geri tuşu için hafif gri
+
+
 	public static void main(String[] args) {
 // Pencere çerçevelerini işletim sistemi yerine Swing'in çizmesini sağlar
 		JFrame.setDefaultLookAndFeelDecorated(true);
@@ -108,7 +127,7 @@ public class UIManager {
 	}
 
 	public static void leftPanelConfigurationMethod(JPanel leftPanel) {
-		leftPanel.setBackground(Color.decode("#598392"));
+		leftPanel.setBackground(leftBackgroundColor);
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 		leftPanel.setPreferredSize(new Dimension((int)(dynamicWidth * 0.20), dynamicHeight));
 
@@ -134,25 +153,25 @@ public class UIManager {
 	}
 
 	public static void leftPanelButtonConfigruations(JPanel jPanel, JButton btn) {
-		btn.setBackground(Color.decode("#124559"));
+		btn.setBackground(buttonColor);
 		btn.setAlignmentX(JButton.CENTER_ALIGNMENT);
 		btn.setBorderPainted(false);
 //btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#000000")));
 		btn.setFocusable(false);
-		btn.setForeground(Color.decode("#dbd8d8"));
+		btn.setForeground(Color.WHITE);
 		btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int)(screenSize.height * 0.10)));
 		btn.setPreferredSize(new Dimension(0, (int)(jPanel.getHeight() * 0.1)));
 
 		btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				btn.setBackground(new Color(41, 128, 185));
+				btn.setBackground(hoverButtonColor);
 				btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btn.setBackground(Color.decode("#124559"));
+				btn.setBackground(buttonColor);
 			}
 
 			@Override
@@ -167,7 +186,7 @@ public class UIManager {
 
 	public static void rightPanelConfigurationMethod(JPanel rightPanel) {
 		rightPanel.removeAll();
-		rightPanel.setBackground(Color.decode("#f1f1f1"));
+		rightPanel.setBackground(rightBackgroundColor);
 		rightPanel.setBorder(BorderFactory.createEmptyBorder((int)(dynamicHeight * 0.05), (int)(dynamicWidth * 0.05), (int)(dynamicHeight * 0.05), (int)(dynamicWidth * 0.05)));
 
 
@@ -198,13 +217,13 @@ public class UIManager {
 
 	private static void recordsPanelConfig(JPanel panel) {
 		panel.removeAll();
-		panel.setBackground(Color.decode("#e3e3e3"));
+		panel.setBackground(panelBackgroundColor);
 
 		allRecords = JsonManager.getRecords();
 
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-		contentPanel.setBackground(Color.decode("#e3e3e3"));
+		contentPanel.setBackground(panelBackgroundColor);
 
 		for (Record rec : allRecords) {
 			JPanel p = new JPanel(new BorderLayout());
@@ -214,10 +233,10 @@ public class UIManager {
 			recordName.setHorizontalAlignment(SwingConstants.CENTER);
 			JButton deleteButton = new JButton("X");
 			deleteButton.setForeground(Color.WHITE);
-			deleteButton.setBackground(Color.decode("#ed574c"));
+			deleteButton.setBackground(deleteButtonColor);
 			JButton reviewButton = new JButton(">");
 			reviewButton.setForeground(Color.WHITE);
-			reviewButton.setBackground(Color.decode("#4487eb"));
+			reviewButton.setBackground(addButtonColor);
 			reviewButton.setName(rec.getRecordName());
 
 			deleteButton.addActionListener(e -> {
@@ -258,14 +277,15 @@ public class UIManager {
 
 //buttonPanel.setMaximumSize(new Dimension((int) (dynamicWidth*0.05), (int) (dynamicHeight*0.1)));
 			buttonPanel.setBackground(Color.LIGHT_GRAY);
+			buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
 
 			deleteButton.setMaximumSize(new Dimension((int)(dynamicWidth * 0.8), (int)(dynamicHeight * 0.05)));
 			reviewButton.setMaximumSize(new Dimension((int)(dynamicWidth * 0.8), (int)(dynamicHeight * 0.05)));
 
-			p.setPreferredSize(new Dimension((int)(dynamicWidth * 0.7), (int)(dynamicHeight * 0.1)));
+			//p.setPreferredSize(new Dimension((int)(dynamicWidth * 0.6), (int)(dynamicHeight * 0.1)));
 			p.setMaximumSize(new Dimension((int)(dynamicWidth * 0.7), (int)(dynamicHeight * 0.10)));
-			p.setMinimumSize(new Dimension((int)(dynamicWidth * 0.7), (int)(dynamicHeight * 0.1)));
+			//p.setMinimumSize(new Dimension((int)(dynamicWidth * 0.7), (int)(dynamicHeight * 0.1)));
 
 			p.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#000000")));
 			p.setBackground(Color.LIGHT_GRAY);
@@ -278,12 +298,14 @@ public class UIManager {
 		}
 
 		JScrollPane scrollPane = new JScrollPane(contentPanel);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		JPanel createRecordPanel = new JPanel(new BorderLayout());
 		createRecordPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		JButton createRecordBtn = new JButton("+");
+		createRecordBtn.setForeground(Color.WHITE);
+		createRecordBtn.setBackground(addButtonColor);
 		createRecordBtn.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, CREATE_RECORD_PANEL);
 		});
@@ -300,7 +322,7 @@ public class UIManager {
 	private static void createRecordPanelConfig(JPanel panel) {
 		int panelWidth = (int)(dynamicWidth * 0.4);
 		int panelHeight = (int)(dynamicHeight * 0.1);
-		panel.setBackground(Color.decode("#e3e3e3"));
+		panel.setBackground(panelBackgroundColor);
 		GridBagConstraints gbc = new GridBagConstraints();
 
 		gbc.insets = new Insets((int)(panelHeight * 0.1), (int)(panelWidth * 0.1), (int)(panelHeight * 0.15), (int)(panelWidth * 0.1));
@@ -365,7 +387,7 @@ public class UIManager {
 		gbc.gridy = 4;
 		JButton cancelBtn = new JButton("Cancel");
 		cancelBtn.setForeground(Color.WHITE);
-		cancelBtn.setBackground(Color.decode("#ed574c"));
+		cancelBtn.setBackground(deleteButtonColor);
 		cancelBtn.addActionListener(e -> {
 			recordNameField.setText("");
 			recordIncomeField.setText("");
@@ -378,7 +400,7 @@ public class UIManager {
 		gbc.gridy = 4;
 		JButton createBtn = new JButton("Create");
 		createBtn.setForeground(Color.WHITE);
-		createBtn.setBackground(Color.decode("#4487eb"));
+		createBtn.setBackground(addButtonColor);
 		createBtn.addActionListener(e -> {
 			if (!Validation.isValidName(recordNameField.getText().trim(), allRecords)) {
 				JOptionPane.showMessageDialog(null, "Record Name is Already Exists!");
@@ -407,35 +429,43 @@ public class UIManager {
 
 	private static void settingsPanelConfig(JPanel panel) {
 		panel.removeAll();
-		panel.setBackground(Color.decode("#e3e3e3"));
+		panel.setBackground(panelBackgroundColor);
+		panel.setLayout(new BorderLayout());
 
-		panel.setLayout(new GridBagLayout());
+		JTabbedPane settingsTabbedPane = new JTabbedPane();
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		int panelWidth = (int)(dynamicWidth * 0.4);
+		int panelHeight = (int)(dynamicHeight * 0.1);
+		gbc.insets = new Insets((int)(panelHeight * 0.1), (int)(panelWidth * 0.1), (int)(panelHeight * 0.15), (int)(panelWidth * 0.1));
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+
+		//    CATEGORY OPERATIONS
+		JPanel categoryPanel = new JPanel(new GridBagLayout());
 
 		ArrayList<String> cats = JsonManager.getCats();
 
-// ADD CATEGORY
 		JLabel addLbl = new JLabel("Add Category");
 		JTextField catFld = new JTextField("");
 		JButton addBtn = new JButton("Add");
 
+		catFld.setBackground(Color.WHITE);
 		catFld.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 
 		addBtn.setForeground(Color.WHITE);
-		addBtn.setBackground(Color.decode("#4487eb"));
+		addBtn.setBackground(addButtonColor);
 		addBtn.addActionListener(e -> {
 			if (!Validation.isValidNameCat(catFld.getText().trim(), cats) || catFld.getText().trim().equals("")) {
 				JOptionPane.showMessageDialog(null, "Category Already Exists");
 			} else {
 				JsonManager.createCat(catFld.getText().trim());
 				JOptionPane.showMessageDialog(null, "New Category Added!");
-//settingsPanelConfig(settingsPanel);
 				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			}
 		});
 
-
-// DELETE CATEGORY
 		JLabel delLbl = new JLabel("Delete Category");
 		JComboBox<String> catBox = new JComboBox<>();
 		JButton delBtn = new JButton("Delete");
@@ -446,7 +476,7 @@ public class UIManager {
 		}
 
 		delBtn.setForeground(Color.WHITE);
-		delBtn.setBackground(Color.decode("#ed574c"));
+		delBtn.setBackground(deleteButtonColor);
 		delBtn.addActionListener(e -> {
 			String selectedCat = (String) catBox.getSelectedItem();
 
@@ -455,72 +485,68 @@ public class UIManager {
 			} else {
 				JsonManager.deleteCat(selectedCat);
 				JOptionPane.showMessageDialog(null, "Category Deleted!");
-//settingsPanelConfig(settingsPanel);
 				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			}
 		});
 
-		JSeparator jsep = new JSeparator(SwingConstants.HORIZONTAL);
 
-		int panelWidth = (int)(dynamicWidth * 0.4);
-		int panelHeight = (int)(dynamicHeight * 0.1);
-
-		GridBagConstraints gbc = new GridBagConstraints();
-
-		gbc.insets = new Insets((int)(panelHeight * 0.1), (int)(panelWidth * 0.1), (int)(panelHeight * 0.15), (int)(panelWidth * 0.1));
-		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		panel.add(addLbl, gbc);
+		categoryPanel.add(addLbl, gbc);
 
 		gbc.gridx = 1;
 		gbc.gridy = 0;
-		panel.add(catFld, gbc);
+		categoryPanel.add(catFld, gbc);
 
 		gbc.gridx = 2;
 		gbc.gridy = 0;
-		panel.add(addBtn, gbc);
+		categoryPanel.add(addBtn, gbc);
 
 		gbc.gridx = 0;
 		gbc.gridy = 1;
-		panel.add(delLbl, gbc);
+		categoryPanel.add(delLbl, gbc);
 
 		gbc.gridx = 1;
 		gbc.gridy = 1;
-		panel.add(catBox, gbc);
+		categoryPanel.add(catBox, gbc);
 
 		gbc.gridx = 2;
 		gbc.gridy = 1;
-		panel.add(delBtn, gbc);
-
-		JButton prevBtn = new JButton("<");
-
-		prevBtn.setBackground(Color.decode("#e8e8e8"));
-		prevBtn.setForeground(Color.BLACK);
-		prevBtn.addActionListener(e -> {
-			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
-		});
+		categoryPanel.add(delBtn, gbc);
 
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 2;
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		panel.add(jsep, gbc);
+		categoryPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+
+		settingsTabbedPane.add("Category", categoryPanel);
 
 
-// PAYMENT TEMPLATE CREATING
+		// PAYMENT TEMPLATE OPERATIONS
+		JPanel ptPanel = new JPanel(new GridBagLayout());
 		JComboBox<String> categoryBox = new JComboBox<>();
-
+        
+        categoryBox.addItem("Category");
 		ArrayList<String> categories = JsonManager.getCats();
 		for (String str : categories) {
 			categoryBox.addItem(str);
 		}
 		JTextField catJtf = new JTextField(10);
+		catJtf.setBackground(Color.WHITE);
+		catJtf.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 
 		JButton payTempBtn = new JButton("Create");
+		payTempBtn.setForeground(Color.WHITE);
+		payTempBtn.setBackground(addButtonColor);
 		payTempBtn.addActionListener(e -> {
+		    String selValue = (String) categoryBox.getSelectedItem();
+		    
+		    if (selValue == null || selValue.equals("Category")) {
+		        JOptionPane.showMessageDialog(null, "Please Choose Category!");
+		        return;
+		    }
 
 			if (Validation.isValidAmount(catJtf.getText().trim())) {
 				JsonManager.createPT(new PT((String)(categoryBox.getSelectedItem()), Double.parseDouble(catJtf.getText().trim())));
@@ -535,17 +561,25 @@ public class UIManager {
 		});
 
 
-//    PAYMENT TEMPLAYE DELETING
 		JComboBox<String> ptCb = new JComboBox<>();
 		ArrayList<PT> allPTs = JsonManager.getPTs();
-
+		
+        ptCb.addItem("PT");
 		for (PT pt : allPTs) {
 			ptCb.addItem(pt.toString());
 		}
 
 		JButton ptDelBtn = new JButton("Delete");
+		ptDelBtn.setForeground(Color.WHITE);
+		ptDelBtn.setBackground(deleteButtonColor);
 		ptDelBtn.addActionListener(e -> {
 			int selIndex = ptCb.getSelectedIndex();
+			String selValue = (String) ptCb.getSelectedItem();
+			
+			if (selValue == null || selValue.equals("PT")) {
+			    JOptionPane.showMessageDialog(null, "Please Choose Payment Template!");
+			    return;
+			}
 
 			JsonManager.deletePT(allPTs.get(selIndex));
 			rightPanelConfigurationMethod(rightPanel);
@@ -555,80 +589,83 @@ public class UIManager {
 
 
 		gbc.gridx = 0;
-		gbc.gridy = 4;
+		gbc.gridy = 0;
 		gbc.gridwidth = 1;
-		panel.add(new JLabel("Create Payment Template"), gbc);
+		ptPanel.add(new JLabel("Create PT"), gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		ptPanel.add(new JLabel(""), gbc);
+		
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		ptPanel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		ptPanel.add(categoryBox, gbc);
 
 		gbc.gridx = 1;
+		gbc.gridy = 1;
+		ptPanel.add(catJtf, gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 1;
+		ptPanel.add(payTempBtn, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		ptPanel.add(new JLabel("Delete PT"), gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		ptPanel.add(new JLabel(""), gbc);
+		
+		gbc.gridx = 2;
+		gbc.gridy = 2;
+		ptPanel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		ptPanel.add(ptCb, gbc);
+
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		ptPanel.add(new JLabel(""), gbc);
+
+		gbc.gridx = 2;
+		gbc.gridy = 3;
+		ptPanel.add(ptDelBtn, gbc);
+
+		gbc.gridx = 0;
 		gbc.gridy = 4;
-		panel.add(new JLabel(""), gbc);
+		gbc.gridwidth = 3;
+		ptPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+		gbc.gridwidth = 1;
 
-		gbc.gridx = 2;
-		gbc.gridy = 4;
-		panel.add(new JLabel(""), gbc);
+		settingsTabbedPane.add("Payment Templates", ptPanel);
 
-
+		//    DATA OPERATIONS
+		JPanel dataPanel = new JPanel(new GridBagLayout());
 
 		gbc.gridx = 0;
-		gbc.gridy = 5;
-		panel.add(categoryBox, gbc);
+		gbc.gridy = 0;
+		dataPanel.add(new JLabel("Data Operations"), gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 5;
-		panel.add(catJtf, gbc);
+		gbc.gridy = 0;
+		dataPanel.add(new JLabel(""), gbc);
 
 		gbc.gridx = 2;
-		gbc.gridy = 5;
-		panel.add(payTempBtn, gbc);
-
-		gbc.gridx = 0;
-		gbc.gridy = 6;
-		panel.add(new JLabel("Delete Payment Template"), gbc);
-
-		gbc.gridx = 1;
-		gbc.gridy = 6;
-		panel.add(new JLabel(""), gbc);
-
-		gbc.gridx = 2;
-		gbc.gridy = 6;
-		panel.add(new JLabel(""), gbc);
-
-		gbc.gridx = 0;
-		gbc.gridy = 7;
-		panel.add(ptCb, gbc);
-
-		gbc.gridx = 1;
-		gbc.gridy = 7;
-		panel.add(new JLabel(""), gbc);
-
-		gbc.gridx = 2;
-		gbc.gridy = 7;
-		panel.add(ptDelBtn, gbc);
-
-		gbc.gridx = 0;
-		gbc.gridy = 8;
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		panel.add(jsep, gbc);
-
-		gbc.gridwidth =  1;
-		gbc.gridx = 0;
-		gbc.gridy = 9;
-		panel.add(new JLabel("Data Operations"), gbc);
-
-		gbc.gridx = 1;
-		gbc.gridy = 9;
-		panel.add(new JLabel(""), gbc);
-
-		gbc.gridx = 2;
-		gbc.gridy = 9;
-		panel.add(new JLabel(""), gbc);
+		gbc.gridy = 0;
+		dataPanel.add(new JLabel(""), gbc);
 
 		JButton resetBtn = new JButton("Reset");
 		JButton backupBtn = new JButton("Backup");
 		JButton restoreBtn = new JButton("Restore");
 
 		resetBtn.setForeground(Color.WHITE);
-		resetBtn.setBackground(Color.decode("#ed574c"));
+		resetBtn.setBackground(deleteButtonColor);
 		resetBtn.addActionListener(e -> {
 			int choice = JOptionPane.showConfirmDialog(null, "Are you sure delete all data?", null, JOptionPane.YES_NO_OPTION);
 
@@ -648,13 +685,13 @@ public class UIManager {
 		});
 
 		backupBtn.setForeground(Color.WHITE);
-		backupBtn.setBackground(Color.decode("#00B050"));
+		backupBtn.setBackground(addButtonColor);
 		backupBtn.addActionListener(e -> {
 			JOptionPane.showMessageDialog(rightPanel, BackupManager.createBackup());
 		});
 
 		restoreBtn.setForeground(Color.WHITE);
-		restoreBtn.setBackground(Color.decode("#4487eb"));
+		restoreBtn.setBackground(Color.decode("#00B050"));
 		restoreBtn.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setFileFilter(new FileNameExtensionFilter("Zip Files Only", "zip"));
@@ -676,49 +713,57 @@ public class UIManager {
 
 
 		gbc.gridx = 0;
-		gbc.gridy = 10;
-		panel.add(resetBtn, gbc);
+		gbc.gridy = 1;
+		dataPanel.add(resetBtn, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 10;
-		panel.add(backupBtn, gbc);
+		gbc.gridy = 1;
+		dataPanel.add(backupBtn, gbc);
 
 		gbc.gridx = 2;
-		gbc.gridy = 10;
-		panel.add(restoreBtn, gbc);
+		gbc.gridy = 1;
+		dataPanel.add(restoreBtn, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.gridwidth = 3;
+		dataPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+		gbc.gridwidth = 1;
+
+		settingsTabbedPane.add("Data", dataPanel);
 
 		//    LIMIT OPERATIONS
-
-		gbc.gridwidth = 3;
-		gbc.gridx = 0;
-		gbc.gridy = 11;
-		panel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+		JPanel limitPanel = new JPanel(new GridBagLayout());
 
 		JComboBox<String> limitCatBox = new JComboBox<>();
 		JComboBox<String> recordBox = new JComboBox<>();
 		JTextField limitAmt = new JTextField();
+		limitAmt.setBackground(Color.WHITE);
+		limitAmt.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 
-		limitCatBox.addItem("Default");
+		limitCatBox.addItem("Category");
 		limitCatBox.addItem("General");
 		for (String cat : JsonManager.getCats()) {
 			limitCatBox.addItem(cat);
 		}
 
-		recordBox.addItem("Default");
+		recordBox.addItem("Record");
 		for (Record rec : JsonManager.getRecords()) {
 			recordBox.addItem(rec.getRecordName());
 		}
 
 
 		JButton addLimitBtn = new JButton("Add");
+		addLimitBtn.setForeground(Color.WHITE);
+		addLimitBtn.setBackground(addButtonColor);
 		addLimitBtn.addActionListener(e -> {
 			String selCat = (String) limitCatBox.getSelectedItem();
 			String selRec = (String) recordBox.getSelectedItem();
 			String selAmt = (String) limitAmt.getText().trim();
 
-			if (selCat.equals("Default")) {
+			if (selCat.equals("Category")) {
 				JOptionPane.showMessageDialog(null, "Please Choose Category!");
-			} else if (selRec.equals("Default")) {
+			} else if (selRec.equals("Record")) {
 				JOptionPane.showMessageDialog(null, "Please Choose Record!");
 			} else if (!Validation.isValidAmount(selAmt)) {
 				JOptionPane.showMessageDialog(null, "Please Enter Valid Amount!");
@@ -739,63 +784,101 @@ public class UIManager {
 
 		});
 
-		gbc.gridwidth = 1;
 		gbc.gridx = 0;
-		gbc.gridy = 12;
-		panel.add(limitCatBox, gbc);
+		gbc.gridy = 0;
+		limitPanel.add(new JLabel("Create Limit"), gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		limitPanel.add(new JLabel(""), gbc);
+		
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		limitPanel.add(new JLabel(""), gbc);
+		
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		limitPanel.add(limitCatBox, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 12;
-		panel.add(recordBox, gbc);
+		gbc.gridy = 1;
+		limitPanel.add(recordBox, gbc);
 
 		gbc.gridx = 2;
-		gbc.gridy = 12;
-		panel.add(limitAmt, gbc);
+		gbc.gridy = 1;
+		limitPanel.add(limitAmt, gbc);
 
 		gbc.gridx = 2;
-		gbc.gridy = 13;
-		panel.add(addLimitBtn, gbc);
+		gbc.gridy = 2;
+		limitPanel.add(addLimitBtn, gbc);
 
 		JComboBox<String> deleteLimitBox = new JComboBox<>();
 
-		deleteLimitBox.addItem("Default");
+		deleteLimitBox.addItem("Limit");
 		for (Limit lim : JsonManager.getLimits()) {
 			deleteLimitBox.addItem(lim.toString());
 		}
 
 		JButton deleteLimitBtn = new JButton("Delete");
+		deleteLimitBtn.setForeground(Color.WHITE);
+		deleteLimitBtn.setBackground(deleteButtonColor);
 		deleteLimitBtn.addActionListener(e -> {
 			String selValue = (String) deleteLimitBox.getSelectedItem();
-			if (!selValue.equals("Default")) {
+			if (!selValue.equals("Limit")) {
 				JsonManager.deleteLimit(Limit.fromString(selValue));
 				JOptionPane.showMessageDialog(null, "Limit Deleted Successfully!");
 				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+			} else {
+			    JOptionPane.showMessageDialog(null, "Please Choose Limit!");
 			}
 		});
+		
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		limitPanel.add(new JLabel("Delete Limit"), gbc);
+		
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		limitPanel.add(new JLabel(""), gbc);
+		
+		gbc.gridx = 2;
+		gbc.gridy = 3;
+		limitPanel.add(new JLabel(""), gbc);
+		
 
 		gbc.gridx = 0;
-		gbc.gridy = 14;
-		panel.add(deleteLimitBox, gbc);
+		gbc.gridy = 4;
+		limitPanel.add(deleteLimitBox, gbc);
 
 		gbc.gridx = 1;
-		gbc.gridy = 14;
-		panel.add(new JLabel(""), gbc);
+		gbc.gridy = 4;
+		limitPanel.add(new JLabel(""), gbc);
 
 		gbc.gridx = 2;
-		gbc.gridy = 14;
-		panel.add(deleteLimitBtn, gbc);
+		gbc.gridy = 4;
+		limitPanel.add(deleteLimitBtn, gbc);
 
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		gbc.gridwidth = 3;
+		limitPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+		gbc.gridwidth = 1;
 
+		settingsTabbedPane.add("Limits", limitPanel);
 
-		gbc.gridx = 2;
-		gbc.gridy = 15;
-		panel.add(prevBtn, gbc);
+		JButton prevBtn = new JButton("<");
+		prevBtn.setBackground(prevButtonColor);
+		prevBtn.setForeground(Color.BLACK);
+		prevBtn.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+		});
+		JPanel prevBtnPanel = new JPanel();
+		prevBtnPanel.add(prevBtn);
 
-		panel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
-
-
-
+		panel.add(settingsTabbedPane, BorderLayout.CENTER);
+		panel.add(prevBtnPanel, BorderLayout.SOUTH);
 
 	}
 
@@ -806,7 +889,7 @@ public class UIManager {
 		JPanel wrapperPanel = new JPanel();
 		wrapperPanel.removeAll();
 		wrapperPanel.setLayout(new BoxLayout(wrapperPanel, BoxLayout.Y_AXIS));
-		wrapperPanel.setBackground(Color.decode("#e3e3e3"));
+		wrapperPanel.setBackground(panelBackgroundColor);
 		wrapperPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
 
@@ -895,6 +978,8 @@ public class UIManager {
 		}
 
 		JButton addPtBtn = new JButton("Add");
+		addPtBtn.setForeground(Color.WHITE);
+		addPtBtn.setBackground(addButtonColor);
 		addPtBtn.addActionListener(e -> {
 			PT selPt = allPTs.get(ptCb.getSelectedIndex());
 			Expense expenseTemp = new Expense(record.getRecordPeriod(), selPt.getPTCat(), selPt.getPTAmt());
@@ -917,6 +1002,8 @@ public class UIManager {
 		allExpenses = JsonManager.getExpenses(record);
 
 		JButton compareBtn = new JButton("Compare");
+		compareBtn.setForeground(Color.WHITE);
+		compareBtn.setBackground(addButtonColor);
 		compareBtn.addActionListener(e -> {
 			if (JsonManager.getRecords().size() > 1) {
 				comparePanelConfig();
@@ -1182,17 +1269,18 @@ public class UIManager {
 		JButton deleteBtn = new JButton("Delete");
 		JButton createBtn = new JButton("Create Expense");
 		JButton prevBtn = new JButton("<");
+		prevBtn.setBackground(prevButtonColor);
 
 
-		deleteBtn.setBackground(Color.decode("#ed574c"));
+		deleteBtn.setBackground(deleteButtonColor);
 
-		prevBtn.setBackground(Color.decode("#e8e8e8"));
+		prevBtn.setBackground(prevButtonColor);
 		prevBtn.setForeground(Color.BLACK);
 		prevBtn.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 		});
 
-		createBtn.setBackground(Color.decode("#4487eb"));
+		createBtn.setBackground(addButtonColor);
 		createBtn.setForeground(Color.WHITE);
 		createBtn.addActionListener(e -> {
 
@@ -1340,7 +1428,7 @@ public class UIManager {
 
 	public static void syncPanelConfig() {
 		syncPanel.removeAll();
-		syncPanel.setBackground(Color.decode("#e3e3e3"));
+		syncPanel.setBackground(panelBackgroundColor);
 		syncPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
 
@@ -1373,7 +1461,7 @@ public class UIManager {
 
 		JButton syncBtn = new JButton("Start Synchron");
 		syncBtn.setForeground(Color.WHITE);
-		syncBtn.setBackground(Color.decode("#4487eb"));
+		syncBtn.setBackground(addButtonColor);
 		syncBtn.addActionListener(e -> {
 			JOptionPane.showMessageDialog(null, DBManager.sync());
 			rightPanelConfigurationMethod(rightPanel);
@@ -1381,6 +1469,7 @@ public class UIManager {
 		});
 
 		JButton prevBtn = new JButton("<");
+		prevBtn.setBackground(prevButtonColor);
 		prevBtn.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
 		});
@@ -1569,6 +1658,7 @@ public class UIManager {
 		//    SOUTH (Prev)
 
 		JButton prevBtn = new JButton("<");
+		prevBtn.setBackground(prevButtonColor);
 		prevBtn.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, REVIEW_PANEL);
 		});
