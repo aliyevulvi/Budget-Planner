@@ -41,6 +41,7 @@ public class UIManager {
 	private static final String REVIEW_PANEL = "REVIEW_PANEL";
 	private static final String SYNC_PANEL = "SYNC_PANEL";
 	private static final String COMPARE_PANEL = "COMPARE_PANEL";
+	private static final String CALC_PANEL = "CALC_PANEL";
 
 	private static JPanel rightPanel;
 	private static JPanel recordsPanel;
@@ -49,6 +50,7 @@ public class UIManager {
 	private static JPanel reviewPanel;
 	private static JPanel comparePanel;
 	private static JPanel chartsPanel = new JPanel();
+	private static JPanel calcPanel = new JPanel();
 
 	private static JScrollPane reviewScrollPane = new JScrollPane();
 	private static Record record = new Record();
@@ -105,9 +107,11 @@ public class UIManager {
 
 		JButton synchronizationButton = new JButton("Synchronization");
 		JButton settingsButton = new JButton("Settings");
+		JButton calcButton = new JButton("Calculator");
 
 		leftPanelButtonConfigruations(leftPanel, settingsButton);
 		leftPanelButtonConfigruations(leftPanel, synchronizationButton);
+		leftPanelButtonConfigruations(leftPanel, calcButton);
 
 		synchronizationButton.addActionListener(e -> {
 			syncPanelConfig();
@@ -116,6 +120,10 @@ public class UIManager {
 
 		settingsButton.addActionListener(e -> {
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
+		});
+
+		calcButton.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, CALC_PANEL);
 		});
 
 
@@ -175,6 +183,7 @@ public class UIManager {
 		createRecordPanelConfig(createRecordPanel);
 		settingsPanelConfig(settingsPanel);
 		syncPanelConfig();
+		calcPanelConfig();
 
 		rightPanel.add(recordsPanel, RECORDS_PANEL);
 		rightPanel.add(createRecordPanel, CREATE_RECORD_PANEL);
@@ -182,6 +191,7 @@ public class UIManager {
 		rightPanel.add(reviewPanel, REVIEW_PANEL);
 		rightPanel.add(syncPanel, SYNC_PANEL);
 		rightPanel.add(comparePanel, COMPARE_PANEL);
+		rightPanel.add(calcPanel, CALC_PANEL);
 
 
 
@@ -499,8 +509,8 @@ public class UIManager {
 		// PAYMENT TEMPLATE OPERATIONS
 		JPanel ptPanel = new JPanel(new GridBagLayout());
 		JComboBox<String> categoryBox = new JComboBox<>();
-        
-        categoryBox.addItem("Category");
+
+		categoryBox.addItem("Category");
 		ArrayList<String> categories = JsonManager.getCats();
 		for (String str : categories) {
 			categoryBox.addItem(str);
@@ -513,12 +523,12 @@ public class UIManager {
 		payTempBtn.setForeground(Color.WHITE);
 		payTempBtn.setBackground(addButtonColor);
 		payTempBtn.addActionListener(e -> {
-		    String selValue = (String) categoryBox.getSelectedItem();
-		    
-		    if (selValue == null || selValue.equals("Category")) {
-		        JOptionPane.showMessageDialog(null, "Please Choose Category!");
-		        return;
-		    }
+			String selValue = (String) categoryBox.getSelectedItem();
+
+			if (selValue == null || selValue.equals("Category")) {
+				JOptionPane.showMessageDialog(null, "Please Choose Category!");
+				return;
+			}
 
 			if (Validation.isValidAmount(catJtf.getText().trim())) {
 				JsonManager.createPT(new PT((String)(categoryBox.getSelectedItem()), Double.parseDouble(catJtf.getText().trim())));
@@ -535,8 +545,8 @@ public class UIManager {
 
 		JComboBox<String> ptCb = new JComboBox<>();
 		ArrayList<PT> allPTs = JsonManager.getPTs();
-		
-        ptCb.addItem("PT");
+
+		ptCb.addItem("PT");
 		for (PT pt : allPTs) {
 			ptCb.addItem(pt.toString());
 		}
@@ -547,10 +557,10 @@ public class UIManager {
 		ptDelBtn.addActionListener(e -> {
 			int selIndex = ptCb.getSelectedIndex();
 			String selValue = (String) ptCb.getSelectedItem();
-			
+
 			if (selValue == null || selValue.equals("PT")) {
-			    JOptionPane.showMessageDialog(null, "Please Choose Payment Template!");
-			    return;
+				JOptionPane.showMessageDialog(null, "Please Choose Payment Template!");
+				return;
 			}
 
 			JsonManager.deletePT(allPTs.get(selIndex));
@@ -564,11 +574,11 @@ public class UIManager {
 		gbc.gridy = 0;
 		gbc.gridwidth = 1;
 		ptPanel.add(new JLabel("Create PT"), gbc);
-		
+
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		ptPanel.add(new JLabel(""), gbc);
-		
+
 		gbc.gridx = 2;
 		gbc.gridy = 0;
 		ptPanel.add(new JLabel(""), gbc);
@@ -588,11 +598,11 @@ public class UIManager {
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		ptPanel.add(new JLabel("Delete PT"), gbc);
-		
+
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		ptPanel.add(new JLabel(""), gbc);
-		
+
 		gbc.gridx = 2;
 		gbc.gridy = 2;
 		ptPanel.add(new JLabel(""), gbc);
@@ -759,15 +769,15 @@ public class UIManager {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		limitPanel.add(new JLabel("Create Limit"), gbc);
-		
+
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		limitPanel.add(new JLabel(""), gbc);
-		
+
 		gbc.gridx = 2;
 		gbc.gridy = 0;
 		limitPanel.add(new JLabel(""), gbc);
-		
+
 
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -803,22 +813,22 @@ public class UIManager {
 				rightPanelConfigurationMethod(rightPanel);
 				((CardLayout)(rightPanel.getLayout())).show(rightPanel, SETTINGS_PANEL);
 			} else {
-			    JOptionPane.showMessageDialog(null, "Please Choose Limit!");
+				JOptionPane.showMessageDialog(null, "Please Choose Limit!");
 			}
 		});
-		
+
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		limitPanel.add(new JLabel("Delete Limit"), gbc);
-		
+
 		gbc.gridx = 1;
 		gbc.gridy = 3;
 		limitPanel.add(new JLabel(""), gbc);
-		
+
 		gbc.gridx = 2;
 		gbc.gridy = 3;
 		limitPanel.add(new JLabel(""), gbc);
-		
+
 
 		gbc.gridx = 0;
 		gbc.gridy = 4;
@@ -945,7 +955,7 @@ public class UIManager {
 		JComboBox<String> ptCb = new JComboBox<>();
 		ArrayList<PT> allPTs = JsonManager.getPTs();
 
-        ptCb.addItem("Payment Template");
+		ptCb.addItem("Payment Template");
 		for (PT pt : allPTs) {
 			ptCb.addItem(pt.toString());
 		}
@@ -955,13 +965,13 @@ public class UIManager {
 		addPtBtn.setBackground(addButtonColor);
 		addPtBtn.addActionListener(e -> {
 			String selValue = (String) ptCb.getSelectedItem();
-			
+
 			if (selValue == null || selValue.equals("Payment Template")) {
-			    JOptionPane.showMessageDialog(null, "Please Choose Payment Template!");
-			    return;
+				JOptionPane.showMessageDialog(null, "Please Choose Payment Template!");
+				return;
 			}
-			
-			
+
+
 			PT selPt = allPTs.get(ptCb.getSelectedIndex());
 			Expense expenseTemp = new Expense(record.getRecordPeriod(), selPt.getPTCat(), selPt.getPTAmt());
 			expenseTemp.setExpenseRecordId(record.getRecordId());
@@ -1410,13 +1420,33 @@ public class UIManager {
 		syncPanel.setBackground(panelBackgroundColor);
 		syncPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.decode("#cccccc")));
 
+		//    NORTH PANEL
+		JPanel northPanel = new JPanel();
+		northPanel.setBorder(BorderFactory.createEmptyBorder(20, 0,0, 10));
 
+		JTextField urlJtf = new JTextField(20);
+		urlJtf.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+		urlJtf.setBackground(Color.WHITE);
+
+		JButton defineUrlBtn = new JButton("Define Url");
+		defineUrlBtn.setForeground(Color.WHITE);
+		defineUrlBtn.setBackground(addButtonColor);
+		defineUrlBtn.addActionListener(e -> {
+			String value = urlJtf.getText().trim();
+
+			if (value != null || !value.equals("")) {
+				JsonManager.defineUrl(value);
+			}
+		});
+		
+		northPanel.add(urlJtf);
+		northPanel.add(defineUrlBtn);
 		//    CENTER PANEL
 		JPanel centerPanel = new JPanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		JLabel countLbl = new JLabel(JsonManager.getOps().size() + " Operations Pending", SwingConstants.CENTER);
 		JPanel lblPanel = new JPanel();
-		lblPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
+		lblPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 20, 10));
 		lblPanel.add(countLbl);
 
 		centerPanel.add(lblPanel);
@@ -1458,6 +1488,7 @@ public class UIManager {
 		}
 		southPanel.add(prevBtn);
 
+		syncPanel.add(northPanel, BorderLayout.NORTH);
 		syncPanel.add(centerPanel, BorderLayout.CENTER);
 		syncPanel.add(southPanel, BorderLayout.SOUTH);
 
@@ -1672,4 +1703,196 @@ public class UIManager {
 		return progressBar;
 
 	}
+
+	public static void calcPanelConfig() {
+		calcPanel.removeAll();
+		calcPanel.setLayout(new BorderLayout());
+		calcPanel.setBackground(rightBackgroundColor);
+
+		JPanel centerPanel = new JPanel(new GridBagLayout());
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		int panelWidth = (int)(dynamicWidth * 0.4);
+		int panelHeight = (int)(dynamicHeight * 0.1);
+		gbc.insets = new Insets((int)(panelHeight * 0.05), (int)(panelWidth * 0.05), (int)(panelHeight * 0.05), (int)(panelWidth * 0.05));
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+
+		JTextField inputFld = new JTextField();
+
+		String[] textList = {"C", "÷", "x", "<", "7", "8", "9", "-", "4", "5", "6", "+", "1", "2", "3", ".", " ", "0", " ", "=" };
+		ArrayList<JButton> btnList = new ArrayList<>();
+
+		for (String btnText : textList) {
+			btnList.add(new JButton(btnText));
+		}
+
+		for (JButton btn : btnList) {
+
+			if (btn.getText().equals(" ")) {
+				btn.setEnabled(false);
+				btn.setVisible(false);
+				continue;
+			}
+
+			if (!btn.getText().equals("C") && !btn.getText().equals("<") && !btn.getText().equals("=")) {
+				btn.addActionListener(e -> {
+					//inputFld.setText(inputFld.getText() + btn.getText());
+
+					if (inputFld.getText().length() == 0) {
+						if (!"÷x".contains(btn.getText())) {
+							inputFld.setText(inputFld.getText() + btn.getText());
+						}
+					} else {
+						if ("+-÷x".contains(inputFld.getText().charAt(inputFld.getText().length() - 1) + "") && "+-÷x".contains(btn.getText())) {
+							inputFld.setText(inputFld.getText().substring(0, inputFld.getText().length() - 1) + btn.getText());
+						} else {
+							inputFld.setText(inputFld.getText() + btn.getText());
+						}
+					}
+				});
+			} else if (btn.getText().equals("C")) {
+				btn.addActionListener(e -> {
+					inputFld.setText("");
+				});
+			} else if (btn.getText().equals("<")) {
+				btn.addActionListener(e -> {
+					if (inputFld.getText().length() > 0) {
+						inputFld.setText(inputFld.getText().substring(0, inputFld.getText().length() - 1));
+					}
+				});
+			} else if (btn.getText().equals("=")) {
+				btn.addActionListener(e -> {
+					inputFld.setText(computeOp(inputFld.getText()));
+				});
+			}
+		}
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 4;
+		centerPanel.add(inputFld, gbc);
+		gbc.gridwidth = 1;
+
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (i == 4 && (j == 0 || j == 2)) {
+					continue;
+				}
+				gbc.gridx = j;
+				gbc.gridy = i + 1;
+				centerPanel.add(btnList.get(i * 4 + j), gbc);
+			}
+		}
+
+		calcPanel.add(centerPanel, BorderLayout.CENTER);
+
+		//    SOUTH PANEL
+
+		JButton prevBtn = new JButton("<");
+		prevBtn.setBackground(prevButtonColor);
+		prevBtn.addActionListener(e -> {
+			((CardLayout)(rightPanel.getLayout())).show(rightPanel, RECORDS_PANEL);
+		});
+		JPanel prevPanel = new JPanel();
+		prevPanel.add(prevBtn);
+		calcPanel.add(prevPanel, BorderLayout.SOUTH);
+
+
+
+
+	}
+
+	private static String computeOp(String op) {
+
+		if (op.isEmpty()) {
+			return "";
+		}
+
+		if ("+-÷x".contains(op.charAt(op.length() - 1) + "")) {
+			op = op.substring(0, op.length() - 1);
+		}
+
+		if (op.isEmpty()) {
+			return "";
+		}
+
+		ArrayList<Double> nums = new ArrayList<>();
+		ArrayList<String> ops = new ArrayList<>();
+
+		String current = "";
+
+		try {
+
+			for (int i = 0; i < op.length(); i++) {
+
+				if (i == 0 && "+-".contains(op.charAt(i) + "")) {
+					current += op.charAt(i) + "";
+					continue;
+				}
+
+				if ("+-÷x".contains(op.charAt(i) + "")) {
+					nums.add(Double.parseDouble(current));
+					ops.add(op.charAt(i) + "");
+					current = "";
+				} else {
+					current += op.charAt(i) + "";
+				}
+			}
+
+			nums.add(Double.parseDouble(current));
+
+			int i = 0;
+			while (i < ops.size()) {
+				String currentOp = ops.get(i);
+				if (currentOp.equals("x") || currentOp.equals("÷")) {
+					double a = nums.get(i);
+					double b = nums.get(i + 1);
+
+					if (currentOp.equals("÷") && b == 0) {
+						return "Sıfıra bölünemez";
+					}
+
+					double res = currentOp.equals("x") ? (a * b) : (a / b);
+					nums.set(i, res);
+					nums.remove(i + 1);
+					ops.remove(i);
+				} else {
+					i++;
+				}
+			}
+
+			double total = nums.get(0);
+			for (int j = 0; j < ops.size(); j++) {
+				String currentOp = ops.get(j);
+				double nextNum = nums.get(j + 1);
+
+				if (currentOp.equals("+")) {
+					total += nextNum;
+				} else if (currentOp.equals("-")) {
+					total -= nextNum;
+				}
+			}
+
+			if (Double.isNaN(total) || Double.isInfinite(total)) {
+				return "Hata";
+			}
+
+			if (total == (long) total) {
+				return String.valueOf((long) total);
+			}
+
+			return String.valueOf(total);
+
+
+
+
+		} catch (Exception e) {
+
+		}
+
+		String result = "";
+		return result;
+	}
+
 }

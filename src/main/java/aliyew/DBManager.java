@@ -12,9 +12,9 @@ import java.util.logging.Logger;
 
 public class DBManager {
 
-	private static final String LINK_STRING = System.getenv("DB_URL");
+	private static final String LINK_STRING = JsonManager.getUrl();
 	private static final Logger logger = LogManager.getLogger(DBManager.class.getName());
-
+    
 	public static void main(String[] args) {
 
 		try (Connection conn = DriverManager.getConnection(System.getenv("DB_URL"));

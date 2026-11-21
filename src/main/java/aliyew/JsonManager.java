@@ -1,9 +1,13 @@
 package aliyew;
 
-import java.io.File;
+import java.io.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +26,7 @@ public class JsonManager {
 	private static final File CAT_FILE = new File(DATA_DIR, "category.json");
 	private static final File PAYMENT_TEMPLATES_FILE = new File(DATA_DIR, "payment_templates.json");
 	private static final File LIMIT_FILE = new File(DATA_DIR, "limits.json");
+	private static final File URL_FILE = new File(DATA_DIR, "url.txt");
 
 	// Yardımcı metot: Dosya yoksa boş bir JSON array ([]) oluşturur
 	private static void ensureFileExists(File file) {
@@ -378,4 +383,29 @@ public class JsonManager {
 			logger.severe(e.getMessage());
 		}
 	}
+	
+
+	public static void defineUrl(String url) {
+		try {
+			if (!URL_FILE.exists()) {
+				URL_FILE.getParentFile().mkdirs();
+			}
+			Files.writeString(URL_FILE.toPath(), url);
+		} catch (IOException e) {
+			logger.severe("URL Not Saved " + e.getMessage());
+		}
+	}
+
+	public static String getUrl() {
+		if (!URL_FILE.exists()) {
+			return "";
+		}
+		try {
+			return Files.readString(URL_FILE.toPath()).trim();
+		} catch (IOException e) {
+			logger.severe("URL Not Read " + e.getMessage());
+			return "";
+		}
+	}
+
 }
