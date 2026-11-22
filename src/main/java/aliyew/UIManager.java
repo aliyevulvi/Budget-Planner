@@ -116,6 +116,9 @@ public class UIManager {
 		synchronizationButton.addActionListener(e -> {
 			syncPanelConfig();
 			((CardLayout)(rightPanel.getLayout())).show(rightPanel, SYNC_PANEL);
+			rightPanel.revalidate();
+			rightPanel.repaint();
+
 		});
 
 		settingsButton.addActionListener(e -> {
@@ -1422,7 +1425,7 @@ public class UIManager {
 
 		//    NORTH PANEL
 		JPanel northPanel = new JPanel();
-		northPanel.setBorder(BorderFactory.createEmptyBorder(20, 0,0, 10));
+		northPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 10));
 
 		JTextField urlJtf = new JTextField(20);
 		urlJtf.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
@@ -1438,7 +1441,7 @@ public class UIManager {
 				JsonManager.defineUrl(value);
 			}
 		});
-		
+
 		northPanel.add(urlJtf);
 		northPanel.add(defineUrlBtn);
 		//    CENTER PANEL
@@ -1491,6 +1494,10 @@ public class UIManager {
 		syncPanel.add(northPanel, BorderLayout.NORTH);
 		syncPanel.add(centerPanel, BorderLayout.CENTER);
 		syncPanel.add(southPanel, BorderLayout.SOUTH);
+
+		syncPanel.revalidate();
+		syncPanel.repaint();
+
 
 	}
 
