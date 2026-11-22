@@ -1743,6 +1743,11 @@ public class UIManager {
 			}
 
 			if (!btn.getText().equals("C") && !btn.getText().equals("<") && !btn.getText().equals("=")) {
+				if ("+-÷x".contains(btn.getText())) {
+				    btn.setBackground(prevButtonColor);
+				} else {
+				    btn.setBackground(Color.WHITE);
+				}
 				btn.addActionListener(e -> {
 					//inputFld.setText(inputFld.getText() + btn.getText());
 
@@ -1759,16 +1764,21 @@ public class UIManager {
 					}
 				});
 			} else if (btn.getText().equals("C")) {
+				btn.setForeground(Color.WHITE);
+				btn.setBackground(deleteButtonColor);
 				btn.addActionListener(e -> {
 					inputFld.setText("");
 				});
 			} else if (btn.getText().equals("<")) {
+				btn.setBackground(Color.decode("#878787"));
 				btn.addActionListener(e -> {
 					if (inputFld.getText().length() > 0) {
 						inputFld.setText(inputFld.getText().substring(0, inputFld.getText().length() - 1));
 					}
 				});
 			} else if (btn.getText().equals("=")) {
+				btn.setForeground(Color.WHITE);
+				btn.setBackground(addButtonColor);
 				btn.addActionListener(e -> {
 					inputFld.setText(computeOp(inputFld.getText()));
 				});
@@ -1857,7 +1867,7 @@ public class UIManager {
 					double b = nums.get(i + 1);
 
 					if (currentOp.equals("÷") && b == 0) {
-						return "Sıfıra bölünemez";
+						return "Error";
 					}
 
 					double res = currentOp.equals("x") ? (a * b) : (a / b);
@@ -1882,7 +1892,7 @@ public class UIManager {
 			}
 
 			if (Double.isNaN(total) || Double.isInfinite(total)) {
-				return "Hata";
+				return "Error";
 			}
 
 			if (total == (long) total) {
