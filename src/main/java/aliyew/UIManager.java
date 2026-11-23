@@ -1,33 +1,66 @@
 package aliyew;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.*;
-
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.border.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Comparator;
-import java.time.*;
-import java.time.format.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+
+import com.formdev.flatlaf.FlatLightLaf;
+
 
 
 public class UIManager {
@@ -69,8 +102,14 @@ public class UIManager {
 
 	public static void main(String[] args) {
 // Pencere çerçevelerini işletim sistemi yerine Swing'in çizmesini sağlar
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		JDialog.setDefaultLookAndFeelDecorated(true);
+		// JFrame.setDefaultLookAndFeelDecorated(true);
+		// JDialog.setDefaultLookAndFeelDecorated(true);
+
+		try {
+            FlatLightLaf.setup();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
 		JFrame myFrame = getFrame();
 
@@ -1727,6 +1766,59 @@ public class UIManager {
 
 		JTextField inputFld = new JTextField();
 
+		inputFld.addKeyListener(new java.awt.event.KeyAdapter() {
+    @Override
+    public void keyTyped(java.awt.event.KeyEvent e) {
+        char c = e.getKeyChar();
+
+        // Enter veya '=' basıldığında hesapla ve varsayılan davranışı engelle
+        if (c == '\n' || c == '=') {
+            e.consume();
+            inputFld.setText(computeOp(inputFld.getText()));
+            return;
+        }
+
+        // 'c' veya 'C' basıldığında temizle
+        if (c == 'c' || c == 'C') {
+            e.consume();
+            inputFld.setText("");
+            return;
+        }
+
+        // Klavyedeki '*' ve '/' karakterlerini butonlardaki 'x' ve '÷' ile eşleştir
+        if (c == '*') {
+            e.consume();
+            appendOperator(inputFld, "x");
+            return;
+        }
+        if (c == '/') {
+            e.consume();
+            appendOperator(inputFld, "÷");
+            return;
+        }
+
+        // Rakam, nokta ve + / - dışındaki geçersiz karakterleri engelle
+        if (!Character.isDigit(c) && c != '.' && c != '+' && c != '-') {
+            e.consume();
+            return;
+        }
+
+        // Ardışık operatör kontrolü (mevcut buton mantığıyla uyumlu)
+        if ("+-".indexOf(c) != -1) {
+            e.consume();
+            appendOperator(inputFld, String.valueOf(c));
+        }
+    }
+
+    @Override
+    public void keyPressed(java.awt.event.KeyEvent e) {
+        // Escape tuşuyla ekranı temizleme
+        if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ESCAPE) {
+            inputFld.setText("");
+        }
+    }
+});
+
 		String[] textList = {"C", "÷", "x", "<", "7", "8", "9", "-", "4", "5", "6", "+", "1", "2", "3", ".", " ", "0", " ", "=" };
 		ArrayList<JButton> btnList = new ArrayList<>();
 
@@ -1820,11 +1912,29 @@ public class UIManager {
 
 	}
 
+	private static void appendOperator(JTextField inputFld, String op) {
+    String currentText = inputFld.getText();
+    if (currentText.isEmpty()) {
+        if (!"÷x".contains(op)) {
+            inputFld.setText(op);
+        }
+    } else {
+        char lastChar = currentText.charAt(currentText.length() - 1);
+        if ("+-÷x".indexOf(lastChar) != -1) {
+            inputFld.setText(currentText.substring(0, currentText.length() - 1) + op);
+        } else {
+            inputFld.setText(currentText + op);
+        }
+    }
+}
+
 	private static String computeOp(String op) {
 
 		if (op.isEmpty()) {
 			return "";
 		}
+
+		op = op.replace('*', 'x').replace('/', '÷');
 
 		if ("+-÷x".contains(op.charAt(op.length() - 1) + "")) {
 			op = op.substring(0, op.length() - 1);

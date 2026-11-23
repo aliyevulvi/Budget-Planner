@@ -1,93 +1,127 @@
 # Budget Planner
 
-A simple Java desktop budgeting application for tracking income, expenses, savings, and generating reports in PDF format.
+A desktop budget management application built with Java and Swing. It helps users track income, savings, expenses, categories, budget limits, reports, backups, and PostgreSQL synchronization.
 
 ## Features
 
-- Create and manage budget records
-- Add income and savings values
-- Record daily expenses by category
-- View all records and expenses
-- Generate category-based reports
-- Export reports to PDF
-- PostgreSQL database integration
+- Create budget records with income and savings information
+- List, update, and delete budget periods
+- Record expenses by category and date
+- Set general and category-based spending limits
+- Manage expense categories and payment templates
+- Display expense charts with JFreeChart
+- Generate PDF reports and XLSX files
+- Store local data in JSON files
+- Synchronize data with PostgreSQL
+- Create backups and restore application data
 
-## Tech Stack
+## Technologies
 
 - Java 17
+- Java Swing
 - Maven
-- PostgreSQL
+- PostgreSQL and JDBC
+- Jackson
 - OpenPDF
+- Apache POI
+- JFreeChart
+- Log4j 2
+
+## Requirements
+
+- JDK 17 or later
+- Maven 3.8 or later
+- A PostgreSQL database
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/<your-username>/BudgetPlanner.git
+cd BudgetPlanner
+```
+
+2. Prepare a PostgreSQL JDBC connection URL:
+
+```text
+jdbc:postgresql://server:port/database?ssl=require&user=username&password=password
+```
+
+> If example connection details or credentials exist in `link.txt` or Git history, replace them with credentials for your own environment. Never commit database passwords.
+
+3. In the project root, ensure the `data` directory contains a `url.txt` file with the PostgreSQL JDBC URL:
+
+```text
+jdbc:postgresql://server:port/database?ssl=require&user=username&password=password
+```
+
+The application stores local data in the `data` directory and creates reports and backups in folders inside the application directory.
+
+4. Build the project:
+
+```bash
+mvn clean package
+```
+
+5. Run the application:
+
+```bash
+java -jar target/BudgetPlanner-1.0-SNAPSHOT.jar
+```
+
+Alternatively, run the `main` method in `aliyew.Main` from your IDE.
+
+## Database Setup
+
+The application uses the `app_schema` PostgreSQL schema. It creates the following tables automatically when database operations are available:
+
+- `app_schema.tb_records`
+- `app_schema.tb_expenses`
+
+The database user must have permission to create the schema and manage tables in that schema.
+
+## Usage
+
+1. Create a new budget record.
+2. Enter income, savings, and period information.
+3. Add expense categories and record expenses.
+4. Define spending limits.
+5. Generate PDF or XLSX reports.
+6. Synchronize the local changes with PostgreSQL.
+7. Use the settings panel to create or restore backups.
+
+## Testing
+
+Run the tests with Maven:
+
+```bash
+mvn test
+```
 
 ## Project Structure
 
 ```text
 BudgetPlanner/
 ├── src/
-│   ├── main/
-│   │   ├── java/aliyew/
-│   │   │   ├── ConsoleUI.java
-│   │   │   ├── DBManager.java
-│   │   │   ├── Expense.java
-│   │   │   ├── Main.java
-│   │   │   ├── PDFManager.java
-│   │   │   ├── Record.java
-│   │   │   └── Report.java
-│   │   └── resources/
+│   ├── main/java/aliyew/
+│   │   ├── Main.java           # Application entry point
+│   │   ├── UIManager.java      # Swing user interface
+│   │   ├── DBManager.java      # PostgreSQL operations
+│   │   ├── JsonManager.java    # Local JSON data management
+│   │   ├── BackupManager.java  # Backup and restore operations
+│   │   ├── PDFManager.java     # PDF reports
+│   │   └── XlsxManager.java    # Excel reports
 │   └── test/java/aliyew/
-│       └── AppTest.java
+├── data/                       # Local data files
 ├── pom.xml
-├── README.md
-└── link.txt
+└── README.md
 ```
 
-## Requirements
+## Security
 
-- Java 17 or newer
-- Maven 3.8+
-- PostgreSQL database access
-
-## Setup
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/your-username/BudgetPlanner.git
-cd BudgetPlanner
-```
-
-2. Configure the database connection in `DBManager.java` if needed.
-
-3. Build the project:
-
-```bash
-mvn clean install
-```
-
-4. Run the application:
-
-```bash
-mvn exec:java
-```
-
-If `exec-maven-plugin` is not configured, run the main class from your IDE or use:
-
-```bash
-mvn package
-java -cp target/classes:target/dependency/* aliyew.Main
-```
-
-## Usage
-
-- Launch the app from `Main`.
-- Create a record with income and saving information.
-- Add expenses grouped by category.
-- View summaries and generate a report PDF.
-
-## Notes
-
-This project currently connects to a PostgreSQL database through the JDBC URL defined in `DBManager`. Make sure the database is reachable and the required tables exist.
+Do not store database passwords or private connection URLs in source files or commit history. Rotate any credential that has already been committed to a public repository.
 
 ## License
 
-This project is licensed under the MIT License.
+No license file has been added to this project yet.
